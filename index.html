@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocktail-Bewertungen</title>
+<style>
+  :root {
+    --bg: #faf6f2;
+    --card: #ffffff;
+    --accent: #c9762f;
+    --accent-dark: #a15d21;
+    --star-filled: #e0a530;
+    --star-empty: #d8d2cb;
+    --text: #2b2620;
+    --muted: #8a8178;
+    --border: #ede4d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
+    color: var(--text);
+    padding: 24px 16px 60px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  header h1 {
+    font-size: 1.6rem;
+    margin: 0 0 4px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .status {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    min-height: 20px;
+    margin-bottom: 12px;
+    transition: opacity 0.3s;
+  }
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin: 24px 4px 10px;
+  }
+  .section-title:first-child {
+    margin-top: 0;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cocktail-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    opacity: 0;
+    transform: translateY(6px);
+    animation: fadeIn 0.35s ease forwards;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cocktail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .cocktail-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  .expand-icon {
+    font-size: 0.7rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    display: inline-block;
+    width: 12px;
+  }
+  .expand-icon.open { transform: rotate(90deg); }
+  .cocktail-name {
+    font-size: 1rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  .custom-tag {
+    font-size: 0.65rem;
+    color: var(--accent-dark);
+    background: #fbeedd;
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+  .stars {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .star {
+    font-size: 1.4rem;
+    color: var(--star-empty);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s, color 0.15s;
+    line-height: 1;
+  }
+  .star:hover { transform: scale(1.15); }
+  .star.filled { color: var(--star-filled); }
+  .ingredients-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, margin-top 0.25s ease;
+  }
+  .ingredients-panel.open {
+    max-height: 200px;
+    margin-top: 10px;
+  }
+  .ingredients-inner {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .ingredients-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+  }
+  .ingredients-list li {
+    margin: 2px 0;
+  }
+  .no-ingredients {
+    color: var(--muted);
+    font-style: italic;
+  }
+  .delete-custom-btn {
+    margin-top: 8px;
+    background: none;
+    border: none;
+    color: #b04a3a;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0;
+  }
+  .empty-hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 10px 0;
+  }
+  .clear-btn {
+    display: block;
+    margin: 28px auto 0;
+    background: none;
+    border: 1px solid #ddd3c8;
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .clear-btn:active { background: #f0e9e0; }
+  .summary {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .add-section {
+    margin-top: 24px;
+  }
+  .add-btn {
+    display: block;
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .add-btn:active { background: var(--accent-dark); }
+  .add-form {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .add-form.open { display: flex; }
+  .add-form label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: -4px;
+  }
+  .add-form input {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fffdfb;
+    color: var(--text);
+  }
+  .add-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .add-form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .add-form-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .save-cocktail-btn {
+    background: var(--accent);
+    color: #fff;
+  }
+  .save-cocktail-btn:active { background: var(--accent-dark); }
+  .cancel-cocktail-btn {
+    background: #f0e9e0;
+    color: var(--text);
+  }
+  .form-error {
+    color: #b04a3a;
+    font-size: 0.8rem;
+    display: none;
+  }
+  .form-error.show { display: block; }
+  .form-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: none;
+  }
+  .form-hint.show { display: block; }
+  .name-input-wrap {
+    position: relative;
+  }
+  .suggestions-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: #fffefc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+  }
+  .suggestions-list.open { display: block; }
+  .suggestion-item {
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .suggestion-item:active,
+  .suggestion-item.active {
+    background: #fbeedd;
+  }
+  .suggestion-thumb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .suggestion-loading,
+  .suggestion-empty {
+    padding: 9px 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍹 Cocktail-Bewertungen</h1>
+  <p>Tippe auf die Sterne, um zu bewerten · auf den Namen für Zutaten</p>
+</header>
+
+<div class="status" id="status">Lade Bewertungen…</div>
+
+<div class="container">
+  <div class="section-title">⭐ Bewertet</div>
+  <div class="list" id="ratedList"></div>
+
+  <div class="section-title">Unbewertet</div>
+  <div class="list" id="unratedList"></div>
+
+  <div class="add-section">
+    <button class="add-btn" id="addBtn">+ Neuen Cocktail hinzufügen</button>
+    <div class="add-form" id="addForm">
+      <label for="newName">Name</label>
+      <div class="name-input-wrap">
+        <input type="text" id="newName" placeholder="z. B. Mai Tai" autocomplete="off">
+        <ul class="suggestions-list" id="suggestionsList"></ul>
+      </div>
+      <label for="newIngredients">Zutaten (mit Komma getrennt)</label>
+      <input type="text" id="newIngredients" placeholder="z. B. Rum, Limettensaft, Orgeat-Sirup" autocomplete="off">
+      <div class="form-error" id="formError">Bitte einen Namen eingeben.</div>
+      <div class="form-hint" id="autofillHint"></div>
+      <div class="add-form-actions">
+        <button class="cancel-cocktail-btn" id="cancelAddBtn" type="button">Abbrechen</button>
+        <button class="save-cocktail-btn" id="saveAddBtn" type="button">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="summary" id="summary"></div>
+
+<button class="clear-btn" id="clearBtn">Alle Bewertungen zurücksetzen</button>
+
+<script>
+// Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
+// Format, wie es die TheCocktailDB-API zurückgibt (Menge + Zutat kombiniert,
+// z. B. "1 1/2 oz Vodka" statt nur "Vodka").
+const baseRecipes = {
+  "Blue Lagoon": ["1 1/2 oz Vodka", "1 oz Blue Curacao", "3 oz Lemonade"],
+  "Malibu Pineapple": ["2 oz Malibu Rum", "4 oz Pineapple Juice"],
+  "Vodka Orange": ["1 1/2 oz Vodka", "4 oz Orange Juice"],
+  "Black Russian": ["2 oz Vodka", "1 oz Kahlua"],
+  "Tequila Sunrise": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Grenadine"],
+  "Tequila Sunset": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Blackcurrant Cordial"],
+  "Sirocco": ["1 oz Vodka", "1 oz Campari", "3 oz Orange Juice", "1/2 oz Grenadine"],
+  "Dolce Vita": ["3 oz Prosecco", "1 oz Campari", "1 oz Orange Juice"],
+  "Cuba Libre": ["2 oz Light Rum", "4 oz Cola", "1/2 oz Lime Juice"],
+  "Campari Orange": ["1 1/2 oz Campari", "4 oz Orange Juice"],
+  "Dry Martini": ["2 1/2 oz Gin", "1/2 oz Dry Vermouth"],
+  "Gin Tonic": ["1 1/2 oz Gin", "4 oz Tonic Water"],
+  "Negroni": ["1 oz Gin", "1 oz Campari", "1 oz Sweet Vermouth"],
+  "Pina Colada": ["2 oz Light Rum", "1 oz Coconut Cream", "3 oz Pineapple Juice"],
+  "Vodka Martini": ["2 1/2 oz Vodka", "1/2 oz Dry Vermouth"],
+  "Kir Royal": ["4 oz Champagne", "1/2 oz Creme de Cassis"],
+  "Bellini": ["3 oz Prosecco", "2 oz Peach Puree"],
+  "Mimoza": ["3 oz Champagne", "3 oz Orange Juice"],
+  "Punch": ["2 oz Dark Rum", "1 oz Orange Juice", "1 oz Pineapple Juice", "1/2 oz Grenadine"]
+};
+
+const RATINGS_KEY = "cocktail-ratings";
+const CUSTOM_KEY = "cocktail-custom-list";
+let ratings = {};
+let customCocktails = {}; // name -> ingredients[]
+const expandedState = {}; // slug -> bool
+
+const ratedListEl = document.getElementById("ratedList");
+const unratedListEl = document.getElementById("unratedList");
+const statusEl = document.getElementById("status");
+const summaryEl = document.getElementById("summary");
+const clearBtn = document.getElementById("clearBtn");
+const addBtn = document.getElementById("addBtn");
+const addForm = document.getElementById("addForm");
+const newNameInput = document.getElementById("newName");
+const newIngredientsInput = document.getElementById("newIngredients");
+const formError = document.getElementById("formError");
+const cancelAddBtn = document.getElementById("cancelAddBtn");
+const saveAddBtn = document.getElementById("saveAddBtn");
+const autofillHint = document.getElementById("autofillHint");
+const suggestionsList = document.getElementById("suggestionsList");
+
+function slug(name) {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
+
+function setStatus(text, fade) {
+  statusEl.style.opacity = "1";
+  statusEl.textContent = text;
+  if (fade) {
+    setTimeout(() => { statusEl.style.opacity = "0"; }, 1200);
+  }
+}
+
+// Speicherung: schreibt IMMER in beide Speicher (window.storage UND
+// localStorage), damit Bewertungen und selbst hinzugefügte Cocktails auch
+// dann erhalten bleiben, wenn diese HTML-Datei später aktualisiert wird
+// (z. B. neue Features) oder die Seite eigenständig im Browser geöffnet
+// wird. Beim Laden werden beide Quellen zusammengeführt.
+async function storageGetBoth(key) {
+  let fromWindowStorage = null;
+  let fromLocalStorage = null;
+  try {
+    if (window.storage) {
+      const result = await window.storage.get(key, false);
+      fromWindowStorage = result ? result.value : null;
+    }
+  } catch (e) { /* nicht verfügbar oder Key existiert noch nicht */ }
+  try {
+    fromLocalStorage = localStorage.getItem(key);
+  } catch (e) { /* nicht verfügbar (z.B. Privacy-Modus) */ }
+  return { fromWindowStorage, fromLocalStorage };
+}
+
+async function storageSetBoth(key, value) {
+  let ok = false;
+  try {
+    if (window.storage) {
+      const result = await window.storage.set(key, value, false);
+      if (result) ok = true;
+    }
+  } catch (e) { /* ignorieren, localStorage übernimmt */ }
+  try {
+    localStorage.setItem(key, value);
+    ok = true;
+  } catch (e) { /* ignorieren */ }
+  return ok;
+}
+
+function parseJson(raw, fallback) {
+  try {
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+async function loadRatings() {
+  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(RATINGS_KEY);
+  const a = parseJson(fromWindowStorage, {});
+  const b = parseJson(fromLocalStorage, {});
+  const merged = { ...a };
+  for (const key of Object.keys(b)) {
+    if (!(key in merged) || (b[key] > (merged[key] || 0))) {
+      merged[key] = b[key];
+    }
+  }
+  ratings = merged;
+  await storageSetBoth(RATINGS_KEY, JSON.stringify(ratings));
+}
+
+async function saveRatings() {
+  setStatus("Speichere…", false);
+  const ok = await storageSetBoth(RATINGS_KEY, JSON.stringify(ratings));
+  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
+}
+
+async function loadCustomCocktails() {
+  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(CUSTOM_KEY);
+  const a = parseJson(fromWindowStorage, {});
+  const b = parseJson(fromLocalStorage, {});
+  // Zusammenführen: alle selbst hinzugefügten Cocktails aus beiden Quellen behalten.
+  customCocktails = { ...b, ...a };
+  await storageSetBoth(CUSTOM_KEY, JSON.stringify(customCocktails));
+}
+
+async function saveCustomCocktails() {
+  setStatus("Speichere…", false);
+  const ok = await storageSetBoth(CUSTOM_KEY, JSON.stringify(customCocktails));
+  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
+}
+
+function getAllRecipes() {
+  return { ...baseRecipes, ...customCocktails };
+}
+
+function updateSummary() {
+  const allRecipes = getAllRecipes();
+  const total = Object.keys(allRecipes).length;
+  const rated = Object.values(ratings).filter(v => v > 0);
+  if (rated.length === 0) {
+    summaryEl.textContent = "Noch keine Bewertungen abgegeben.";
+    return;
+  }
+  const avg = (rated.reduce((a, b) => a + b, 0) / rated.length).toFixed(1);
+  summaryEl.textContent = `${rated.length} von ${total} bewertet · Ø ${avg} ★`;
+}
+
+function renderStars(container, name) {
+  container.innerHTML = "";
+  const current = ratings[slug(name)] || 0;
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement("span");
+    star.className = "star" + (i <= current ? " filled" : "");
+    star.textContent = "★";
+    star.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const key = slug(name);
+      // Klick auf bereits gesetzten höchsten Stern setzt Bewertung zurück
+      ratings[key] = (ratings[key] === i) ? 0 : i;
+      renderList();
+      await saveRatings();
+    });
+    container.appendChild(star);
+  }
+}
+
+function buildCard(name, idx, isCustom) {
+  const key = slug(name);
+  const card = document.createElement("div");
+  card.className = "cocktail-card";
+  card.style.animationDelay = (idx * 0.03) + "s";
+
+  const row = document.createElement("div");
+  row.className = "cocktail-row";
+
+  const nameWrap = document.createElement("div");
+  nameWrap.className = "cocktail-name-wrap";
+
+  const expandIcon = document.createElement("span");
+  expandIcon.className = "expand-icon" + (expandedState[key] ? " open" : "");
+  expandIcon.textContent = "▶";
+
+  const nameEl = document.createElement("span");
+  nameEl.className = "cocktail-name";
+  nameEl.textContent = name;
+  if (isCustom) {
+    const tag = document.createElement("span");
+    tag.className = "custom-tag";
+    tag.textContent = "eigener";
+    nameEl.appendChild(tag);
+  }
+
+  nameWrap.appendChild(expandIcon);
+  nameWrap.appendChild(nameEl);
+
+  const starsEl = document.createElement("div");
+  starsEl.className = "stars";
+  renderStars(starsEl, name);
+
+  row.appendChild(nameWrap);
+  row.appendChild(starsEl);
+  card.appendChild(row);
+
+  const panel = document.createElement("div");
+  panel.className = "ingredients-panel" + (expandedState[key] ? " open" : "");
+
+  const inner = document.createElement("div");
+  inner.className = "ingredients-inner";
+
+  const ingredients = getAllRecipes()[name] || [];
+  if (ingredients.length === 0) {
+    const p = document.createElement("div");
+    p.className = "no-ingredients";
+    p.textContent = "Keine Zutaten hinterlegt.";
+    inner.appendChild(p);
+  } else {
+    const ul = document.createElement("ul");
+    ul.className = "ingredients-list";
+    ingredients.forEach(ing => {
+      const li = document.createElement("li");
+      li.textContent = ing;
+      ul.appendChild(li);
+    });
+    inner.appendChild(ul);
+  }
+
+  if (isCustom) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-custom-btn";
+    delBtn.type = "button";
+    delBtn.textContent = "Diesen selbst hinzugefügten Cocktail löschen";
+    delBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (!confirm(`"${name}" wirklich löschen?`)) return;
+      delete customCocktails[name];
+      delete ratings[key];
+      delete expandedState[key];
+      renderList();
+      await saveCustomCocktails();
+      await saveRatings();
+    });
+    inner.appendChild(delBtn);
+  }
+
+  panel.appendChild(inner);
+  card.appendChild(panel);
+
+  nameWrap.addEventListener("click", () => {
+    expandedState[key] = !expandedState[key];
+    panel.classList.toggle("open", expandedState[key]);
+    expandIcon.classList.toggle("open", expandedState[key]);
+  });
+
+  return card;
+}
+
+function renderList() {
+  ratedListEl.innerHTML = "";
+  unratedListEl.innerHTML = "";
+
+  const allRecipes = getAllRecipes();
+  const names = Object.keys(allRecipes);
+
+  const rated = [];
+  const unrated = [];
+  names.forEach(name => {
+    const r = ratings[slug(name)] || 0;
+    const isCustom = Object.prototype.hasOwnProperty.call(customCocktails, name);
+    if (r > 0) rated.push({ name, r, isCustom });
+    else unrated.push({ name, r: 0, isCustom });
+  });
+
+  // Bewertete: beste zuerst, bei Gleichstand alphabetisch
+  rated.sort((a, b) => b.r - a.r || a.name.localeCompare(b.name, "de"));
+  // Unbewertete: alphabetisch
+  unrated.sort((a, b) => a.name.localeCompare(b.name, "de"));
+
+  if (rated.length === 0) {
+    const hint = document.createElement("div");
+    hint.className = "empty-hint";
+    hint.textContent = "Noch nichts bewertet.";
+    ratedListEl.appendChild(hint);
+  } else {
+    rated.forEach((item, idx) => ratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
+  }
+
+  unrated.forEach((item, idx) => unratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
+
+  updateSummary();
+}
+
+clearBtn.addEventListener("click", async () => {
+  if (!confirm("Wirklich alle Bewertungen löschen?")) return;
+  ratings = {};
+  renderList();
+  await saveRatings();
+});
+
+function showAutofillHint(text) {
+  autofillHint.textContent = text;
+  autofillHint.classList.toggle("show", !!text);
+}
+
+// Trägt Name + Zutaten (inkl. Mengen) aus einem TheCocktailDB-Datensatz
+// ins Formular ein. Wird sowohl vom "Automatisch befüllen"-Button als
+// auch bei Auswahl aus dem Vorschlags-Dropdown genutzt.
+function fillFormFromDrink(drink) {
+  const ingredients = [];
+  for (let i = 1; i <= 15; i++) {
+    const ing = drink["strIngredient" + i];
+    const measure = drink["strMeasure" + i];
+    if (ing && ing.trim()) {
+      const measureText = measure && measure.trim() ? measure.trim() + " " : "";
+      ingredients.push((measureText + ing.trim()).trim());
+    }
+  }
+  if (drink.strDrink) newNameInput.value = drink.strDrink;
+  newIngredientsInput.value = ingredients.join(", ");
+  showAutofillHint(`Gefunden: "${drink.strDrink}" · Zutaten übernommen, bei Bedarf anpassen.`);
+}
+
+// --- Live-Vorschläge (Dropdown) beim Tippen ---
+let suggestionTimer = null;
+let suggestionDrinks = [];
+let suggestionActiveIndex = -1;
+let suggestionRequestId = 0;
+
+function closeSuggestions() {
+  suggestionsList.classList.remove("open");
+  suggestionsList.innerHTML = "";
+  suggestionDrinks = [];
+  suggestionActiveIndex = -1;
+}
+
+function renderSuggestionsLoading() {
+  suggestionsList.innerHTML = '<li class="suggestion-loading">Suche…</li>';
+  suggestionsList.classList.add("open");
+}
+
+function renderSuggestionsEmpty() {
+  suggestionsList.innerHTML = '<li class="suggestion-empty">Keine Treffer.</li>';
+  suggestionsList.classList.add("open");
+}
+
+function renderSuggestions(drinks) {
+  suggestionDrinks = drinks;
+  suggestionActiveIndex = -1;
+  suggestionsList.innerHTML = "";
+  drinks.forEach((drink, i) => {
+    const li = document.createElement("li");
+    li.className = "suggestion-item";
+    li.dataset.index = String(i);
+
+    if (drink.strDrinkThumb) {
+      const img = document.createElement("img");
+      img.className = "suggestion-thumb";
+      img.src = drink.strDrinkThumb + "/preview";
+      img.alt = "";
+      li.appendChild(img);
+    }
+    const span = document.createElement("span");
+    span.textContent = drink.strDrink;
+    li.appendChild(span);
+
+    li.addEventListener("mousedown", (e) => {
+      // mousedown statt click, damit es vor dem blur-Event des Inputs feuert
+      e.preventDefault();
+      fillFormFromDrink(drink);
+      closeSuggestions();
+    });
+    suggestionsList.appendChild(li);
+  });
+  suggestionsList.classList.add("open");
+}
+
+function updateActiveSuggestion() {
+  const items = suggestionsList.querySelectorAll(".suggestion-item");
+  items.forEach((el, i) => el.classList.toggle("active", i === suggestionActiveIndex));
+  const activeEl = items[suggestionActiveIndex];
+  if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+}
+
+async function fetchSuggestions(query) {
+  const requestId = ++suggestionRequestId;
+  renderSuggestionsLoading();
+  try {
+    const url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + encodeURIComponent(query);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Netzwerkfehler");
+    const data = await res.json();
+    if (requestId !== suggestionRequestId) return; // veraltete Antwort ignorieren
+    const drinks = data && data.drinks ? data.drinks.slice(0, 8) : [];
+    if (drinks.length === 0) {
+      renderSuggestionsEmpty();
+    } else {
+      renderSuggestions(drinks);
+    }
+  } catch (e) {
+    if (requestId !== suggestionRequestId) return;
+    closeSuggestions();
+  }
+}
+
+newNameInput.addEventListener("input", () => {
+  const query = newNameInput.value.trim();
+  clearTimeout(suggestionTimer);
+  if (query.length < 2) {
+    closeSuggestions();
+    return;
+  }
+  suggestionTimer = setTimeout(() => fetchSuggestions(query), 300);
+});
+
+newNameInput.addEventListener("keydown", (e) => {
+  if (!suggestionsList.classList.contains("open") || suggestionDrinks.length === 0) return;
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    suggestionActiveIndex = Math.min(suggestionActiveIndex + 1, suggestionDrinks.length - 1);
+    updateActiveSuggestion();
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    suggestionActiveIndex = Math.max(suggestionActiveIndex - 1, 0);
+    updateActiveSuggestion();
+  } else if (e.key === "Enter") {
+    if (suggestionActiveIndex >= 0 && suggestionDrinks[suggestionActiveIndex]) {
+      e.preventDefault();
+      fillFormFromDrink(suggestionDrinks[suggestionActiveIndex]);
+      closeSuggestions();
+    }
+  } else if (e.key === "Escape") {
+    closeSuggestions();
+  }
+});
+
+newNameInput.addEventListener("blur", () => {
+  // Kurze Verzögerung, damit ein Klick (mousedown) auf einen Vorschlag
+  // noch verarbeitet werden kann, bevor die Liste verschwindet.
+  setTimeout(closeSuggestions, 150);
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".name-input-wrap")) {
+    closeSuggestions();
+  }
+});
+
+function openAddForm() {
+  addForm.classList.add("open");
+  formError.classList.remove("show");
+  showAutofillHint("");
+  closeSuggestions();
+  newNameInput.value = "";
+  newIngredientsInput.value = "";
+  newNameInput.focus();
+}
+
+function closeAddForm() {
+  addForm.classList.remove("open");
+  showAutofillHint("");
+  closeSuggestions();
+}
+
+addBtn.addEventListener("click", () => {
+  if (addForm.classList.contains("open")) {
+    closeAddForm();
+  } else {
+    openAddForm();
+  }
+});
+
+cancelAddBtn.addEventListener("click", closeAddForm);
+
+saveAddBtn.addEventListener("click", async () => {
+  const name = newNameInput.value.trim();
+  if (!name) {
+    formError.textContent = "Bitte einen Namen eingeben.";
+    formError.classList.add("show");
+    newNameInput.focus();
+    return;
+  }
+  const allRecipes = getAllRecipes();
+  const exists = Object.keys(allRecipes).some(n => n.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    formError.textContent = "Diesen Cocktail gibt es schon.";
+    formError.classList.add("show");
+    return;
+  }
+  const ingredients = newIngredientsInput.value
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  customCocktails[name] = ingredients;
+  closeAddForm();
+  expandedState[slug(name)] = true;
+  renderList();
+  await saveCustomCocktails();
+});
+
+(async function init() {
+  await loadRatings();
+  await loadCustomCocktails();
+  renderList();
+  setStatus("Bereit", true);
+})();
+</script>
+
+</body>
+</html>
