@@ -78,6 +78,22 @@
   @keyframes fadeIn {
     to { opacity: 1; transform: translateY(0); }
   }
+  /* Nach dem Einblenden wird die Einblend-Animation abgeschaltet, damit ein
+     Umhängen der Karte (beim Umsortieren) sie nicht erneut auslöst. */
+  .cocktail-card.settled {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .cocktail-card.flipping {
+    position: relative;
+    z-index: 2;
+  }
+  /* Die gerade bewertete Karte wandert sichtbar über die anderen hinweg. */
+  .cocktail-card.flip-lead {
+    z-index: 5;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.06);
+  }
   .cocktail-row {
     display: flex;
     align-items: center;
@@ -139,7 +155,7 @@
     transition: max-height 0.25s ease, margin-top 0.25s ease;
   }
   .ingredients-panel.open {
-    max-height: 200px;
+    max-height: 320px;
     margin-top: 10px;
   }
   .ingredients-inner {
@@ -160,15 +176,29 @@
     color: var(--muted);
     font-style: italic;
   }
-  .delete-custom-btn {
-    margin-top: 8px;
-    background: none;
-    border: none;
-    color: #b04a3a;
-    font-size: 0.8rem;
-    cursor: pointer;
-    padding: 0;
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
   }
+  .card-action-btn {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fffdfb;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .card-action-btn:active { background: #f0e9e0; }
+  .card-action-btn[hidden] { display: none; }
+  .delete-btn {
+    border-color: #eccfc9;
+    color: #b04a3a;
+  }
+  .delete-btn:active { background: #f7e7e3; }
   .empty-hint {
     text-align: center;
     color: var(--muted);
@@ -361,6 +391,7 @@
 <div class="summary" id="summary"></div>
 
 <button class="clear-btn" id="clearBtn">Alle Bewertungen zurücksetzen</button>
+<button class="clear-btn" id="restoreBtn" style="display: none;"></button>
 
 <script>
 // Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
@@ -390,15 +421,19 @@ const baseRecipes = {
 
 const RATINGS_KEY = "cocktail-ratings";
 const CUSTOM_KEY = "cocktail-custom-list";
+const DELETED_KEY = "cocktail-deleted-base";
 let ratings = {};
 let customCocktails = {}; // name -> ingredients[]
+let deletedBase = {}; // name -> true, entfernte Standard-Cocktails
 const expandedState = {}; // slug -> bool
+const cardEls = new Map(); // slug -> Karten-Element (für das Umsortieren ohne Neuaufbau)
 
 const ratedListEl = document.getElementById("ratedList");
 const unratedListEl = document.getElementById("unratedList");
 const statusEl = document.getElementById("status");
 const summaryEl = document.getElementById("summary");
 const clearBtn = document.getElementById("clearBtn");
+const restoreBtn = document.getElementById("restoreBtn");
 const addBtn = document.getElementById("addBtn");
 const addForm = document.getElementById("addForm");
 const newNameInput = document.getElementById("newName");
@@ -499,8 +534,45 @@ async function saveCustomCocktails() {
   setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
 }
 
+// Entfernte Standard-Cocktails werden als Namensliste gespeichert, damit die
+// Basisliste im Code unverändert bleibt und ein Wiederherstellen möglich ist.
+async function loadDeletedBase() {
+  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(DELETED_KEY);
+  const a = parseJson(fromWindowStorage, {});
+  const b = parseJson(fromLocalStorage, {});
+  const merged = { ...b, ...a };
+  // Nur Namen behalten, die es in der Standardliste wirklich (noch) gibt.
+  for (const name of Object.keys(merged)) {
+    if (!Object.prototype.hasOwnProperty.call(baseRecipes, name)) delete merged[name];
+  }
+  deletedBase = merged;
+  await storageSetBoth(DELETED_KEY, JSON.stringify(deletedBase));
+}
+
+async function saveDeletedBase() {
+  setStatus("Speichere…", false);
+  const ok = await storageSetBoth(DELETED_KEY, JSON.stringify(deletedBase));
+  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
+}
+
 function getAllRecipes() {
-  return { ...baseRecipes, ...customCocktails };
+  const base = {};
+  for (const name of Object.keys(baseRecipes)) {
+    if (!deletedBase[name]) base[name] = baseRecipes[name];
+  }
+  return { ...base, ...customCocktails };
+}
+
+function updateRestoreBtn() {
+  const count = Object.keys(deletedBase).length;
+  if (count === 0) {
+    restoreBtn.style.display = "none";
+    return;
+  }
+  restoreBtn.style.display = "block";
+  restoreBtn.textContent = count === 1
+    ? "1 entfernten Standard-Cocktail wiederherstellen"
+    : count + " entfernte Standard-Cocktails wiederherstellen";
 }
 
 function updateSummary() {
@@ -527,7 +599,7 @@ function renderStars(container, name) {
       const key = slug(name);
       // Klick auf bereits gesetzten höchsten Stern setzt Bewertung zurück
       ratings[key] = (ratings[key] === i) ? 0 : i;
-      renderList();
+      updateAfterRating(name);
       await saveRatings();
     });
     container.appendChild(star);
@@ -538,6 +610,7 @@ function buildCard(name, idx, isCustom) {
   const key = slug(name);
   const card = document.createElement("div");
   card.className = "cocktail-card";
+  card.dataset.key = key;
   card.style.animationDelay = (idx * 0.03) + "s";
 
   const row = document.createElement("div");
@@ -594,23 +667,49 @@ function buildCard(name, idx, isCustom) {
     inner.appendChild(ul);
   }
 
-  if (isCustom) {
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-custom-btn";
-    delBtn.type = "button";
-    delBtn.textContent = "Diesen selbst hinzugefügten Cocktail löschen";
-    delBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (!confirm(`"${name}" wirklich löschen?`)) return;
+  const actions = document.createElement("div");
+  actions.className = "card-actions";
+
+  // Nur sichtbar, solange der Cocktail überhaupt eine Bewertung hat.
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "card-action-btn reset-rating-btn";
+  resetBtn.type = "button";
+  resetBtn.textContent = "Bewertung zurücksetzen";
+  resetBtn.hidden = !(ratings[key] > 0);
+  resetBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (!(ratings[key] > 0)) return;
+    ratings[key] = 0;
+    updateAfterRating(name); // wandert animiert zurück zu "Unbewertet"
+    await saveRatings();
+  });
+
+  const delBtn = document.createElement("button");
+  delBtn.className = "card-action-btn delete-btn";
+  delBtn.type = "button";
+  delBtn.textContent = "Cocktail löschen";
+  delBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (!confirm(`"${name}" wirklich löschen?`)) return;
+    if (isCustom) {
       delete customCocktails[name];
-      delete ratings[key];
-      delete expandedState[key];
-      renderList();
+    } else {
+      deletedBase[name] = true;
+    }
+    delete ratings[key];
+    delete expandedState[key];
+    renderList();
+    if (isCustom) {
       await saveCustomCocktails();
-      await saveRatings();
-    });
-    inner.appendChild(delBtn);
-  }
+    } else {
+      await saveDeletedBase();
+    }
+    await saveRatings();
+  });
+
+  actions.appendChild(resetBtn);
+  actions.appendChild(delBtn);
+  inner.appendChild(actions);
 
   panel.appendChild(inner);
   card.appendChild(panel);
@@ -621,40 +720,153 @@ function buildCard(name, idx, isCustom) {
     expandIcon.classList.toggle("open", expandedState[key]);
   });
 
+  const settle = () => card.classList.add("settled");
+  card.addEventListener("animationend", settle, { once: true });
+  setTimeout(settle, 800); // Fallback, falls die Animation nicht läuft
+
+  cardEls.set(key, card);
   return card;
 }
 
-function renderList() {
-  ratedListEl.innerHTML = "";
-  unratedListEl.innerHTML = "";
-
+// Teilt alle Cocktails in bewertet/unbewertet auf und sortiert beide Gruppen.
+function computeGroups() {
   const allRecipes = getAllRecipes();
-  const names = Object.keys(allRecipes);
-
   const rated = [];
   const unrated = [];
-  names.forEach(name => {
+  Object.keys(allRecipes).forEach(name => {
     const r = ratings[slug(name)] || 0;
     const isCustom = Object.prototype.hasOwnProperty.call(customCocktails, name);
     if (r > 0) rated.push({ name, r, isCustom });
     else unrated.push({ name, r: 0, isCustom });
   });
-
   // Bewertete: beste zuerst, bei Gleichstand alphabetisch
   rated.sort((a, b) => b.r - a.r || a.name.localeCompare(b.name, "de"));
   // Unbewertete: alphabetisch
   unrated.sort((a, b) => a.name.localeCompare(b.name, "de"));
+  return { rated, unrated };
+}
+
+function buildEmptyHint() {
+  const hint = document.createElement("div");
+  hint.className = "empty-hint";
+  hint.textContent = "Noch nichts bewertet.";
+  return hint;
+}
+
+// Vollständiger Neuaufbau: beim Laden sowie beim Hinzufügen/Löschen.
+function renderList() {
+  ratedListEl.innerHTML = "";
+  unratedListEl.innerHTML = "";
+  cardEls.clear();
+
+  const { rated, unrated } = computeGroups();
 
   if (rated.length === 0) {
-    const hint = document.createElement("div");
-    hint.className = "empty-hint";
-    hint.textContent = "Noch nichts bewertet.";
-    ratedListEl.appendChild(hint);
+    ratedListEl.appendChild(buildEmptyHint());
   } else {
     rated.forEach((item, idx) => ratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
   }
 
   unrated.forEach((item, idx) => unratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
+
+  updateSummary();
+  updateRestoreBtn();
+}
+
+// Aktualisiert Sterne und Button-Sichtbarkeit einer bestehenden Karte,
+// ohne sie neu zu bauen.
+function refreshCard(card, name) {
+  const current = ratings[slug(name)] || 0;
+  card.querySelectorAll(".star").forEach((star, i) => {
+    star.classList.toggle("filled", i < current);
+  });
+  const resetBtn = card.querySelector(".reset-rating-btn");
+  if (resetBtn) resetBtn.hidden = current === 0;
+}
+
+// Hängt die vorhandenen Karten in die richtige Reihenfolge/Liste um.
+// Die Elemente selbst bleiben erhalten (kein innerHTML), damit aufgeklappte
+// Zutaten, Scrollposition und Event-Listener unverändert bleiben.
+function sortListsInPlace() {
+  const { rated, unrated } = computeGroups();
+  const hint = ratedListEl.querySelector(".empty-hint");
+  if (rated.length > 0 && hint) hint.remove();
+
+  rated.forEach(item => {
+    const el = cardEls.get(slug(item.name));
+    if (el) ratedListEl.appendChild(el);
+  });
+  unrated.forEach(item => {
+    const el = cardEls.get(slug(item.name));
+    if (el) unratedListEl.appendChild(el);
+  });
+
+  if (rated.length === 0 && !hint) ratedListEl.appendChild(buildEmptyHint());
+}
+
+// FLIP-Animation ("First, Last, Invert, Play"): erst die aktuellen Positionen
+// merken, dann umsortieren, dann jede verschobene Karte von ihrer alten an ihre
+// neue Position animieren. Es wird dabei nichts neu aufgebaut.
+const FLIP_MS = 400;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function endFlip(el) {
+  el.classList.remove("flipping", "flip-lead");
+  el.style.transition = "";
+  el.style.transform = "";
+}
+
+function updateAfterRating(name) {
+  const key = slug(name);
+  const card = cardEls.get(key);
+  if (!card) { // Sollte nicht vorkommen; sicherheitshalber normaler Neuaufbau
+    renderList();
+    return;
+  }
+
+  if (reduceMotion.matches) {
+    refreshCard(card, name);
+    sortListsInPlace();
+    updateSummary();
+    return;
+  }
+
+  // First: Positionen vor jeder Änderung merken
+  const before = new Map();
+  cardEls.forEach((el, k) => before.set(k, el.getBoundingClientRect()));
+
+  // Last: Karte aktualisieren und umsortieren
+  refreshCard(card, name);
+  sortListsInPlace();
+
+  // Invert: jede verschobene Karte optisch an ihre alte Stelle zurücksetzen
+  const moved = [];
+  cardEls.forEach((el, k) => {
+    const b = before.get(k);
+    if (!b) return;
+    const a = el.getBoundingClientRect();
+    const dx = b.left - a.left;
+    const dy = b.top - a.top;
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+    el.classList.add("flipping");
+    if (k === key) el.classList.add("flip-lead");
+    el.style.transition = "none";
+    el.style.transform = "translate(" + dx + "px, " + dy + "px)";
+    moved.push(el);
+  });
+
+  // Play: im nächsten Frame zurück auf die echte Position animieren
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      moved.forEach(el => {
+        el.style.transition = "transform " + FLIP_MS + "ms cubic-bezier(0.22, 0.61, 0.36, 1)";
+        el.style.transform = "";
+        const done = () => endFlip(el);
+        el.addEventListener("transitionend", done, { once: true });
+        setTimeout(done, FLIP_MS + 150);
+      });
+    });
+  });
 
   updateSummary();
 }
@@ -664,6 +876,12 @@ clearBtn.addEventListener("click", async () => {
   ratings = {};
   renderList();
   await saveRatings();
+});
+
+restoreBtn.addEventListener("click", async () => {
+  deletedBase = {};
+  renderList();
+  await saveDeletedBase();
 });
 
 function showAutofillHint(text) {
@@ -870,6 +1088,7 @@ saveAddBtn.addEventListener("click", async () => {
 (async function init() {
   await loadRatings();
   await loadCustomCocktails();
+  await loadDeletedBase();
   renderList();
   setStatus("Bereit", true);
 })();

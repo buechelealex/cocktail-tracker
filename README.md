@@ -13,7 +13,12 @@ Live: <https://buechelealex.github.io/cocktail-tracker/>
 - **Bewerten mit 1–5 Sternen.** Bewertete Cocktails wandern automatisch in den
   Bereich „⭐ Bewertet“ und werden dort nach Bewertung sortiert (beste zuerst,
   bei Gleichstand alphabetisch). Unbewertete stehen alphabetisch darunter.
+  Die bewertete Karte gleitet dabei sichtbar an ihre neue Position – die Liste
+  wird nicht neu aufgebaut, aufgeklappte Zutaten und Scrollposition bleiben
+  erhalten.
 - **Zutaten aufklappen** per Tipp auf den Cocktailnamen.
+- **Cocktails löschen** – eigene endgültig, fest hinterlegte nur aus der eigenen
+  Liste (jederzeit wiederherstellbar).
 - **Eigene Cocktails hinzufügen** – mit Live-Suche gegen
   [TheCocktailDB](https://www.thecocktaildb.com/): beim Tippen erscheinen
   Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
@@ -28,18 +33,23 @@ Live: <https://buechelealex.github.io/cocktail-tracker/>
 
 1. Cocktail in der Liste suchen.
 2. Rechts auf den gewünschten Stern tippen – z. B. der vierte Stern für 4 ★.
-3. Die Karte springt in den Bereich „⭐ Bewertet“ und wird gespeichert
-   (kurze Statusmeldung „Gespeichert ✓“ oben).
+3. Die Karte gleitet in den Bereich „⭐ Bewertet“ und wird gespeichert
+   (kurze Statusmeldung „Gespeichert ✓“ oben). Die übrigen Cocktails rücken
+   ruhig nach, ohne dass die Seite neu aufgebaut wird.
 
-**Bewertung entfernen:** noch einmal auf den *aktuell höchsten gesetzten* Stern
-tippen – die Bewertung wird auf 0 zurückgesetzt und der Cocktail landet wieder
-unter „Unbewertet“.
+**Bewertung entfernen:** entweder noch einmal auf den *aktuell höchsten
+gesetzten* Stern tippen, oder die Zutaten aufklappen und dort auf **„Bewertung
+zurücksetzen“** tippen. In beiden Fällen wandert der Cocktail animiert zurück
+unter „Unbewertet“. Der Button erscheint nur bei Cocktails, die auch bewertet
+sind.
 
 ### Zutaten ansehen
 
 Auf den Cocktailnamen (oder das ▶-Symbol) tippen. Das Panel klappt auf und zeigt
-die Zutaten mit Mengen. Erneutes Tippen schließt es wieder. Bei eigenen
-Cocktails ohne eingetragene Zutaten steht dort „Keine Zutaten hinterlegt.“
+die Zutaten mit Mengen sowie die Buttons **„Bewertung zurücksetzen“** (nur bei
+bewerteten Cocktails) und **„Cocktail löschen“**. Erneutes Tippen schließt es
+wieder. Bei eigenen Cocktails ohne eingetragene Zutaten steht dort „Keine
+Zutaten hinterlegt.“
 
 ### Eigenen Cocktail hinzufügen
 
@@ -60,12 +70,22 @@ Cocktails ohne eingetragene Zutaten steht dort „Keine Zutaten hinterlegt.“
 Doppelte Namen werden abgelehnt („Diesen Cocktail gibt es schon.“) – die Prüfung
 ignoriert Groß-/Kleinschreibung.
 
-### Eigenen Cocktail löschen
+### Cocktail löschen
 
-Zutaten des Cocktails aufklappen und unten auf **„Diesen selbst hinzugefügten
-Cocktail löschen“** tippen, dann die Rückfrage bestätigen. Die Bewertung des
-Cocktails wird mitgelöscht. Die 19 fest hinterlegten Cocktails lassen sich nicht
-löschen.
+Zutaten des Cocktails aufklappen und auf **„Cocktail löschen“** tippen, dann die
+Rückfrage bestätigen. Die Bewertung des Cocktails wird mitgelöscht.
+
+- Ein **eigener** Cocktail ist danach endgültig weg.
+- Ein **fest hinterlegter** Cocktail verschwindet nur aus *deiner* Liste; das
+  Rezept bleibt in der App und lässt sich wiederherstellen (siehe unten).
+
+### Entfernte Standard-Cocktails wiederherstellen
+
+Sobald mindestens ein fest hinterlegter Cocktail entfernt wurde, erscheint ganz
+unten ein zusätzlicher Button, z. B. **„3 entfernte Standard-Cocktails
+wiederherstellen“**. Ein Tipp darauf holt alle entfernten Standard-Cocktails
+zurück (unbewertet). Selbst gelöschte eigene Cocktails lassen sich so nicht
+zurückholen – die müssen bei Bedarf neu angelegt werden.
 
 ### Alle Bewertungen zurücksetzen
 
@@ -81,6 +101,7 @@ Alles wird lokal im Browser gespeichert, unter zwei Schlüsseln:
 | --- | --- |
 | `cocktail-ratings` | Bewertungen (Cocktail-Name in Kleinbuchstaben mit Bindestrichen → 0–5) |
 | `cocktail-custom-list` | Selbst hinzugefügte Cocktails (Name → Zutatenliste) |
+| `cocktail-deleted-base` | Aus der Liste entfernte Standard-Cocktails (Name → `true`) |
 
 Geschrieben wird immer in `localStorage` **und** – falls vorhanden – in
 `window.storage`; beim Laden werden beide Quellen zusammengeführt. Dadurch
@@ -112,6 +133,11 @@ funktioniert offline.
 
 - Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript in einer
   Datei.
+- Beim Bewerten wird die Liste nicht neu gerendert: die vorhandenen Karten werden
+  nur umgehängt und per FLIP-Technik (Position vorher messen → umsortieren →
+  von der alten an die neue Position animieren) bewegt. Bei aktiviertem
+  „Bewegung reduzieren“ (`prefers-reduced-motion`) wird ohne Animation
+  umsortiert.
 - Einzige externe Abhängigkeit: die TheCocktailDB-API für Suchvorschläge
   (`search.php?s=`), aufgerufen mit 300 ms Verzögerung nach der Eingabe;
   veraltete Antworten werden verworfen.
