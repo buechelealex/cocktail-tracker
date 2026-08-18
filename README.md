@@ -4,7 +4,7 @@ Eine kleine Web-App zum Bewerten von Cocktails. Sie besteht aus einer einzigen
 HTML-Datei ([index.html](index.html)) ohne Build-Schritt, ohne Server und ohne
 Benutzerkonto – alle Daten bleiben auf dem eigenen Gerät.
 
-Live: <https://buechelealex.github.io/cocktail-tracker/>
+Live: <https://projects.abuechele.de/cocktail-tracker/>
 
 ## Was die App kann
 
