@@ -23,7 +23,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
     color: var(--text);
-    padding: 24px 16px 60px;
+    padding: 24px 16px 110px;
   }
   header {
     text-align: center;
@@ -223,33 +223,94 @@
     font-size: 0.85rem;
     color: var(--muted);
   }
-  .add-section {
-    margin-top: 24px;
-  }
-  .add-btn {
-    display: block;
-    width: 100%;
+  /* Schwebender Button unten rechts */
+  .fab {
+    position: fixed;
+    right: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    width: 58px;
+    height: 58px;
+    border: none;
+    border-radius: 50%;
     background: var(--accent);
     color: #fff;
-    border: none;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-family: inherit;
+    font-size: 2rem;
+    line-height: 1;
+    padding: 0 0 3px;
     cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.12);
+    z-index: 40;
+    transition: transform 0.15s ease, background 0.15s ease;
   }
-  .add-btn:active { background: var(--accent-dark); }
-  .add-form {
-    background: var(--card);
-    border-radius: 14px;
+  .fab:hover { transform: scale(1.05); }
+  .fab:active { background: var(--accent-dark); transform: scale(0.96); }
+  /* Abgedunkelter Hintergrund des Dialogs */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     padding: 16px;
-    margin-top: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    display: none;
+    overflow-y: auto;
+    background: rgba(43, 38, 32, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    /* visibility ohne Verzoegerung einschalten (sonst kann das Namensfeld
+       beim Oeffnen keinen Fokus bekommen), beim Schliessen erst danach. */
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0s linear 0s;
+  }
+  body.modal-open { overflow: hidden; }
+  .add-form {
+    /* margin:auto statt align-items:center - so wird der Dialog auch dann
+       nicht oben abgeschnitten, wenn er hoeher als der Bildschirm ist. */
+    margin: auto;
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+    display: flex;
     flex-direction: column;
     gap: 10px;
+    transform: translateY(12px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.22s ease, opacity 0.22s ease;
   }
-  .add-form.open { display: flex; }
+  .modal-overlay.open .add-form {
+    transform: none;
+    opacity: 1;
+  }
+  .add-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 2px;
+  }
+  .add-form-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+  }
+  .modal-close:active { color: var(--text); }
   .add-form label {
     font-size: 0.8rem;
     color: var(--muted);
@@ -368,30 +429,36 @@
   <div class="section-title">Unbewertet</div>
   <div class="list" id="unratedList"></div>
 
-  <div class="add-section">
-    <button class="add-btn" id="addBtn">+ Neuen Cocktail hinzufügen</button>
-    <div class="add-form" id="addForm">
-      <label for="newName">Name</label>
-      <div class="name-input-wrap">
-        <input type="text" id="newName" placeholder="z. B. Mai Tai" autocomplete="off">
-        <ul class="suggestions-list" id="suggestionsList"></ul>
-      </div>
-      <label for="newIngredients">Zutaten (mit Komma getrennt)</label>
-      <input type="text" id="newIngredients" placeholder="z. B. Rum, Limettensaft, Orgeat-Sirup" autocomplete="off">
-      <div class="form-error" id="formError">Bitte einen Namen eingeben.</div>
-      <div class="form-hint" id="autofillHint"></div>
-      <div class="add-form-actions">
-        <button class="cancel-cocktail-btn" id="cancelAddBtn" type="button">Abbrechen</button>
-        <button class="save-cocktail-btn" id="saveAddBtn" type="button">Speichern</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="summary" id="summary"></div>
 
 <button class="clear-btn" id="clearBtn">Alle Bewertungen zurücksetzen</button>
 <button class="clear-btn" id="restoreBtn" style="display: none;"></button>
+
+<button class="fab" id="addBtn" type="button" title="Neuen Cocktail hinzufügen" aria-label="Neuen Cocktail hinzufügen">+</button>
+
+<div class="modal-overlay" id="addOverlay">
+  <div class="add-form" id="addForm" role="dialog" aria-modal="true" aria-labelledby="addFormTitle">
+    <div class="add-form-header">
+      <h2 id="addFormTitle">Neuen Cocktail hinzufügen</h2>
+      <button class="modal-close" id="closeAddBtn" type="button" aria-label="Schließen">&times;</button>
+    </div>
+    <label for="newName">Name</label>
+    <div class="name-input-wrap">
+      <input type="text" id="newName" placeholder="z. B. Mai Tai" autocomplete="off">
+      <ul class="suggestions-list" id="suggestionsList"></ul>
+    </div>
+    <label for="newIngredients">Zutaten (mit Komma getrennt)</label>
+    <input type="text" id="newIngredients" placeholder="z. B. Rum, Limettensaft, Orgeat-Sirup" autocomplete="off">
+    <div class="form-error" id="formError">Bitte einen Namen eingeben.</div>
+    <div class="form-hint" id="autofillHint"></div>
+    <div class="add-form-actions">
+      <button class="cancel-cocktail-btn" id="cancelAddBtn" type="button">Abbrechen</button>
+      <button class="save-cocktail-btn" id="saveAddBtn" type="button">Speichern</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
@@ -435,7 +502,8 @@ const summaryEl = document.getElementById("summary");
 const clearBtn = document.getElementById("clearBtn");
 const restoreBtn = document.getElementById("restoreBtn");
 const addBtn = document.getElementById("addBtn");
-const addForm = document.getElementById("addForm");
+const addOverlay = document.getElementById("addOverlay");
+const closeAddBtn = document.getElementById("closeAddBtn");
 const newNameInput = document.getElementById("newName");
 const newIngredientsInput = document.getElementById("newIngredients");
 const formError = document.getElementById("formError");
@@ -1015,8 +1083,6 @@ newNameInput.addEventListener("keydown", (e) => {
       fillFormFromDrink(suggestionDrinks[suggestionActiveIndex]);
       closeSuggestions();
     }
-  } else if (e.key === "Escape") {
-    closeSuggestions();
   }
 });
 
@@ -1032,8 +1098,13 @@ document.addEventListener("click", (e) => {
   }
 });
 
+function isAddFormOpen() {
+  return addOverlay.classList.contains("open");
+}
+
 function openAddForm() {
-  addForm.classList.add("open");
+  addOverlay.classList.add("open");
+  document.body.classList.add("modal-open"); // Hintergrund nicht mitscrollen
   formError.classList.remove("show");
   showAutofillHint("");
   closeSuggestions();
@@ -1043,20 +1114,31 @@ function openAddForm() {
 }
 
 function closeAddForm() {
-  addForm.classList.remove("open");
+  addOverlay.classList.remove("open");
+  document.body.classList.remove("modal-open");
   showAutofillHint("");
   closeSuggestions();
+  addBtn.focus();
 }
 
-addBtn.addEventListener("click", () => {
-  if (addForm.classList.contains("open")) {
-    closeAddForm();
-  } else {
-    openAddForm();
-  }
+addBtn.addEventListener("click", openAddForm);
+cancelAddBtn.addEventListener("click", closeAddForm);
+closeAddBtn.addEventListener("click", closeAddForm);
+
+// Klick auf den abgedunkelten Bereich schliesst den Dialog
+addOverlay.addEventListener("click", (e) => {
+  if (e.target === addOverlay) closeAddForm();
 });
 
-cancelAddBtn.addEventListener("click", closeAddForm);
+// Escape: zuerst die Vorschlagsliste, danach den Dialog schliessen
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || !isAddFormOpen()) return;
+  if (suggestionsList.classList.contains("open")) {
+    closeSuggestions();
+  } else {
+    closeAddForm();
+  }
+});
 
 saveAddBtn.addEventListener("click", async () => {
   const name = newNameInput.value.trim();

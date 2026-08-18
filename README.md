@@ -19,7 +19,8 @@ Live: <https://projects.abuechele.de/cocktail-tracker/>
 - **Zutaten aufklappen** per Tipp auf den Cocktailnamen.
 - **Cocktails löschen** – eigene endgültig, fest hinterlegte nur aus der eigenen
   Liste (jederzeit wiederherstellbar).
-- **Eigene Cocktails hinzufügen** – mit Live-Suche gegen
+- **Eigene Cocktails hinzufügen** – über den schwebenden **+**-Button unten
+  rechts, der einen Dialog öffnet – mit Live-Suche gegen
   [TheCocktailDB](https://www.thecocktaildb.com/): beim Tippen erscheinen
   Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
 - **Zusammenfassung** am Seitenende: wie viele Cocktails bewertet sind und der
@@ -53,7 +54,7 @@ Zutaten hinterlegt.“
 
 ### Eigenen Cocktail hinzufügen
 
-1. Unten auf **„+ Neuen Cocktail hinzufügen“** tippen.
+1. Unten rechts auf den runden **+**-Button tippen – es öffnet sich ein Dialog.
 2. In das Feld **Name** mindestens 2 Zeichen eingeben. Nach kurzer Pause
    erscheint ein Vorschlagsmenü aus der Online-Datenbank.
    - Vorschlag antippen (oder mit ↑/↓ auswählen und mit Enter bestätigen) →
@@ -64,8 +65,12 @@ Zutaten hinterlegt.“
 3. Feld **Zutaten**: mehrere Zutaten mit Komma trennen, z. B.
    `2 oz Rum, 1 oz Limettensaft, 1/2 oz Zuckersirup`. Das Feld darf auch leer
    bleiben.
-4. **Speichern**. Der Cocktail erscheint mit dem Hinweis „eigener“ in der Liste,
-   mit bereits aufgeklappten Zutaten.
+4. **Speichern**. Der Dialog schließt sich, und der Cocktail erscheint mit dem
+   Hinweis „eigener“ in der Liste, mit bereits aufgeklappten Zutaten.
+
+Den Dialog schließt du ohne zu speichern über **Abbrechen**, das **×** oben
+rechts, einen Klick auf den abgedunkelten Hintergrund oder mit **Esc**. Ist die
+Vorschlagsliste offen, schließt Esc zuerst nur diese.
 
 Doppelte Namen werden abgelehnt („Diesen Cocktail gibt es schon.“) – die Prüfung
 ignoriert Groß-/Kleinschreibung.
