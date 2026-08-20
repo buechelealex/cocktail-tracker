@@ -1,0 +1,7 @@
+title: "Cocktail Tracker"
+description: "Cocktail Tracker Projekt"
+url: "https://projects.abuechele.de"
+baseurl: "/cocktail-tracker"   # WICHTIG: muss dem Repo-Namen entsprechen
+
+plugins:
+  - jekyll-sitemap
