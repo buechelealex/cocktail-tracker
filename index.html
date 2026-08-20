@@ -223,6 +223,18 @@
     font-size: 0.85rem;
     color: var(--muted);
   }
+  .footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.8rem;
+  }
+  .footer a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1px;
+  }
+  .footer a:hover { color: var(--accent-dark); }
   /* Schwebender Button unten rechts */
   .fab {
     position: fixed;
@@ -435,6 +447,10 @@
 
 <button class="clear-btn" id="clearBtn">Alle Bewertungen zurücksetzen</button>
 <button class="clear-btn" id="restoreBtn" style="display: none;"></button>
+
+<footer class="footer">
+  <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+</footer>
 
 <button class="fab" id="addBtn" type="button" title="Neuen Cocktail hinzufügen" aria-label="Neuen Cocktail hinzufügen">+</button>
 
