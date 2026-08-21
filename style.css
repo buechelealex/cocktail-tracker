@@ -1,0 +1,417 @@
+:root {
+  --bg: #faf6f2;
+  --card: #ffffff;
+  --accent: #c9762f;
+  --accent-dark: #a15d21;
+  --star-filled: #e0a530;
+  --star-empty: #d8d2cb;
+  --text: #2b2620;
+  --muted: #8a8178;
+  --border: #ede4d8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
+  color: var(--text);
+  padding: 24px 16px 110px;
+}
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+header h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+  letter-spacing: 0.5px;
+}
+header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.status {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-height: 20px;
+  margin-bottom: 12px;
+  transition: opacity 0.3s;
+}
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin: 24px 4px 10px;
+}
+.section-title:first-child {
+  margin-top: 0;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cocktail-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeIn 0.35s ease forwards;
+}
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Nach dem Einblenden wird die Einblend-Animation abgeschaltet, damit ein
+   Umhängen der Karte (beim Umsortieren) sie nicht erneut auslöst. */
+.cocktail-card.settled {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.cocktail-card.flipping {
+  position: relative;
+  z-index: 2;
+}
+/* Die gerade bewertete Karte wandert sichtbar über die anderen hinweg. */
+.cocktail-card.flip-lead {
+  z-index: 5;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.06);
+}
+.cocktail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cocktail-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+.expand-icon {
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  display: inline-block;
+  width: 12px;
+}
+.expand-icon.open { transform: rotate(90deg); }
+.cocktail-name {
+  font-size: 1rem;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.custom-tag {
+  font-size: 0.65rem;
+  color: var(--accent-dark);
+  background: #fbeedd;
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.stars {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.star {
+  font-size: 1.4rem;
+  color: var(--star-empty);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, color 0.15s;
+  line-height: 1;
+}
+.star:hover { transform: scale(1.15); }
+.star.filled { color: var(--star-filled); }
+.ingredients-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, margin-top 0.25s ease;
+}
+.ingredients-panel.open {
+  max-height: 320px;
+  margin-top: 10px;
+}
+.ingredients-inner {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.ingredients-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+.ingredients-list li {
+  margin: 2px 0;
+}
+.no-ingredients {
+  color: var(--muted);
+  font-style: italic;
+}
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.card-action-btn {
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+  cursor: pointer;
+}
+.card-action-btn:active { background: #f0e9e0; }
+.card-action-btn[hidden] { display: none; }
+.delete-btn {
+  border-color: #eccfc9;
+  color: #b04a3a;
+}
+.delete-btn:active { background: #f7e7e3; }
+.empty-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 10px 0;
+}
+.clear-btn {
+  display: block;
+  margin: 28px auto 0;
+  background: none;
+  border: 1px solid #ddd3c8;
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.clear-btn:active { background: #f0e9e0; }
+.summary {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.8rem;
+}
+.footer a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1px;
+}
+.footer a:hover { color: var(--accent-dark); }
+/* Schwebender Button unten rechts */
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0 0 3px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.12);
+  z-index: 40;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.fab:hover { transform: scale(1.05); }
+.fab:active { background: var(--accent-dark); transform: scale(0.96); }
+/* Abgedunkelter Hintergrund des Dialogs */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(43, 38, 32, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  /* visibility ohne Verzoegerung einschalten (sonst kann das Namensfeld
+     beim Oeffnen keinen Fokus bekommen), beim Schliessen erst danach. */
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0s linear 0s;
+}
+body.modal-open { overflow: hidden; }
+.add-form {
+  /* margin:auto statt align-items:center - so wird der Dialog auch dann
+     nicht oben abgeschnitten, wenn er hoeher als der Bildschirm ist. */
+  margin: auto;
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.modal-overlay.open .add-form {
+  transform: none;
+  opacity: 1;
+}
+.add-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+.add-form-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+}
+.modal-close:active { color: var(--text); }
+.add-form label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: -4px;
+}
+.add-form input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+}
+.add-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.add-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.add-form-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.save-cocktail-btn {
+  background: var(--accent);
+  color: #fff;
+}
+.save-cocktail-btn:active { background: var(--accent-dark); }
+.cancel-cocktail-btn {
+  background: #f0e9e0;
+  color: var(--text);
+}
+.form-error {
+  color: #b04a3a;
+  font-size: 0.8rem;
+  display: none;
+}
+.form-error.show { display: block; }
+.form-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  display: none;
+}
+.form-hint.show { display: block; }
+.name-input-wrap {
+  position: relative;
+}
+.suggestions-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fffefc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+.suggestions-list.open { display: block; }
+.suggestion-item {
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggestion-item:active,
+.suggestion-item.active {
+  background: #fbeedd;
+}
+.suggestion-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.suggestion-loading,
+.suggestion-empty {
+  padding: 9px 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
