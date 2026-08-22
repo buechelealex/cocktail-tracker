@@ -34,6 +34,9 @@ Live: <https://projects.abuechele.de/cocktail-tracker/>
   Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
 - **Zusammenfassung** am Seitenende: wie viele Cocktails bewertet sind und der
   Durchschnitt in Sternen.
+- **Story-Bild teilen** – die Zählerstände als fertiges Hochformat-Bild
+  (1080×1920) für Instagram & Co., bewusst knapp gehalten: Gesamtzahl, Top 3
+  und die häufigste Art.
 - **Zählen, was getrunken wurde** (Seite „🥂 Zähler“): pro Cocktail mit
   **+**/**−**, dazu Auswertungen nach **Sorte** (welcher Cocktail wie oft) und
   nach **Art** (Vodka, Gin, Rum, Schaumwein …) sowie Gesamt, Heute und die
@@ -132,6 +135,25 @@ komplette Trink-Protokoll; Bewertungen und eigene Cocktails bleiben unberührt.
 Wird ein bereits gezählter Cocktail aus der Liste gelöscht, bleibt sein
 Zählerstand mit dem Hinweis „nicht mehr in der Liste“ erhalten.
 
+### Als Instagram-Story teilen
+
+Sobald mindestens ein Cocktail gezählt ist, erscheint unten rechts der Button
+**„📸 Teilen“**.
+
+1. Button antippen – es öffnet sich eine Vorschau des Story-Bilds.
+2. Oben den Zeitraum wählen: **Heute**, **7 Tage** oder **Gesamt**
+   (voreingestellt ist „Heute“, wenn heute schon etwas gezählt wurde).
+3. **Teilen** öffnet das Teilen-Menü des Handys – dort Instagram wählen und das
+   Bild in die Story legen. **Speichern** legt das PNG stattdessen in den
+   Downloads ab.
+
+Das Bild ist 1080×1920 Pixel groß (Story-Format) und zeigt bewusst nur wenig:
+die Gesamtzahl, aus wie vielen Sorten sie besteht, die Top 3 mit Balken und die
+häufigste Art. Gestaltung und Farben entsprechen der Website.
+
+Browser ohne Datei-Teilen (typischerweise am Desktop) laden das Bild
+automatisch herunter statt das Teilen-Menü zu öffnen.
+
 ## Wo die Daten liegen
 
 Alles wird lokal im Browser gespeichert, unter diesen Schlüsseln:
@@ -178,7 +200,12 @@ funktioniert offline.
 - Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript:
   [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Kategorien),
   [script.js](script.js) (Bewertungsseite), [counter.js](counter.js)
-  (Zählerseite) und [style.css](style.css) für beide Seiten.
+  (Zählerseite), [share.js](share.js) (Story-Bild) und [style.css](style.css)
+  für beide Seiten.
+- Das Story-Bild wird zur Laufzeit auf ein `<canvas>` gezeichnet und per
+  Web-Share-API (`navigator.share` mit Datei) weitergegeben; die PNG-Datei wird
+  schon beim Öffnen der Vorschau erzeugt, weil Safari `navigator.share` nur
+  direkt aus der Nutzeraktion heraus erlaubt.
 - Beim Bewerten wird die Liste nicht neu gerendert: die vorhandenen Karten werden
   nur umgehängt und per FLIP-Technik (Position vorher messen → umsortieren →
   von der alten an die neue Position animieren) bewegt. Bei aktiviertem

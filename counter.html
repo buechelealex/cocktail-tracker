@@ -49,7 +49,36 @@
   <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
 </footer>
 
+<button class="fab share-fab" id="shareBtn" type="button" title="Als Story-Bild teilen" hidden>
+  <span aria-hidden="true">📸</span> Teilen
+</button>
+
+<div class="modal-overlay" id="shareOverlay">
+  <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="add-form-header">
+      <h2 id="shareTitle">Als Story teilen</h2>
+      <button class="modal-close" id="closeShareBtn" type="button" aria-label="Schließen">&times;</button>
+    </div>
+
+    <div class="segmented" role="group" aria-label="Zeitraum">
+      <button class="seg-btn" type="button" data-period="today">Heute</button>
+      <button class="seg-btn" type="button" data-period="week">7 Tage</button>
+      <button class="seg-btn" type="button" data-period="all">Gesamt</button>
+    </div>
+
+    <canvas id="shareCanvas" class="share-preview" aria-label="Vorschau des Story-Bilds"></canvas>
+
+    <div class="share-hint" id="shareHint"></div>
+
+    <div class="add-form-actions">
+      <button class="cancel-cocktail-btn" id="downloadBtn" type="button">Speichern</button>
+      <button class="save-cocktail-btn" id="doShareBtn" type="button">Teilen</button>
+    </div>
+  </div>
+</div>
+
 <script src="data.js"></script>
+<script src="share.js"></script>
 <script src="counter.js"></script>
 
 </body>

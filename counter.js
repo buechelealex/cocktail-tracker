@@ -46,6 +46,7 @@ function updateStats() {
   statTodayEl.textContent = countSince(startOfToday());
   statWeekEl.textContent = countSince(Date.now() - 7 * DAY_MS);
   statKindsEl.textContent = Object.keys(counts).length;
+  updateShareBtn(); // Teilen-Button aus share.js ein-/ausblenden
 }
 
 // Balkenliste je Art (Gin, Rum, Vodka …), absteigend nach Anzahl.
