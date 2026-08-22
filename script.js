@@ -1,34 +1,7 @@
-// Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
-// Format, wie es die TheCocktailDB-API zurückgibt (Menge + Zutat kombiniert,
-// z. B. "1 1/2 oz Vodka" statt nur "Vodka").
-const baseRecipes = {
-  "Blue Lagoon": ["1 1/2 oz Vodka", "1 oz Blue Curacao", "3 oz Lemonade"],
-  "Malibu Pineapple": ["2 oz Malibu Rum", "4 oz Pineapple Juice"],
-  "Vodka Orange": ["1 1/2 oz Vodka", "4 oz Orange Juice"],
-  "Black Russian": ["2 oz Vodka", "1 oz Kahlua"],
-  "Tequila Sunrise": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Grenadine"],
-  "Tequila Sunset": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Blackcurrant Cordial"],
-  "Sirocco": ["1 oz Vodka", "1 oz Campari", "3 oz Orange Juice", "1/2 oz Grenadine"],
-  "Dolce Vita": ["3 oz Prosecco", "1 oz Campari", "1 oz Orange Juice"],
-  "Cuba Libre": ["2 oz Light Rum", "4 oz Cola", "1/2 oz Lime Juice"],
-  "Campari Orange": ["1 1/2 oz Campari", "4 oz Orange Juice"],
-  "Dry Martini": ["2 1/2 oz Gin", "1/2 oz Dry Vermouth"],
-  "Gin Tonic": ["1 1/2 oz Gin", "4 oz Tonic Water"],
-  "Negroni": ["1 oz Gin", "1 oz Campari", "1 oz Sweet Vermouth"],
-  "Pina Colada": ["2 oz Light Rum", "1 oz Coconut Cream", "3 oz Pineapple Juice"],
-  "Vodka Martini": ["2 1/2 oz Vodka", "1/2 oz Dry Vermouth"],
-  "Kir Royal": ["4 oz Champagne", "1/2 oz Creme de Cassis"],
-  "Bellini": ["3 oz Prosecco", "2 oz Peach Puree"],
-  "Mimoza": ["3 oz Champagne", "3 oz Orange Juice"],
-  "Punch": ["2 oz Dark Rum", "1 oz Orange Juice", "1 oz Pineapple Juice", "1/2 oz Grenadine"]
-};
+// Cocktail-Liste, Speicherlogik und Kategorien stehen in data.js und werden
+// von dieser Seite und der Zähler-Seite gemeinsam genutzt.
 
-const RATINGS_KEY = "cocktail-ratings";
-const CUSTOM_KEY = "cocktail-custom-list";
-const DELETED_KEY = "cocktail-deleted-base";
 let ratings = {};
-let customCocktails = {}; // name -> ingredients[]
-let deletedBase = {}; // name -> true, entfernte Standard-Cocktails
 const expandedState = {}; // slug -> bool
 const cardEls = new Map(); // slug -> Karten-Element (für das Umsortieren ohne Neuaufbau)
 
@@ -49,10 +22,6 @@ const saveAddBtn = document.getElementById("saveAddBtn");
 const autofillHint = document.getElementById("autofillHint");
 const suggestionsList = document.getElementById("suggestionsList");
 
-function slug(name) {
-  return name.toLowerCase().replace(/\s+/g, "-");
-}
-
 function setStatus(text, fade) {
   statusEl.style.opacity = "1";
   statusEl.textContent = text;
@@ -60,49 +29,7 @@ function setStatus(text, fade) {
     setTimeout(() => { statusEl.style.opacity = "0"; }, 1200);
   }
 }
-
-// Speicherung: schreibt IMMER in beide Speicher (window.storage UND
-// localStorage), damit Bewertungen und selbst hinzugefügte Cocktails auch
-// dann erhalten bleiben, wenn diese HTML-Datei später aktualisiert wird
-// (z. B. neue Features) oder die Seite eigenständig im Browser geöffnet
-// wird. Beim Laden werden beide Quellen zusammengeführt.
-async function storageGetBoth(key) {
-  let fromWindowStorage = null;
-  let fromLocalStorage = null;
-  try {
-    if (window.storage) {
-      const result = await window.storage.get(key, false);
-      fromWindowStorage = result ? result.value : null;
-    }
-  } catch (e) { /* nicht verfügbar oder Key existiert noch nicht */ }
-  try {
-    fromLocalStorage = localStorage.getItem(key);
-  } catch (e) { /* nicht verfügbar (z.B. Privacy-Modus) */ }
-  return { fromWindowStorage, fromLocalStorage };
-}
-
-async function storageSetBoth(key, value) {
-  let ok = false;
-  try {
-    if (window.storage) {
-      const result = await window.storage.set(key, value, false);
-      if (result) ok = true;
-    }
-  } catch (e) { /* ignorieren, localStorage übernimmt */ }
-  try {
-    localStorage.setItem(key, value);
-    ok = true;
-  } catch (e) { /* ignorieren */ }
-  return ok;
-}
-
-function parseJson(raw, fallback) {
-  try {
-    return raw ? JSON.parse(raw) : fallback;
-  } catch (e) {
-    return fallback;
-  }
-}
+setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
 
 async function loadRatings() {
   const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(RATINGS_KEY);
@@ -119,53 +46,7 @@ async function loadRatings() {
 }
 
 async function saveRatings() {
-  setStatus("Speichere…", false);
-  const ok = await storageSetBoth(RATINGS_KEY, JSON.stringify(ratings));
-  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
-}
-
-async function loadCustomCocktails() {
-  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(CUSTOM_KEY);
-  const a = parseJson(fromWindowStorage, {});
-  const b = parseJson(fromLocalStorage, {});
-  // Zusammenführen: alle selbst hinzugefügten Cocktails aus beiden Quellen behalten.
-  customCocktails = { ...b, ...a };
-  await storageSetBoth(CUSTOM_KEY, JSON.stringify(customCocktails));
-}
-
-async function saveCustomCocktails() {
-  setStatus("Speichere…", false);
-  const ok = await storageSetBoth(CUSTOM_KEY, JSON.stringify(customCocktails));
-  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
-}
-
-// Entfernte Standard-Cocktails werden als Namensliste gespeichert, damit die
-// Basisliste im Code unverändert bleibt und ein Wiederherstellen möglich ist.
-async function loadDeletedBase() {
-  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(DELETED_KEY);
-  const a = parseJson(fromWindowStorage, {});
-  const b = parseJson(fromLocalStorage, {});
-  const merged = { ...b, ...a };
-  // Nur Namen behalten, die es in der Standardliste wirklich (noch) gibt.
-  for (const name of Object.keys(merged)) {
-    if (!Object.prototype.hasOwnProperty.call(baseRecipes, name)) delete merged[name];
-  }
-  deletedBase = merged;
-  await storageSetBoth(DELETED_KEY, JSON.stringify(deletedBase));
-}
-
-async function saveDeletedBase() {
-  setStatus("Speichere…", false);
-  const ok = await storageSetBoth(DELETED_KEY, JSON.stringify(deletedBase));
-  setStatus(ok ? "Gespeichert ✓" : "Speichern fehlgeschlagen", ok);
-}
-
-function getAllRecipes() {
-  const base = {};
-  for (const name of Object.keys(baseRecipes)) {
-    if (!deletedBase[name]) base[name] = baseRecipes[name];
-  }
-  return { ...base, ...customCocktails };
+  return saveKey(RATINGS_KEY, ratings);
 }
 
 function updateRestoreBtn() {

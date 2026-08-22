@@ -1,8 +1,17 @@
 # 🍹 Cocktail-Bewertungen (BarCheck)
 
-Eine kleine Web-App zum Bewerten von Cocktails. Sie besteht aus einer einzigen
-HTML-Datei ([index.html](index.html)) ohne Build-Schritt, ohne Server und ohne
-Benutzerkonto – alle Daten bleiben auf dem eigenen Gerät.
+Eine kleine Web-App zum Bewerten und Zählen von Cocktails, ohne Build-Schritt,
+ohne Server und ohne Benutzerkonto – alle Daten bleiben auf dem eigenen Gerät.
+
+Sie besteht aus zwei Seiten:
+
+| Seite | Zweck |
+| --- | --- |
+| [index.html](index.html) | Cocktails bewerten, Zutaten ansehen, eigene Cocktails anlegen |
+| [counter.html](counter.html) | Zählen, wie viele Cocktails welcher Sorte und Art getrunken wurden |
+
+Beide Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
+[data.js](data.js); oben wechselt man mit den beiden Reitern zwischen ihnen.
 
 Live: <https://projects.abuechele.de/cocktail-tracker/>
 
@@ -25,6 +34,10 @@ Live: <https://projects.abuechele.de/cocktail-tracker/>
   Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
 - **Zusammenfassung** am Seitenende: wie viele Cocktails bewertet sind und der
   Durchschnitt in Sternen.
+- **Zählen, was getrunken wurde** (Seite „🥂 Zähler“): pro Cocktail mit
+  **+**/**−**, dazu Auswertungen nach **Sorte** (welcher Cocktail wie oft) und
+  nach **Art** (Vodka, Gin, Rum, Schaumwein …) sowie Gesamt, Heute und die
+  letzten 7 Tage.
 - **Installierbar** als App (PWA über [manifest.json](manifest.json)); zusätzlich
   existiert eine Android-Variante als APK.
 
@@ -98,19 +111,45 @@ Ganz unten **„Alle Bewertungen zurücksetzen“** – nach Bestätigung sind a
 Sterne wieder leer. Selbst hinzugefügte Cocktails bleiben dabei erhalten, nur
 ihre Bewertungen verschwinden.
 
+### Getrunkene Cocktails zählen
+
+Oben auf den Reiter **„🥂 Zähler“** wechseln. Dort steht dieselbe Cocktail-Liste
+wie auf der Bewertungsseite, jeweils mit **− 0 +**:
+
+1. Beim Trinken eines Cocktails auf **+** tippen. Der Cocktail wandert nach oben
+   in den Bereich „Nach Sorte“ (häufigste zuerst) und wird sofort gespeichert.
+2. Zu viel gezählt? **−** entfernt den zuletzt gezählten Drink dieser Sorte.
+3. Oben zeigen vier Kacheln **Gesamt**, **Heute**, **7 Tage** und **Sorten**
+   (Anzahl verschiedener Cocktails).
+4. Der Block **Nach Art** fasst zusammen, wie viele Drinks auf welche Basis
+   entfielen – Vodka, Gin, Rum, Tequila, Whisky, Brandy, Bitter & Aperitif,
+   Schaumwein, Wein, Likör, Bier oder „Alkoholfrei / Sonstige“. Die Art wird
+   automatisch aus den Zutaten abgeleitet (erste passende Regel gewinnt).
+5. Das Suchfeld filtert die Liste nach Namen.
+
+**„Alle Zählerstände zurücksetzen“** ganz unten löscht nach Rückfrage das
+komplette Trink-Protokoll; Bewertungen und eigene Cocktails bleiben unberührt.
+Wird ein bereits gezählter Cocktail aus der Liste gelöscht, bleibt sein
+Zählerstand mit dem Hinweis „nicht mehr in der Liste“ erhalten.
+
 ## Wo die Daten liegen
 
-Alles wird lokal im Browser gespeichert, unter zwei Schlüsseln:
+Alles wird lokal im Browser gespeichert, unter diesen Schlüsseln:
 
 | Schlüssel | Inhalt |
 | --- | --- |
 | `cocktail-ratings` | Bewertungen (Cocktail-Name in Kleinbuchstaben mit Bindestrichen → 0–5) |
 | `cocktail-custom-list` | Selbst hinzugefügte Cocktails (Name → Zutatenliste) |
 | `cocktail-deleted-base` | Aus der Liste entfernte Standard-Cocktails (Name → `true`) |
+| `cocktail-counts` | Trink-Protokoll: ein Eintrag `{id, name, ts}` pro getrunkenem Cocktail |
 
 Geschrieben wird immer in `localStorage` **und** – falls vorhanden – in
 `window.storage`; beim Laden werden beide Quellen zusammengeführt. Dadurch
-bleiben Bewertungen erhalten, wenn die HTML-Datei später aktualisiert wird.
+bleiben Bewertungen und Zählerstände erhalten, wenn die Dateien später
+aktualisiert werden. Beim Zähler wird nicht nur eine Zahl gespeichert, sondern
+ein Protokoll mit Zeitstempel und eigener ID je Eintrag – daraus ergeben sich
+die Zeiträume (Heute, 7 Tage), und beim Zusammenführen beider Speicherquellen
+wird nichts doppelt gezählt.
 
 Konsequenz: Die Daten sind **an Gerät und Browser gebunden**. Es gibt keine
 Synchronisation zwischen Geräten, und das Löschen der Browserdaten löscht auch
@@ -136,8 +175,10 @@ funktioniert offline.
 
 ## Technisches in Kürze
 
-- Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript in einer
-  Datei.
+- Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript:
+  [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Kategorien),
+  [script.js](script.js) (Bewertungsseite), [counter.js](counter.js)
+  (Zählerseite) und [style.css](style.css) für beide Seiten.
 - Beim Bewerten wird die Liste nicht neu gerendert: die vorhandenen Karten werden
   nur umgehängt und per FLIP-Technik (Position vorher messen → umsortieren →
   von der alten an die neue Position animieren) bewegt. Bei aktiviertem

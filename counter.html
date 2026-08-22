@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarCheck · Zähler</title>
+<link rel="icon" type="image/x-icon" href="icon-512.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🥂 Getrunken</h1>
+  <p>Tippe auf + wenn du einen Cocktail getrunken hast</p>
+</header>
+
+<nav class="page-nav">
+  <a href="index.html">⭐ Bewerten</a>
+  <a href="counter.html" class="active" aria-current="page">🥂 Zähler</a>
+</nav>
+
+<div class="status" id="status">Lade Zählerstände…</div>
+
+<div class="container">
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Gesamt</div></div>
+    <div class="stat-card"><div class="stat-value" id="statToday">0</div><div class="stat-label">Heute</div></div>
+    <div class="stat-card"><div class="stat-value" id="statWeek">0</div><div class="stat-label">7 Tage</div></div>
+    <div class="stat-card"><div class="stat-value" id="statKinds">0</div><div class="stat-label">Sorten</div></div>
+  </div>
+
+  <div class="section-title">Nach Art</div>
+  <div class="kind-list" id="kindList"></div>
+
+  <div class="section-title">Nach Sorte</div>
+  <input type="search" class="filter-input" id="filterInput" placeholder="Cocktail suchen…" autocomplete="off">
+
+  <div class="list" id="drunkList"></div>
+
+  <div class="section-title" id="notYetTitle">Noch nicht getrunken</div>
+  <div class="list" id="notDrunkList"></div>
+
+</div>
+
+<button class="clear-btn" id="resetBtn">Alle Zählerstände zurücksetzen</button>
+
+<footer class="footer">
+  <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+</footer>
+
+<script src="data.js"></script>
+<script src="counter.js"></script>
+
+</body>
+</html>

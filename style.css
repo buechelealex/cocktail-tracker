@@ -415,3 +415,165 @@ body.modal-open { overflow: hidden; }
   font-size: 0.82rem;
   color: var(--muted);
 }
+
+/* --- Navigation zwischen Bewerten- und Zähler-Seite --- */
+.page-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 18px;
+  max-width: 480px;
+}
+.page-nav a {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.page-nav a.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --- Zähler-Seite --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  line-height: 1.1;
+}
+.stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.kind-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+.kind-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+}
+.kind-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.kind-bar {
+  height: 8px;
+  border-radius: 6px;
+  background: #f1e8dd;
+  overflow: hidden;
+}
+.kind-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--star-filled) 100%);
+  transition: width 0.3s ease;
+}
+.filter-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+}
+.filter-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.count-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.count-info {
+  flex: 1;
+  min-width: 0;
+}
+.count-cat {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.count-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.count-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.count-btn:active { transform: scale(0.92); background: #f0e9e0; }
+.count-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.count-btn.plus {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.count-btn.plus:active { background: var(--accent-dark); }
+.count-value {
+  min-width: 26px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.count-value.bump { animation: countBump 0.25s ease; }
+@keyframes countBump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); color: var(--accent); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .count-value.bump { animation: none; }
+}
