@@ -227,6 +227,24 @@ header p {
   padding-bottom: 1px;
 }
 .footer a:hover { color: var(--accent-dark); }
+.privacy-note {
+  margin: 0 auto 10px;
+  max-width: 420px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.footer-links {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.footer-sep {
+  color: var(--muted);
+  opacity: 0.5;
+}
 /* Schwebender Button unten rechts */
 .fab {
   position: fixed;
@@ -464,19 +482,43 @@ body.modal-open { overflow: hidden; }
   text-align: center;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
 }
+/* Als <span> in den Umschalt-Kacheln brauchen beide ein eigenes display. */
 .stat-value {
+  display: block;
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--accent-dark);
   line-height: 1.1;
 }
 .stat-label {
+  display: block;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--muted);
   margin-top: 2px;
 }
+/* Die drei Zeitraum-Kacheln sind Buttons: Rahmen immer reservieren, damit
+   beim Aktivieren nichts springt. */
+.stat-btn {
+  font-family: inherit;
+  /* Sichtbarer Rahmen auch im Ruhezustand - so ist erkennbar, dass diese drei
+     Kacheln bedienbar sind und "Sorten" daneben nur anzeigt. */
+  border: 1px solid var(--border);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.stat-btn:active { transform: scale(0.96); }
+.stat-btn.active {
+  border-color: var(--accent);
+  background: #fff6ec;
+}
+.stat-btn.active .stat-value { color: var(--accent); }
+.stat-btn.active .stat-label { color: var(--accent-dark); }
+/* "Sorten" ist kein Umschalter und bekommt denselben Rahmenplatz, damit die
+   vier Kacheln gleich hoch bleiben. */
+.stat-passive { border: 1px solid transparent; }
 .stats-scope {
   text-align: center;
   font-size: 0.78rem;

@@ -77,11 +77,12 @@ function alcoholOf(name) {
   return { ml, bekannt: withAmount > 0 };
 }
 
-// Summe über alle gezählten Getränke der aktuell gewählten Liste.
-function alcoholTotal() {
+// Summe über die übergebenen Zähler-Einträge; ohne Angabe über alle Getränke
+// der aktuell gewählten Liste.
+function alcoholTotal(entries) {
   let ml = 0;
   const unbekannt = new Set();
-  visibleLog().forEach(e => {
+  (entries || visibleLog()).forEach(e => {
     const a = alcoholOf(e.name);
     if (a.bekannt) ml += a.ml;
     else unbekannt.add(e.name);

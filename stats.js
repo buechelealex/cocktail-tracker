@@ -10,6 +10,7 @@ const statTodayEl = document.getElementById("statToday");
 const statWeekEl = document.getElementById("statWeek");
 const statKindsEl = document.getElementById("statKinds");
 const statsScopeEl = document.getElementById("statsScope");
+const periodBtnEls = [...document.querySelectorAll(".stat-btn")];
 const donutEl = document.getElementById("donut");
 const chartLegendEl = document.getElementById("chartLegend");
 const chartCardEl = document.getElementById("chartCard");
@@ -26,6 +27,28 @@ const alcListEl = document.getElementById("alcList");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const BOARD_MAX = 8; // so viele Getränke stehen im Leaderboard
+
+// Die Kacheln oben sind zugleich Umschalter für den Zeitraum. Alles darunter
+// (Kreisdiagramm, Top-Drinks, Alkohol) rechnet nur mit den Einträgen dieses
+// Zeitraums. Die Auswahl gilt für den Seitenbesuch und startet bei "Gesamt".
+const STATS_PERIODS = {
+  all:   { label: "Gesamt", leer: "Noch nichts gezählt." },
+  today: { label: "Heute",  leer: "Heute noch nichts gezählt." },
+  week:  { label: "7 Tage", leer: "In den letzten 7 Tagen nichts gezählt." }
+};
+let statsPeriod = "all";
+
+function periodStart() {
+  if (statsPeriod === "today") return startOfToday();
+  if (statsPeriod === "week") return Date.now() - 7 * DAY_MS;
+  return 0;
+}
+
+// Die Zähler-Einträge der gewählten Liste UND des gewählten Zeitraums.
+function periodLog() {
+  const from = periodStart();
+  return from === 0 ? visibleLog() : visibleLog().filter(e => (e.ts || 0) >= from);
+}
 
 // Feste Farbe je Art, damit ein Tortenstück beim Weiterzählen nicht die
 // Farbe wechselt. Reihenfolge und Töne passen zur Palette aus style.css.
@@ -56,21 +79,40 @@ function setStatus(text, fade) {
 setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
 
 function updateStats() {
-  const counts = countsByName();
+  // Jede Zeitraum-Kachel zeigt immer ihre eigene Zahl - sonst wüsste man
+  // nach dem Umschalten nicht mehr, worauf man klickt.
   statTotalEl.textContent = visibleLog().length;
   statTodayEl.textContent = countSince(startOfToday());
   statWeekEl.textContent = countSince(Date.now() - 7 * DAY_MS);
-  statKindsEl.textContent = Object.keys(counts).length;
+  // "Sorten" ist eine Eigenschaft der Auswahl und folgt ihr deshalb.
+  statKindsEl.textContent = new Set(periodLog().map(e => e.name)).size;
   updateShareBtn(); // Teilen-Button aus share.js ein-/ausblenden
 }
 
-// Macht sichtbar, dass sich die Zahlen nur auf die gewählte Liste beziehen.
+// Hebt die aktive Kachel hervor.
+function updatePeriodButtons() {
+  periodBtnEls.forEach(btn => {
+    const aktiv = btn.dataset.period === statsPeriod;
+    btn.classList.toggle("active", aktiv);
+    btn.setAttribute("aria-pressed", aktiv ? "true" : "false");
+  });
+}
+
+function setStatsPeriod(id) {
+  if (!STATS_PERIODS[id] || id === statsPeriod) return;
+  statsPeriod = id;
+  renderAll();
+}
+
+// Macht sichtbar, worauf sich die Zahlen gerade beziehen - Liste, Zeitraum
+// oder beides. Bei "Alle" und "Gesamt" gibt es nichts einzuschränken.
 function updateStatsScope() {
   const list = getActiveList();
-  statsScopeEl.hidden = !list;
-  if (list) {
-    statsScopeEl.textContent = "Nur " + (list.emoji ? list.emoji + " " : "") + list.name;
-  }
+  const teile = [];
+  if (list) teile.push("Nur " + (list.emoji ? list.emoji + " " : "") + list.name);
+  if (statsPeriod !== "all") teile.push(STATS_PERIODS[statsPeriod].label);
+  statsScopeEl.hidden = teile.length === 0;
+  statsScopeEl.textContent = teile.join(" · ");
 }
 
 function emptyHint(text) {
@@ -84,7 +126,7 @@ function emptyHint(text) {
 
 function kindTotals() {
   const byKind = new Map();
-  visibleLog().forEach(e => {
+  periodLog().forEach(e => {
     const cat = categoryOf(e.name);
     const entry = byKind.get(cat.id) || { cat, count: 0 };
     entry.count++;
@@ -188,12 +230,12 @@ function renderLegend(kinds, total) {
 
 function renderChart() {
   const kinds = kindTotals();
-  const total = visibleLog().length;
+  const total = periodLog().length;
   donutEl.innerHTML = "";
   chartLegendEl.innerHTML = "";
   if (total === 0) {
     chartCardEl.classList.add("is-empty");
-    chartLegendEl.appendChild(emptyHint("Noch nichts gezählt."));
+    chartLegendEl.appendChild(emptyHint(STATS_PERIODS[statsPeriod].leer));
     return;
   }
   chartCardEl.classList.remove("is-empty");
@@ -206,7 +248,8 @@ function renderChart() {
 const MEDALS = ["🥇", "🥈", "🥉"];
 
 function renderBoard() {
-  const counts = countsByName();
+  const counts = {};
+  periodLog().forEach(e => { counts[e.name] = (counts[e.name] || 0) + 1; });
   const top = Object.keys(counts)
     .map(name => ({ name, count: counts[name] }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "de"))
@@ -214,7 +257,7 @@ function renderBoard() {
 
   boardEl.innerHTML = "";
   if (top.length === 0) {
-    boardEl.appendChild(emptyHint("Noch nichts gezählt."));
+    boardEl.appendChild(emptyHint(STATS_PERIODS[statsPeriod].leer));
     return;
   }
 
@@ -266,11 +309,11 @@ function renderBoard() {
 // --- Alkohol ---
 
 function renderAlcohol() {
-  const a = alcoholTotal();
+  const a = alcoholTotal(periodLog());
   alcValueEl.textContent = Math.round(a.ml) + " ml";
   alcSubEl.textContent = a.ml > 0
     ? "das sind rund " + Math.round(a.gramm) + " g – etwa " + num(a.ml / 25) + " Halbe Bier"
-    : "Noch nichts gezählt.";
+    : STATS_PERIODS[statsPeriod].leer;
   alcBtn.disabled = a.ml <= 0;
 
   // Ehrlich bleiben: Getränke ohne Mengenangabe können nicht gerechnet werden.
@@ -284,7 +327,7 @@ function renderAlcohol() {
 }
 
 function openAlcModal() {
-  const a = alcoholTotal();
+  const a = alcoholTotal(periodLog());
   if (a.ml <= 0) return;
 
   // Passt zu den Zeilen darunter, die alle Infinitive sind ("Auto fahren").
@@ -333,6 +376,10 @@ function closeAlcModal() {
   alcBtn.focus();
 }
 
+periodBtnEls.forEach(btn => {
+  btn.addEventListener("click", () => setStatsPeriod(btn.dataset.period));
+});
+
 alcBtn.addEventListener("click", openAlcModal);
 closeAlcBtn.addEventListener("click", closeAlcModal);
 alcDoneBtn.addEventListener("click", closeAlcModal);
@@ -344,6 +391,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 function renderAll() {
+  updatePeriodButtons();
   updateStatsScope();
   updateStats();
   renderChart();

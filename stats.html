@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BarCheck · Statistik</title>
 <link rel="icon" type="image/x-icon" href="icon-512.png">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -26,11 +26,22 @@
 
 <div class="container">
 
-  <div class="stats-grid" id="statsGrid">
-    <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Gesamt</div></div>
-    <div class="stat-card"><div class="stat-value" id="statToday">0</div><div class="stat-label">Heute</div></div>
-    <div class="stat-card"><div class="stat-value" id="statWeek">0</div><div class="stat-label">7 Tage</div></div>
-    <div class="stat-card"><div class="stat-value" id="statKinds">0</div><div class="stat-label">Sorten</div></div>
+  <!-- Die drei Zeitraum-Kacheln sind Umschalter: sie grenzen alles darunter
+       ein. "Sorten" ist keine Zeitspanne und zeigt daher nur an, wie viele
+       verschiedene Getränke im gewählten Zeitraum vorkamen. -->
+  <div class="stats-grid" id="statsGrid" role="group" aria-label="Zeitraum wählen">
+    <button class="stat-card stat-btn" type="button" data-period="all" aria-pressed="true">
+      <span class="stat-value" id="statTotal">0</span><span class="stat-label">Gesamt</span>
+    </button>
+    <button class="stat-card stat-btn" type="button" data-period="today" aria-pressed="false">
+      <span class="stat-value" id="statToday">0</span><span class="stat-label">Heute</span>
+    </button>
+    <button class="stat-card stat-btn" type="button" data-period="week" aria-pressed="false">
+      <span class="stat-value" id="statWeek">0</span><span class="stat-label">7 Tage</span>
+    </button>
+    <div class="stat-card stat-passive">
+      <span class="stat-value" id="statKinds">0</span><span class="stat-label">Sorten</span>
+    </div>
   </div>
   <div class="stats-scope" id="statsScope" hidden></div>
 
@@ -57,7 +68,15 @@
 </div>
 
 <footer class="footer">
-  <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+  <p class="privacy-note">
+    🔒 Alle Daten bleiben auf diesem Gerät – Bewertungen, Zählerstände und Listen
+    werden nur lokal im Browser gespeichert, nicht auf einem Server.
+  </p>
+  <p class="footer-links">
+    <a href="https://github.com/buechelealex/cocktail-tracker" target="_blank" rel="noopener noreferrer">Quellcode auf GitHub</a>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+  </p>
 </footer>
 
 <button class="fab share-fab" id="shareBtn" type="button" title="Als Story-Bild teilen" hidden>
@@ -107,11 +126,11 @@
   </div>
 </div>
 
-<script src="data.js?v=3"></script>
-<script src="lists.js?v=3"></script>
-<script src="alcohol.js?v=3"></script>
-<script src="share.js?v=3"></script>
-<script src="stats.js?v=3"></script>
+<script src="data.js?v=5"></script>
+<script src="lists.js?v=5"></script>
+<script src="alcohol.js?v=5"></script>
+<script src="share.js?v=5"></script>
+<script src="stats.js?v=5"></script>
 
 </body>
 </html>

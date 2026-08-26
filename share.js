@@ -338,12 +338,15 @@ function setPeriod(id) {
 }
 
 function openShareModal() {
-  // Standard-Zeitraum: heute, falls heute schon etwas gezählt wurde.
+  // Der Dialog startet mit dem Zeitraum, der auf der Statistik-Seite gerade
+  // gewählt ist - sonst zeigte das Bild etwas anderes als die Seite dahinter.
+  // Fällt auf "heute" zurück, falls die Seite keinen Zeitraum kennt.
   const today = countSince(startOfToday());
+  const seite = typeof statsPeriod === "string" ? statsPeriod : null;
   shareHint.textContent = "Teilen → Instagram → Story";
   shareOverlay.classList.add("open");
   document.body.classList.add("modal-open");
-  setPeriod(today > 0 ? "today" : "all");
+  setPeriod(seite || (today > 0 ? "today" : "all"));
   closeShareBtn.focus();
 }
 

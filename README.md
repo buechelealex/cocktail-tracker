@@ -18,6 +18,10 @@ Anzeige auf eine Auswahl eingrenzen – die Auswahl gilt auf allen drei Seiten
 und begrenzt auch die Statistik.
 
 Live: <https://projects.abuechele.de/cocktail-tracker/>
+Quellcode: <https://github.com/buechelealex/cocktail-tracker>
+
+Beides ist auch im Fußbereich jeder Seite verlinkt, zusammen mit dem Hinweis,
+dass sämtliche Daten nur lokal im Browser liegen.
 
 ## Was die App kann
 
@@ -169,7 +173,12 @@ sofort wieder ausgeblendet.
 Oben auf den Reiter **„📊 Statistik“** wechseln.
 
 1. Vier Kacheln zeigen **Gesamt**, **Heute**, **7 Tage** und **Sorten**
-   (Anzahl verschiedener Cocktails).
+   (Anzahl verschiedener Cocktails). Die ersten drei sind zugleich
+   **Umschalter für den Zeitraum**: ein Tipp darauf grenzt alles Weitere auf
+   diese Zeitspanne ein – Kreisdiagramm, Top-Drinks und Alkoholmenge. Die
+   aktive Kachel ist farbig umrandet, jede behält dabei ihre eigene Zahl.
+   „Sorten“ ist keine Zeitspanne und daher nicht anklickbar; sie zeigt, wie
+   viele verschiedene Getränke im gewählten Zeitraum vorkamen.
 2. **Nach Art** stellt als Kreisdiagramm dar, wie sich die Drinks auf die Basis
    verteilen – Vodka, Gin, Rum, Tequila, Whisky, Brandy, Korn & Klare,
    Bitter & Aperitif, Schaumwein, Wein, Likör, Bier oder „Alkoholfrei /
@@ -180,8 +189,11 @@ Oben auf den Reiter **„📊 Statistik“** wechseln.
 4. **🍸 Alkohol** zeigt, wie viel reiner Alkohol darin steckt – in Millilitern,
    Gramm und „Halbe Bier“.
 
-Ist oben eine Liste gewählt, beziehen sich **alle** Zahlen nur auf deren
-Getränke; darauf weist eine Zeile „Nur 🍺 Bierzelt“ unter den Kacheln hin.
+Liste und Zeitraum lassen sich kombinieren. Worauf sich die Zahlen gerade
+beziehen, steht unter den Kacheln – z. B. „Nur 🍺 Bierzelt · Heute“. Bei
+„Alle“ und „Gesamt“ gibt es nichts einzuschränken, dann bleibt die Zeile leer.
+Der gewählte Zeitraum gilt für den Seitenbesuch und beginnt jedes Mal wieder
+bei „Gesamt“; die gewählte Liste bleibt dagegen dauerhaft gespeichert.
 
 #### Was hätte man damit machen können?
 
@@ -204,8 +216,9 @@ Sobald mindestens ein Cocktail gezählt ist, erscheint auf der Statistik-Seite
 unten rechts der Button **„📸 Teilen“**.
 
 1. Button antippen – es öffnet sich eine Vorschau des Story-Bilds.
-2. Oben den Zeitraum wählen: **Heute**, **7 Tage** oder **Gesamt**
-   (voreingestellt ist „Heute“, wenn heute schon etwas gezählt wurde).
+2. Oben den Zeitraum wählen: **Heute**, **7 Tage** oder **Gesamt**.
+   Voreingestellt ist der Zeitraum, der auf der Statistik-Seite gerade aktiv
+   ist – das Bild zeigt also dasselbe wie die Seite dahinter.
 3. **Teilen** öffnet das Teilen-Menü des Handys – dort Instagram wählen und das
    Bild in die Story legen. **Speichern** legt das PNG stattdessen in den
    Downloads ab.
