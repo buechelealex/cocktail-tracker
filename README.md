@@ -9,7 +9,7 @@ Sie besteht aus drei Seiten:
 | --- | --- |
 | [index.html](index.html) | Cocktails bewerten, Zutaten ansehen, eigene Cocktails anlegen |
 | [counter.html](counter.html) | Zählen, wie oft welcher Cocktail getrunken wurde |
-| [stats.html](stats.html) | Auswertung ansehen (Gesamt, Heute, nach Art) und als Story teilen |
+| [stats.html](stats.html) | Auswertung ansehen: Kennzahlen, Kreisdiagramm, Top-Drinks, Alkoholmenge – und als Story teilen |
 
 Alle Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
 [data.js](data.js); oben wechselt man mit den drei Reitern zwischen ihnen.
@@ -39,13 +39,18 @@ Live: <https://projects.abuechele.de/cocktail-tracker/>
   Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
 - **Zusammenfassung** am Seitenende: wie viele Cocktails bewertet sind und der
   Durchschnitt in Sternen.
-- **Story-Bild teilen** – die Zählerstände als fertiges Hochformat-Bild
-  (1080×1920) für Instagram & Co., bewusst knapp gehalten: Gesamtzahl, Top 3
-  und die häufigste Art.
+- **Eigene Listen anlegen** – z. B. „Bierzelt“ (Bier, Radler, Russe, Vodka-Bull …)
+  und „Exotische Drinks“ (Punch, Campari Orange, Bellini …). Über die Chip-Leiste
+  oben schaltet man um; die Auswahl gilt auf allen drei Seiten und grenzt auch
+  die Statistik ein.
 - **Zählen, was getrunken wurde** (Seite „🥂 Zähler“): pro Cocktail mit
-  **+**/**−**, dazu Auswertungen nach **Sorte** (welcher Cocktail wie oft) und
-  nach **Art** (Vodka, Gin, Rum, Schaumwein …) sowie Gesamt, Heute und die
-  letzten 7 Tage.
+  **+**/**−**, häufigste zuerst, mit Suchfeld.
+- **Statistik ansehen** (Seite „📊 Statistik“): Gesamt, Heute und die letzten
+  7 Tage, ein **Kreisdiagramm** der Verteilung nach Art, ein **Leaderboard**
+  der Top-Drinks und die getrunkene Menge **reinen Alkohols**.
+- **Story-Bild teilen** – die Zählerstände als fertiges Hochformat-Bild
+  (1080×1920) für Instagram & Co. (auf der Statistik-Seite), bewusst knapp
+  gehalten: Gesamtzahl, Top 3 und die häufigste Art.
 - **Installierbar** als App (PWA über [manifest.json](manifest.json)); zusätzlich
   existiert eine Android-Variante als APK.
 
@@ -122,28 +127,81 @@ ihre Bewertungen verschwinden.
 ### Getrunkene Cocktails zählen
 
 Oben auf den Reiter **„🥂 Zähler“** wechseln. Dort steht dieselbe Cocktail-Liste
-wie auf der Bewertungsseite, jeweils mit **− 0 +**:
+wie auf der Bewertungsseite, jeweils mit **− 0 +**. Diese Seite dient nur dem
+Zählen – die Auswertung steht auf der Statistik-Seite.
 
 1. Beim Trinken eines Cocktails auf **+** tippen. Der Cocktail wandert nach oben
-   in den Bereich „Nach Sorte“ (häufigste zuerst) und wird sofort gespeichert.
+   (häufigste zuerst) und wird sofort gespeichert.
 2. Zu viel gezählt? **−** entfernt den zuletzt gezählten Drink dieser Sorte.
-3. Oben zeigen vier Kacheln **Gesamt**, **Heute**, **7 Tage** und **Sorten**
-   (Anzahl verschiedener Cocktails).
-4. Der Block **Nach Art** fasst zusammen, wie viele Drinks auf welche Basis
-   entfielen – Vodka, Gin, Rum, Tequila, Whisky, Brandy, Bitter & Aperitif,
-   Schaumwein, Wein, Likör, Bier oder „Alkoholfrei / Sonstige“. Die Art wird
-   automatisch aus den Zutaten abgeleitet (erste passende Regel gewinnt).
-5. Das Suchfeld filtert die Liste nach Namen.
+3. Das Suchfeld filtert die Liste nach Namen.
 
-**„Alle Zählerstände zurücksetzen“** ganz unten löscht nach Rückfrage das
-komplette Trink-Protokoll; Bewertungen und eigene Cocktails bleiben unberührt.
+Der Button ganz unten löscht nach Rückfrage die Zählerstände. Ist oben eine
+eigene Liste gewählt, betrifft er auch nur deren Cocktails und heißt dann z. B.
+**„Zählerstände in ‚Bierzelt‘ zurücksetzen“**; unter „Alle“ löscht er das
+komplette Trink-Protokoll. Bewertungen und eigene Cocktails bleiben unberührt.
 Wird ein bereits gezählter Cocktail aus der Liste gelöscht, bleibt sein
 Zählerstand mit dem Hinweis „nicht mehr in der Liste“ erhalten.
 
+### Eigene Listen anlegen und bearbeiten
+
+Unter der Navigation steht auf jeder Seite eine Leiste mit **„Alle“**, den
+eigenen Listen und **„+ Liste“**.
+
+1. **„+ Liste“** antippen. Im Dialog ein Symbol (Emoji, optional) und einen
+   Namen eingeben, z. B. 🍺 und „Bierzelt“.
+2. Darunter die Cocktails ankreuzen, die dazugehören. Das Suchfeld hilft bei
+   langen Listen, **„Angezeigte auswählen“** hakt alle gerade sichtbaren Treffer
+   an, **„Auswahl leeren“** setzt zurück.
+3. **Speichern** – die neue Liste ist sofort aktiv.
+
+Ein Tipp auf einen Chip schaltet auf diese Liste um; angezeigt werden dann nur
+noch deren Getränke. Beim aktiven Chip erscheint ein **✎** zum Bearbeiten (dort
+liegt auch **„Liste löschen“** – dabei bleiben die Cocktails selbst erhalten).
+**„Alle“** hebt die Eingrenzung wieder auf.
+
+Die gewählte Liste gilt für alle drei Seiten und bleibt nach dem Neuladen
+erhalten. Ein Cocktail darf in mehreren Listen stehen. Legst du bei aktiver
+Liste einen neuen Cocktail an, landet er automatisch darin – sonst wäre er
+sofort wieder ausgeblendet.
+
+### Statistik ansehen
+
+Oben auf den Reiter **„📊 Statistik“** wechseln.
+
+1. Vier Kacheln zeigen **Gesamt**, **Heute**, **7 Tage** und **Sorten**
+   (Anzahl verschiedener Cocktails).
+2. **Nach Art** stellt als Kreisdiagramm dar, wie sich die Drinks auf die Basis
+   verteilen – Vodka, Gin, Rum, Tequila, Whisky, Brandy, Korn & Klare,
+   Bitter & Aperitif, Schaumwein, Wein, Likör, Bier oder „Alkoholfrei /
+   Sonstige“. Die Art wird automatisch aus den Zutaten abgeleitet (erste
+   passende Regel gewinnt). Jede Art hat eine feste Farbe, daneben stehen
+   Anzahl und Prozent.
+3. **🏆 Top-Drinks** listet die häufigsten Getränke mit 🥇🥈🥉 und Balken.
+4. **🍸 Alkohol** zeigt, wie viel reiner Alkohol darin steckt – in Millilitern,
+   Gramm und „Halbe Bier“.
+
+Ist oben eine Liste gewählt, beziehen sich **alle** Zahlen nur auf deren
+Getränke; darauf weist eine Zeile „Nur 🍺 Bierzelt“ unter den Kacheln hin.
+
+#### Was hätte man damit machen können?
+
+Der Button unter der Alkoholmenge öffnet ein Popup, das dieselbe Menge in
+Vergleiche aus ganz verschiedenen Bereichen umrechnet – Auto fahren, Flugzeug
+fliegen, Grill reinigen, Hände desinfizieren, Fondue warm halten, Wasser kochen,
+Handy laden und eine LED brennen lassen.
+
+Grundlage ist die Menge reinen Alkohols aus den Zutaten; wo Energie im Spiel
+ist, wird über den Heizwert von Ethanol (rund 21 kJ je ml) gerechnet. Das ist
+als Spielerei gedacht, nicht als Messwert.
+
+Selbst angelegte Cocktails **ohne Mengenangaben** lassen sich nicht berechnen.
+Sie werden nicht stillschweigend als 0 gezählt, sondern unter der Karte
+namentlich genannt („Ohne Mengenangabe und daher nicht mitgerechnet: …“).
+
 ### Als Instagram-Story teilen
 
-Sobald mindestens ein Cocktail gezählt ist, erscheint unten rechts der Button
-**„📸 Teilen“**.
+Sobald mindestens ein Cocktail gezählt ist, erscheint auf der Statistik-Seite
+unten rechts der Button **„📸 Teilen“**.
 
 1. Button antippen – es öffnet sich eine Vorschau des Story-Bilds.
 2. Oben den Zeitraum wählen: **Heute**, **7 Tage** oder **Gesamt**
@@ -154,7 +212,8 @@ Sobald mindestens ein Cocktail gezählt ist, erscheint unten rechts der Button
 
 Das Bild ist 1080×1920 Pixel groß (Story-Format) und zeigt bewusst nur wenig:
 die Gesamtzahl, aus wie vielen Sorten sie besteht, die Top 3 mit Balken und die
-häufigste Art. Gestaltung und Farben entsprechen der Website.
+häufigste Art. Gestaltung und Farben entsprechen der Website. Ist oben eine
+Liste gewählt, zeigt das Bild nur deren Drinks und nennt die Liste im Kopf.
 
 Browser ohne Datei-Teilen (typischerweise am Desktop) laden das Bild
 automatisch herunter statt das Teilen-Menü zu öffnen.
@@ -169,6 +228,8 @@ Alles wird lokal im Browser gespeichert, unter diesen Schlüsseln:
 | `cocktail-custom-list` | Selbst hinzugefügte Cocktails (Name → Zutatenliste) |
 | `cocktail-deleted-base` | Aus der Liste entfernte Standard-Cocktails (Name → `true`) |
 | `cocktail-counts` | Trink-Protokoll: ein Eintrag `{id, name, ts}` pro getrunkenem Cocktail |
+| `cocktail-lists` | Eigene Listen: je Liste `{id, name, emoji, items, ts}` |
+| `cocktail-active-list` | ID der gerade gewählten Liste (`null` = „Alle“) |
 
 Geschrieben wird immer in `localStorage` **und** – falls vorhanden – in
 `window.storage`; beim Laden werden beide Quellen zusammengeführt. Dadurch
@@ -219,7 +280,8 @@ andere funktioniert offline.
   Kategorien), [lists.js](lists.js) (Listen-Leiste und -Dialog, von allen
   Seiten genutzt), [script.js](script.js) (Bewertungsseite),
   [counter.js](counter.js) (Zählerseite), [stats.js](stats.js)
-  (Statistikseite), [share.js](share.js) (Story-Bild) und
+  (Statistikseite), [alcohol.js](alcohol.js) (Alkoholmenge und Vergleiche),
+  [share.js](share.js) (Story-Bild) und
   [style.css](style.css) für alle Seiten.
 - Änderungen werden über das `storage`-Ereignis zwischen gleichzeitig
   geöffneten Tabs abgeglichen – wer im Zähler-Tab zählt, sieht es im
