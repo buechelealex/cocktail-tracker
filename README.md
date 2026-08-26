@@ -275,6 +275,13 @@ andere funktioniert offline.
 
 ## Technisches in Kürze
 
+- **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
+  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=2`).
+  Diese Zahl bei jeder Änderung hochzählen – sonst liefern Browser (vor allem
+  auf dem Handy) weiter ihre alte Kopie aus dem Cache aus, während neu
+  hinzugekommene Dateien frisch geladen werden. Das Ergebnis ist eine halb
+  aktuelle Seite: neue Bausteine ohne die zugehörigen Regeln, z. B. ein
+  schwarzes Kreisdiagramm.
 - Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript:
   [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Listen,
   Kategorien), [lists.js](lists.js) (Listen-Leiste und -Dialog, von allen
