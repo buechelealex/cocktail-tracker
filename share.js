@@ -87,7 +87,9 @@ function fitText(ctx, text, maxWidth) {
 
 function shareStats() {
   const from = PERIODS[sharePeriod].from();
-  const entries = countLog.filter(e => (e.ts || 0) >= from);
+  // visibleLog() statt countLog: das Bild zeigt genau die Liste, die auf der
+  // Seite ausgewählt ist.
+  const entries = visibleLog().filter(e => (e.ts || 0) >= from);
 
   const byName = {};
   const byKind = new Map();
@@ -152,10 +154,14 @@ function drawShareImage() {
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
 
-  // Kopfzeile
+  // Kopfzeile - mit dem Namen der Liste, wenn eine ausgewählt ist
   setFont(ctx, "600", 44, 8);
   ctx.fillStyle = C.muted;
-  ctx.fillText("🍹 BARCHECK", mid + 4, cardY + 130);
+  const list = getActiveList();
+  const heading = list
+    ? "🍹 BARCHECK · " + (list.emoji ? list.emoji + " " : "") + list.name.toUpperCase()
+    : "🍹 BARCHECK";
+  ctx.fillText(fitText(ctx, heading, cardW - 140), mid + 4, cardY + 130);
 
   // Zeitraum-Pille
   setFont(ctx, "700", 30, 5);
@@ -349,7 +355,7 @@ function closeShareModal() {
 
 // Der Teilen-Button erscheint erst, wenn es überhaupt etwas zu zeigen gibt.
 function updateShareBtn() {
-  shareBtn.hidden = countLog.length === 0;
+  shareBtn.hidden = visibleLog().length === 0;
 }
 
 shareBtn.addEventListener("click", openShareModal);

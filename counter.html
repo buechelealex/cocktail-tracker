@@ -19,6 +19,8 @@
   <a href="counter.html" class="active" aria-current="page">🥂 Zähler</a>
 </nav>
 
+<div class="list-bar" id="listBar" aria-label="Eigene Listen"></div>
+
 <div class="status" id="status">Lade Zählerstände…</div>
 
 <div class="container">
@@ -29,6 +31,7 @@
     <div class="stat-card"><div class="stat-value" id="statWeek">0</div><div class="stat-label">7 Tage</div></div>
     <div class="stat-card"><div class="stat-value" id="statKinds">0</div><div class="stat-label">Sorten</div></div>
   </div>
+  <div class="stats-scope" id="statsScope" hidden></div>
 
   <div class="section-title">Nach Art</div>
   <div class="kind-list" id="kindList"></div>
@@ -78,6 +81,7 @@
 </div>
 
 <script src="data.js"></script>
+<script src="lists.js"></script>
 <script src="share.js"></script>
 <script src="counter.js"></script>
 

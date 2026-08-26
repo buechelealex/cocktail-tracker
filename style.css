@@ -467,6 +467,16 @@ body.modal-open { overflow: hidden; }
   color: var(--muted);
   margin-top: 2px;
 }
+.stats-scope {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--accent-dark);
+  background: #fbeedd;
+  border-radius: 10px;
+  padding: 5px 10px;
+  margin-top: 8px;
+}
+.stats-scope[hidden] { display: none; }
 .kind-list {
   display: flex;
   flex-direction: column;
@@ -648,3 +658,153 @@ body.modal-open { overflow: hidden; }
   color: var(--muted);
   min-height: 18px;
 }
+
+/* --- Eigene Listen (Bierzelt, Exotische Drinks …) --- */
+.list-bar {
+  display: flex;
+  gap: 8px;
+  max-width: 480px;
+  margin: 0 auto 16px;
+  padding: 2px 2px 6px;
+  overflow-x: auto;
+  /* Auf dem Handy quer scrollbar, ohne dass Chips umbrechen. */
+  scrollbar-width: none;
+}
+.list-bar::-webkit-scrollbar { display: none; }
+.list-chip-wrap {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  overflow: hidden;
+}
+.list-chip-wrap.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.list-chip {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 7px 14px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.list-chip-wrap.active .list-chip { color: #fff; }
+.chip-count {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+.chip-edit {
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0 12px 0 2px;
+  cursor: pointer;
+}
+.chip-edit:active { opacity: 0.7; }
+/* "+ Liste" steht allein, ohne Wrapper */
+.list-chip.add-chip {
+  flex-shrink: 0;
+  border: 1px dashed #ddd3c8;
+  border-radius: 20px;
+  background: none;
+  color: var(--accent-dark);
+}
+.list-chip.add-chip:active { background: #f7ede1; }
+
+/* Dialog zum Anlegen/Bearbeiten einer Liste */
+.list-name-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.list-emoji-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 68px;
+  flex-shrink: 0;
+}
+.list-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.emoji-input { text-align: center; }
+.list-picker-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.list-pick-count {
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+}
+.list-picker-filter { margin-bottom: 0; }
+.list-picker {
+  max-height: 38vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  background: #fffdfb;
+}
+/* Die Zeilen sind <label>-Elemente im Dialog und muessen die Vorgaben aus
+   ".add-form label" bzw. ".add-form input" wieder aufheben - dafuer braucht
+   es die hoehere Spezifitaet ueber ".list-picker". */
+.list-picker .pick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.list-picker .pick-row.checked { background: #fbeedd; }
+.list-picker .pick-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+  accent-color: var(--accent);
+}
+.pick-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pick-name {
+  font-size: 0.9rem;
+  overflow-wrap: break-word;
+}
+.pick-cat {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.list-picker-actions {
+  display: flex;
+  gap: 8px;
+}
+.list-picker-actions .card-action-btn { flex: 1; }
+.list-delete-btn { align-self: flex-start; }
+.list-delete-btn[hidden] { display: none; }

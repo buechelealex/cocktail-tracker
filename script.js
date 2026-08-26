@@ -62,9 +62,14 @@ function updateRestoreBtn() {
 }
 
 function updateSummary() {
-  const allRecipes = getAllRecipes();
-  const total = Object.keys(allRecipes).length;
-  const rated = Object.values(ratings).filter(v => v > 0);
+  // Bezieht sich immer auf die gerade gewaehlte Liste ("Alle" = komplette Sammlung).
+  const names = Object.keys(getVisibleRecipes());
+  const total = names.length;
+  const rated = names.map(n => ratings[slug(n)] || 0).filter(v => v > 0);
+  if (total === 0) {
+    summaryEl.textContent = "Diese Liste ist noch leer.";
+    return;
+  }
   if (rated.length === 0) {
     summaryEl.textContent = "Noch keine Bewertungen abgegeben.";
     return;
@@ -184,7 +189,10 @@ function buildCard(name, idx, isCustom) {
     }
     delete ratings[key];
     delete expandedState[key];
+    const wasInList = removeNameFromLists(name);
     renderList();
+    renderListBar();
+    if (wasInList) await saveCocktailLists();
     if (isCustom) {
       await saveCustomCocktails();
     } else {
@@ -216,7 +224,7 @@ function buildCard(name, idx, isCustom) {
 
 // Teilt alle Cocktails in bewertet/unbewertet auf und sortiert beide Gruppen.
 function computeGroups() {
-  const allRecipes = getAllRecipes();
+  const allRecipes = getVisibleRecipes();
   const rated = [];
   const unrated = [];
   Object.keys(allRecipes).forEach(name => {
@@ -254,6 +262,14 @@ function renderList() {
   }
 
   unrated.forEach((item, idx) => unratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
+
+  // Leere Liste: erklaeren, wie Cocktails hineinkommen.
+  if (rated.length === 0 && unrated.length === 0 && getActiveList()) {
+    const hint = document.createElement("div");
+    hint.className = "empty-hint";
+    hint.textContent = "In dieser Liste ist noch nichts. Tippe oben auf ✎, um Cocktails auszuwählen.";
+    unratedListEl.appendChild(hint);
+  }
 
   updateSummary();
   updateRestoreBtn();
@@ -579,16 +595,24 @@ saveAddBtn.addEventListener("click", async () => {
     .filter(Boolean);
 
   customCocktails[name] = ingredients;
+  // Sonst waere der neue Cocktail bei aktiver Liste sofort wieder ausgeblendet.
+  const addedToList = addNameToActiveList(name);
   closeAddForm();
   expandedState[slug(name)] = true;
   renderList();
+  renderListBar();
   await saveCustomCocktails();
+  if (addedToList) await saveCocktailLists();
 });
 
 (async function init() {
   await loadRatings();
   await loadCustomCocktails();
   await loadDeletedBase();
+  await loadCocktailLists();
+  initLists(renderList); // Wechsel der Liste baut die Karten neu auf
+  // Aenderungen aus einem anderen offenen Tab live uebernehmen.
+  watchStorage(() => { renderListBar(); renderList(); });
   renderList();
   setStatus("Bereit", true);
 })();

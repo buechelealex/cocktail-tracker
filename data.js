@@ -183,14 +183,24 @@ function removeDrink(name) {
   return false;
 }
 
+// Alle Zähler-Einträge, die zur gerade gewählten Liste gehören; ohne Liste
+// ("Alle") ist das das komplette Protokoll. Sämtliche Auswertungen (Gesamt,
+// Heute, Nach Art, Story-Bild) rechnen damit, damit die Zahlen immer zu der
+// Liste passen, die oben ausgewählt ist.
+function visibleLog() {
+  const list = getActiveList();
+  if (!list) return countLog;
+  return countLog.filter(e => list.items.includes(e.name));
+}
+
 function countsByName() {
   const counts = {};
-  countLog.forEach(e => { counts[e.name] = (counts[e.name] || 0) + 1; });
+  visibleLog().forEach(e => { counts[e.name] = (counts[e.name] || 0) + 1; });
   return counts;
 }
 
 function countSince(timestamp) {
-  return countLog.filter(e => (e.ts || 0) >= timestamp).length;
+  return visibleLog().filter(e => (e.ts || 0) >= timestamp).length;
 }
 
 function startOfToday() {
@@ -224,4 +234,143 @@ function categoryOf(name) {
     if (rule.pattern.test(haystack)) return rule;
   }
   return CATEGORY_NONE;
+}
+
+// --- Eigene Listen ---
+// Mit Listen ("Bierzelt", "Exotische Drinks" …) lässt sich die Anzeige auf
+// eine Auswahl von Cocktails eingrenzen. Eine Liste merkt sich nur Namen;
+// die Cocktails selbst bleiben unverändert in getAllRecipes() stehen und
+// tauchen unter "Alle" weiterhin auf.
+const LISTS_KEY = "cocktail-lists";
+const ACTIVE_LIST_KEY = "cocktail-active-list";
+
+let cocktailLists = []; // [{ id, name, emoji, items: [Name], ts }]
+let activeListId = null; // null = "Alle" (kein Filter)
+
+function newListId() {
+  return "l" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+}
+
+function isValidList(l) {
+  return l && typeof l === "object" && typeof l.id === "string"
+    && typeof l.name === "string" && Array.isArray(l.items);
+}
+
+function normalizeList(l) {
+  return {
+    id: l.id,
+    name: l.name,
+    emoji: typeof l.emoji === "string" ? l.emoji : "",
+    items: l.items.filter(n => typeof n === "string"),
+    ts: typeof l.ts === "number" ? l.ts : 0
+  };
+}
+
+// Zusammenführen der beiden Speicherquellen: gleiche ID -> der zuletzt
+// geänderte Stand (ts) gewinnt, unbekannte IDs werden ergänzt.
+function mergeListArrays(a, b) {
+  const byId = new Map();
+  const all = [...(Array.isArray(b) ? b : []), ...(Array.isArray(a) ? a : [])];
+  all.forEach(raw => {
+    if (!isValidList(raw)) return;
+    const list = normalizeList(raw);
+    const existing = byId.get(list.id);
+    if (!existing || list.ts >= existing.ts) byId.set(list.id, list);
+  });
+  return [...byId.values()];
+}
+
+async function loadCocktailLists() {
+  const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(LISTS_KEY);
+  cocktailLists = mergeListArrays(parseJson(fromWindowStorage, []), parseJson(fromLocalStorage, []));
+  await storageSetBoth(LISTS_KEY, JSON.stringify(cocktailLists));
+
+  const active = await storageGetBoth(ACTIVE_LIST_KEY);
+  const raw = active.fromWindowStorage != null ? active.fromWindowStorage : active.fromLocalStorage;
+  const id = parseJson(raw, null);
+  // Nur übernehmen, wenn es die Liste noch gibt.
+  activeListId = cocktailLists.some(l => l.id === id) ? id : null;
+}
+
+async function saveCocktailLists() {
+  return saveKey(LISTS_KEY, cocktailLists);
+}
+
+// Die gewählte Liste ist reine Ansichtssache und wird ohne Statusmeldung
+// gespeichert (sie gilt aber für beide Seiten).
+async function saveActiveList() {
+  return storageSetBoth(ACTIVE_LIST_KEY, JSON.stringify(activeListId));
+}
+
+function getActiveList() {
+  return cocktailLists.find(l => l.id === activeListId) || null;
+}
+
+function sortedLists() {
+  return [...cocktailLists].sort((a, b) => a.name.localeCompare(b.name, "de"));
+}
+
+// Ist der Cocktail bei der aktuell gewählten Liste sichtbar?
+function isVisibleName(name) {
+  const list = getActiveList();
+  return !list || list.items.includes(name);
+}
+
+// Wie getAllRecipes(), aber auf die aktive Liste eingegrenzt.
+function getVisibleRecipes() {
+  const all = getAllRecipes();
+  const list = getActiveList();
+  if (!list) return all;
+  const visible = {};
+  Object.keys(all).forEach(name => {
+    if (list.items.includes(name)) visible[name] = all[name];
+  });
+  return visible;
+}
+
+// Beim Löschen eines Cocktails: Namen aus allen Listen entfernen.
+function removeNameFromLists(name) {
+  let changed = false;
+  cocktailLists.forEach(list => {
+    const i = list.items.indexOf(name);
+    if (i !== -1) {
+      list.items.splice(i, 1);
+      list.ts = Date.now();
+      changed = true;
+    }
+  });
+  return changed;
+}
+
+// Änderungen mitbekommen, die in einem ANDEREN Tab derselben Seite gemacht
+// wurden: localStorage meldet sie über das "storage"-Ereignis (es feuert nur
+// in den jeweils anderen Tabs, nie im schreibenden selbst). Ohne das würde
+// eine im Bewerten-Tab angelegte Liste in einem bereits offenen Zähler-Tab
+// erst nach dem Neuladen auftauchen.
+const SHARED_KEYS = [LISTS_KEY, ACTIVE_LIST_KEY, CUSTOM_KEY, DELETED_KEY, COUNTS_KEY];
+
+function watchStorage(onChange) {
+  window.addEventListener("storage", async (e) => {
+    if (!e.key || SHARED_KEYS.indexOf(e.key) === -1) return;
+    if (e.key === LISTS_KEY || e.key === ACTIVE_LIST_KEY) {
+      await loadCocktailLists();
+    } else if (e.key === CUSTOM_KEY) {
+      await loadCustomCocktails();
+    } else if (e.key === DELETED_KEY) {
+      await loadDeletedBase();
+    } else if (e.key === COUNTS_KEY) {
+      await loadCountLog();
+    }
+    onChange(e.key);
+  });
+}
+
+// Neu angelegte Cocktails landen direkt in der gerade gewählten Liste,
+// damit sie nicht sofort wieder ausgeblendet werden.
+function addNameToActiveList(name) {
+  const list = getActiveList();
+  if (!list || list.items.includes(name)) return false;
+  list.items.push(name);
+  list.ts = Date.now();
+  return true;
 }

@@ -13,6 +13,7 @@ const notDrunkListEl = document.getElementById("notDrunkList");
 const notYetTitleEl = document.getElementById("notYetTitle");
 const filterInput = document.getElementById("filterInput");
 const resetBtn = document.getElementById("resetBtn");
+const statsScopeEl = document.getElementById("statsScope");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const cardEls = new Map(); // Name -> Karten-Element (für das Umsortieren ohne Neuaufbau)
@@ -29,11 +30,13 @@ setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
 
 // Alle Namen, die angezeigt werden: die aktuelle Cocktail-Liste plus alle
 // bereits gezählten Sorten, die inzwischen aus der Liste gelöscht wurden
-// (damit keine Zählerstände unsichtbar verschwinden).
+// (damit keine Zählerstände unsichtbar verschwinden). Ist oben eine eigene
+// Liste gewählt, bleibt nur deren Inhalt übrig - genau wie bei allen
+// Auswertungen auf dieser Seite.
 function allNames() {
-  const recipes = getAllRecipes();
+  const recipes = getVisibleRecipes();
   const names = new Set(Object.keys(recipes));
-  countLog.forEach(e => names.add(e.name));
+  visibleLog().forEach(e => names.add(e.name));
   return { names: [...names], recipes };
 }
 
@@ -63,17 +66,35 @@ function computeGroups() {
 
 function updateStats() {
   const counts = countsByName();
-  statTotalEl.textContent = countLog.length;
+  statTotalEl.textContent = visibleLog().length;
   statTodayEl.textContent = countSince(startOfToday());
   statWeekEl.textContent = countSince(Date.now() - 7 * DAY_MS);
   statKindsEl.textContent = Object.keys(counts).length;
   updateShareBtn(); // Teilen-Button aus share.js ein-/ausblenden
 }
 
+// Macht sichtbar, dass sich die Zahlen nur auf die gewählte Liste beziehen.
+function updateStatsScope() {
+  const list = getActiveList();
+  statsScopeEl.hidden = !list;
+  if (list) {
+    statsScopeEl.textContent = "Nur " + (list.emoji ? list.emoji + " " : "") + list.name;
+  }
+}
+
+// Zurückgesetzt wird immer nur das, was gerade auch gezählt wird.
+function updateResetBtn() {
+  const list = getActiveList();
+  resetBtn.textContent = list
+    ? "Zählerstände in \"" + list.name + "\" zurücksetzen"
+    : "Alle Zählerstände zurücksetzen";
+}
+
 // Balkenliste je Art (Gin, Rum, Vodka …), absteigend nach Anzahl.
 function renderKinds() {
+  const entries = visibleLog();
   const byKind = new Map();
-  countLog.forEach(e => {
+  entries.forEach(e => {
     const cat = categoryOf(e.name);
     const entry = byKind.get(cat.id) || { cat, count: 0 };
     entry.count++;
@@ -91,7 +112,7 @@ function renderKinds() {
   }
 
   const max = kinds[0].count;
-  const total = countLog.length;
+  const total = entries.length;
   kinds.forEach(({ cat, count }) => {
     const row = document.createElement("div");
     row.className = "kind-row";
@@ -199,7 +220,13 @@ function buildCard(name, count, idx, isGone) {
 function buildEmptyHint() {
   const hint = document.createElement("div");
   hint.className = "empty-hint";
-  hint.textContent = filterText ? "Kein Treffer." : "Noch nichts gezählt.";
+  if (filterText) {
+    hint.textContent = "Kein Treffer.";
+  } else if (getActiveList() && getActiveList().items.length === 0) {
+    hint.textContent = "In dieser Liste ist noch nichts. Tippe oben auf ✎, um Cocktails auszuwählen.";
+  } else {
+    hint.textContent = "Noch nichts gezählt.";
+  }
   return hint;
 }
 
@@ -334,9 +361,11 @@ async function changeCount(name, delta) {
 }
 
 function renderAll() {
+  updateStatsScope();
   updateStats();
   renderKinds();
   renderLists();
+  updateResetBtn();
 }
 
 filterInput.addEventListener("input", () => {
@@ -345,8 +374,13 @@ filterInput.addEventListener("input", () => {
 });
 
 resetBtn.addEventListener("click", async () => {
-  if (!confirm("Wirklich alle Zählerstände löschen?")) return;
-  countLog = [];
+  const list = getActiveList();
+  const question = list
+    ? "Wirklich alle Zählerstände in \"" + list.name + "\" löschen?"
+    : "Wirklich alle Zählerstände löschen?";
+  if (!confirm(question)) return;
+  // Ohne Liste alles, mit Liste nur deren Cocktails.
+  countLog = list ? countLog.filter(e => !list.items.includes(e.name)) : [];
   renderAll();
   await saveCountLog();
 });
@@ -355,6 +389,10 @@ resetBtn.addEventListener("click", async () => {
   await loadCustomCocktails();
   await loadDeletedBase();
   await loadCountLog();
+  await loadCocktailLists();
+  initLists(renderAll); // Wechsel der Liste betrifft auch alle Auswertungen
+  // Aenderungen aus einem anderen offenen Tab live uebernehmen.
+  watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
   setStatus("Bereit", true);
 })();
