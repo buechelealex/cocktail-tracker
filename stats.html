@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarCheck · Statistik</title>
+<link rel="icon" type="image/x-icon" href="icon-512.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>📊 Statistik</h1>
+  <p>Deine Auswertung · wähle oben eine Liste, um sie einzugrenzen</p>
+</header>
+
+<nav class="page-nav">
+  <a href="index.html">⭐ Bewerten</a>
+  <a href="counter.html">🥂 Zähler</a>
+  <a href="stats.html" class="active" aria-current="page">📊 Statistik</a>
+</nav>
+
+<div class="list-bar" id="listBar" aria-label="Eigene Listen"></div>
+
+<div class="status" id="status">Lade Zählerstände…</div>
+
+<div class="container">
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Gesamt</div></div>
+    <div class="stat-card"><div class="stat-value" id="statToday">0</div><div class="stat-label">Heute</div></div>
+    <div class="stat-card"><div class="stat-value" id="statWeek">0</div><div class="stat-label">7 Tage</div></div>
+    <div class="stat-card"><div class="stat-value" id="statKinds">0</div><div class="stat-label">Sorten</div></div>
+  </div>
+  <div class="stats-scope" id="statsScope" hidden></div>
+
+  <div class="section-title">Nach Art</div>
+  <div class="chart-card" id="chartCard">
+    <div class="donut" id="donut"></div>
+    <div class="chart-legend" id="chartLegend"></div>
+  </div>
+
+  <div class="section-title">🏆 Top-Drinks</div>
+  <div class="board" id="leaderboard"></div>
+
+  <div class="section-title">🍸 Alkohol</div>
+  <div class="alc-card">
+    <div class="alc-figure">
+      <span class="alc-value" id="alcValue">0 ml</span>
+      <span class="alc-unit">reiner Alkohol</span>
+    </div>
+    <div class="alc-sub" id="alcSub"></div>
+    <button class="alc-btn" id="alcBtn" type="button">Was hätte man damit machen können?</button>
+    <div class="alc-note" id="alcNote" hidden></div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
+</footer>
+
+<button class="fab share-fab" id="shareBtn" type="button" title="Als Story-Bild teilen" hidden>
+  <span aria-hidden="true">📸</span> Teilen
+</button>
+
+<div class="modal-overlay" id="shareOverlay">
+  <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="add-form-header">
+      <h2 id="shareTitle">Als Story teilen</h2>
+      <button class="modal-close" id="closeShareBtn" type="button" aria-label="Schließen">&times;</button>
+    </div>
+
+    <div class="segmented" role="group" aria-label="Zeitraum">
+      <button class="seg-btn" type="button" data-period="today">Heute</button>
+      <button class="seg-btn" type="button" data-period="week">7 Tage</button>
+      <button class="seg-btn" type="button" data-period="all">Gesamt</button>
+    </div>
+
+    <canvas id="shareCanvas" class="share-preview" aria-label="Vorschau des Story-Bilds"></canvas>
+
+    <div class="share-hint" id="shareHint"></div>
+
+    <div class="add-form-actions">
+      <button class="cancel-cocktail-btn" id="downloadBtn" type="button">Speichern</button>
+      <button class="save-cocktail-btn" id="doShareBtn" type="button">Teilen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="alcOverlay">
+  <div class="add-form alc-sheet" role="dialog" aria-modal="true" aria-labelledby="alcModalTitle">
+    <div class="add-form-header">
+      <h2 id="alcModalTitle">Damit hättest du …</h2>
+      <button class="modal-close" id="closeAlcBtn" type="button" aria-label="Schließen">&times;</button>
+    </div>
+
+    <div class="alc-headline" id="alcHeadline"></div>
+    <div class="alc-list" id="alcList"></div>
+    <div class="alc-disclaimer">
+      Grob umgerechnet über den Energiegehalt von Ethanol (rund 21 kJ pro ml).
+      Als Spielerei gedacht, nicht als Messwert.
+    </div>
+
+    <div class="add-form-actions">
+      <button class="save-cocktail-btn" id="alcDoneBtn" type="button">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="lists.js"></script>
+<script src="alcohol.js"></script>
+<script src="share.js"></script>
+<script src="stats.js"></script>
+
+</body>
+</html>
