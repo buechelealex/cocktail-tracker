@@ -23,7 +23,20 @@ const baseRecipes = {
   "Kir Royal": ["4 oz Champagne", "1/2 oz Creme de Cassis"],
   "Bellini": ["3 oz Prosecco", "2 oz Peach Puree"],
   "Mimoza": ["3 oz Champagne", "3 oz Orange Juice"],
-  "Punch": ["2 oz Dark Rum", "1 oz Orange Juice", "1 oz Pineapple Juice", "1/2 oz Grenadine"]
+  "Punch": ["2 oz Dark Rum", "1 oz Orange Juice", "1 oz Pineapple Juice", "1/2 oz Grenadine"],
+
+  // Bierzelt-Klassiker. Hier stehen deutsche Mengenangaben (l / cl) statt oz,
+  // weil diese Getränke so ausgeschenkt werden - für die Anzeige und die
+  // Art-Erkennung spielt die Einheit keine Rolle.
+  "Bier": ["0,5 l Helles Bier"],
+  "Radler": ["0,25 l Helles Bier", "0,25 l Zitronenlimonade"],
+  "Russe (Limo-Weizen)": ["0,25 l Weißbier", "0,25 l Zitronenlimonade"],
+  "Cola-Weizen": ["0,25 l Weißbier", "0,25 l Cola"],
+  "Jacky-Cola": ["4 cl Whiskey (Jack Daniel's)", "0,2 l Cola"],
+  "Vodka-Bull": ["4 cl Vodka", "0,25 l Energydrink"],
+  "Fanta-Korn": ["4 cl Korn", "0,2 l Orangenlimonade (Fanta)"],
+  "Bacardi-Sprite": ["4 cl Weißer Rum (Bacardi)", "0,2 l Zitronenlimonade (Sprite)"],
+  "Rüscherl": ["0,25 l Weißwein", "0,25 l Zitronenlimonade"]
 };
 
 const RATINGS_KEY = "cocktail-ratings";
@@ -219,6 +232,7 @@ const CATEGORY_RULES = [
   { id: "tequila",   label: "Tequila",           emoji: "🌵", pattern: /tequila|mezcal/i },
   { id: "whisky",    label: "Whisky",            emoji: "🥃", pattern: /whisk(?:e)?y|bourbon|scotch/i },
   { id: "brandy",    label: "Brandy & Cognac",   emoji: "🍇", pattern: /brandy|cognac|weinbrand|armagnac/i },
+  { id: "korn",      label: "Korn & Klare",      emoji: "🌾", pattern: /\bkorn\b|doppelkorn|klarer|obstler/i },
   { id: "bitter",    label: "Bitter & Aperitif", emoji: "🍊", pattern: /campari|aperol|vermouth|wermut|cynar/i },
   { id: "sparkling", label: "Schaumwein",        emoji: "🥂", pattern: /champagne|champagner|prosecco|sekt|cremant|crémant|cava|spumante/i },
   { id: "wine",      label: "Wein",              emoji: "🍷", pattern: /\bwine\b|\bwein\b|sherry|\bport\b/i },
