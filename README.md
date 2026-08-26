@@ -3,21 +3,26 @@
 Eine kleine Web-App zum Bewerten und Zählen von Cocktails, ohne Build-Schritt,
 ohne Server und ohne Benutzerkonto – alle Daten bleiben auf dem eigenen Gerät.
 
-Sie besteht aus zwei Seiten:
+Sie besteht aus drei Seiten:
 
 | Seite | Zweck |
 | --- | --- |
 | [index.html](index.html) | Cocktails bewerten, Zutaten ansehen, eigene Cocktails anlegen |
-| [counter.html](counter.html) | Zählen, wie viele Cocktails welcher Sorte und Art getrunken wurden |
+| [counter.html](counter.html) | Zählen, wie oft welcher Cocktail getrunken wurde |
+| [stats.html](stats.html) | Auswertung ansehen (Gesamt, Heute, nach Art) und als Story teilen |
 
-Beide Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
-[data.js](data.js); oben wechselt man mit den beiden Reitern zwischen ihnen.
+Alle Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
+[data.js](data.js); oben wechselt man mit den drei Reitern zwischen ihnen.
+Mit eigenen **Listen** („Bierzelt“, „Exotische Drinks“ …) lässt sich die
+Anzeige auf eine Auswahl eingrenzen – die Auswahl gilt auf allen drei Seiten
+und begrenzt auch die Statistik.
 
 Live: <https://projects.abuechele.de/cocktail-tracker/>
 
 ## Was die App kann
 
-- **19 Cocktails sind fest hinterlegt** (Blue Lagoon, Negroni, Pina Colada, Gin Tonic …),
+- **28 Getränke sind fest hinterlegt** (Blue Lagoon, Negroni, Pina Colada, Gin Tonic,
+  dazu Bierzelt-Klassiker wie Radler, Russe oder Fanta-Korn),
   jeweils mit Zutatenliste inklusive Mengenangaben.
 - **Bewerten mit 1–5 Sternen.** Bewertete Cocktails wandern automatisch in den
   Bereich „⭐ Bewertet“ und werden dort nach Bewertung sortiert (beste zuerst,
@@ -179,9 +184,21 @@ die Bewertungen.
 
 ## Lokal starten
 
-Ein Doppelklick auf `index.html` genügt – es wird kein Server benötigt. Für die
-Live-Suche nach Cocktails ist eine Internetverbindung nötig; alles andere
-funktioniert offline.
+Am besten über einen kleinen Webserver im Projektordner:
+
+```
+python -m http.server 8765
+```
+
+Danach <http://localhost:8765> aufrufen.
+
+Ein Doppelklick auf `index.html` (`file://`) funktioniert in Chrome, **nicht
+aber in Firefox**: Firefox behandelt seit Version 68 jede lokale Datei als
+eigene Origin, dadurch haben die drei Seiten getrennte localStorage-Speicher
+und teilen weder Listen noch eigene Cocktails.
+
+Für die Live-Suche nach Cocktails ist eine Internetverbindung nötig; alles
+andere funktioniert offline.
 
 ## Als App installieren
 
@@ -198,10 +215,15 @@ funktioniert offline.
 ## Technisches in Kürze
 
 - Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript:
-  [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Kategorien),
-  [script.js](script.js) (Bewertungsseite), [counter.js](counter.js)
-  (Zählerseite), [share.js](share.js) (Story-Bild) und [style.css](style.css)
-  für beide Seiten.
+  [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Listen,
+  Kategorien), [lists.js](lists.js) (Listen-Leiste und -Dialog, von allen
+  Seiten genutzt), [script.js](script.js) (Bewertungsseite),
+  [counter.js](counter.js) (Zählerseite), [stats.js](stats.js)
+  (Statistikseite), [share.js](share.js) (Story-Bild) und
+  [style.css](style.css) für alle Seiten.
+- Änderungen werden über das `storage`-Ereignis zwischen gleichzeitig
+  geöffneten Tabs abgeglichen – wer im Zähler-Tab zählt, sieht es im
+  Statistik-Tab sofort.
 - Das Story-Bild wird zur Laufzeit auf ein `<canvas>` gezeichnet und per
   Web-Share-API (`navigator.share` mit Datei) weitergegeben; die PNG-Datei wird
   schon beim Öffnen der Vorschau erzeugt, weil Safari `navigator.share` nur

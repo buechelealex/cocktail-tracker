@@ -1,21 +1,14 @@
-// Zähler-Seite: zählt, wie viele Cocktails welcher Sorte (und damit welcher
-// Art) getrunken wurden. Cocktail-Liste und Speicherung kommen aus data.js,
-// die Zählerstände werden genauso persistent gespeichert wie die Bewertungen.
+// Zähler-Seite: hier wird nur gezählt, wie oft welcher Cocktail getrunken
+// wurde. Cocktail-Liste und Speicherung kommen aus data.js, die Auswertung
+// (Gesamt, Heute, Nach Art, Teilen) steht auf der Statistik-Seite in stats.js.
 
 const statusEl = document.getElementById("status");
-const statTotalEl = document.getElementById("statTotal");
-const statTodayEl = document.getElementById("statToday");
-const statWeekEl = document.getElementById("statWeek");
-const statKindsEl = document.getElementById("statKinds");
-const kindListEl = document.getElementById("kindList");
 const drunkListEl = document.getElementById("drunkList");
 const notDrunkListEl = document.getElementById("notDrunkList");
 const notYetTitleEl = document.getElementById("notYetTitle");
 const filterInput = document.getElementById("filterInput");
 const resetBtn = document.getElementById("resetBtn");
-const statsScopeEl = document.getElementById("statsScope");
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 const cardEls = new Map(); // Name -> Karten-Element (für das Umsortieren ohne Neuaufbau)
 let filterText = "";
 
@@ -31,8 +24,7 @@ setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
 // Alle Namen, die angezeigt werden: die aktuelle Cocktail-Liste plus alle
 // bereits gezählten Sorten, die inzwischen aus der Liste gelöscht wurden
 // (damit keine Zählerstände unsichtbar verschwinden). Ist oben eine eigene
-// Liste gewählt, bleibt nur deren Inhalt übrig - genau wie bei allen
-// Auswertungen auf dieser Seite.
+// Liste gewählt, bleibt nur deren Inhalt übrig.
 function allNames() {
   const recipes = getVisibleRecipes();
   const names = new Set(Object.keys(recipes));
@@ -64,84 +56,12 @@ function computeGroups() {
   return { drunk, notDrunk };
 }
 
-function updateStats() {
-  const counts = countsByName();
-  statTotalEl.textContent = visibleLog().length;
-  statTodayEl.textContent = countSince(startOfToday());
-  statWeekEl.textContent = countSince(Date.now() - 7 * DAY_MS);
-  statKindsEl.textContent = Object.keys(counts).length;
-  updateShareBtn(); // Teilen-Button aus share.js ein-/ausblenden
-}
-
-// Macht sichtbar, dass sich die Zahlen nur auf die gewählte Liste beziehen.
-function updateStatsScope() {
-  const list = getActiveList();
-  statsScopeEl.hidden = !list;
-  if (list) {
-    statsScopeEl.textContent = "Nur " + (list.emoji ? list.emoji + " " : "") + list.name;
-  }
-}
-
 // Zurückgesetzt wird immer nur das, was gerade auch gezählt wird.
 function updateResetBtn() {
   const list = getActiveList();
   resetBtn.textContent = list
     ? "Zählerstände in \"" + list.name + "\" zurücksetzen"
     : "Alle Zählerstände zurücksetzen";
-}
-
-// Balkenliste je Art (Gin, Rum, Vodka …), absteigend nach Anzahl.
-function renderKinds() {
-  const entries = visibleLog();
-  const byKind = new Map();
-  entries.forEach(e => {
-    const cat = categoryOf(e.name);
-    const entry = byKind.get(cat.id) || { cat, count: 0 };
-    entry.count++;
-    byKind.set(cat.id, entry);
-  });
-
-  kindListEl.innerHTML = "";
-  const kinds = [...byKind.values()].sort((a, b) => b.count - a.count || a.cat.label.localeCompare(b.cat.label, "de"));
-  if (kinds.length === 0) {
-    const hint = document.createElement("div");
-    hint.className = "empty-hint";
-    hint.textContent = "Noch nichts gezählt.";
-    kindListEl.appendChild(hint);
-    return;
-  }
-
-  const max = kinds[0].count;
-  const total = entries.length;
-  kinds.forEach(({ cat, count }) => {
-    const row = document.createElement("div");
-    row.className = "kind-row";
-
-    const head = document.createElement("div");
-    head.className = "kind-head";
-
-    const label = document.createElement("span");
-    label.className = "kind-label";
-    label.textContent = cat.emoji + " " + cat.label;
-
-    const value = document.createElement("span");
-    value.className = "kind-count";
-    value.textContent = count + "× · " + Math.round((count / total) * 100) + "%";
-
-    head.appendChild(label);
-    head.appendChild(value);
-
-    const bar = document.createElement("div");
-    bar.className = "kind-bar";
-    const fill = document.createElement("div");
-    fill.className = "kind-bar-fill";
-    fill.style.width = Math.max(4, Math.round((count / max) * 100)) + "%";
-    bar.appendChild(fill);
-
-    row.appendChild(head);
-    row.appendChild(bar);
-    kindListEl.appendChild(row);
-  });
 }
 
 function bump(el) {
@@ -296,16 +216,12 @@ function updateAfterCount(name, count) {
   const card = cardEls.get(name);
   if (!card) { // Sollte nicht vorkommen; sicherheitshalber normaler Neuaufbau
     renderLists();
-    updateStats();
-    renderKinds();
     return;
   }
 
   if (reduceMotion.matches) {
     refreshCard(card, count, false);
     sortListsInPlace();
-    updateStats();
-    renderKinds();
     return;
   }
 
@@ -313,10 +229,8 @@ function updateAfterCount(name, count) {
   const before = new Map();
   cardEls.forEach((el, key) => before.set(key, el.getBoundingClientRect()));
 
-  // Last: Zahl aktualisieren, Auswertungen oben neu aufbauen, umsortieren
+  // Last: Zahl aktualisieren und umsortieren
   refreshCard(card, count, true);
-  updateStats();
-  renderKinds();
   sortListsInPlace();
 
   // Invert: jede verschobene Karte optisch an ihre alte Stelle zurücksetzen
@@ -361,9 +275,6 @@ async function changeCount(name, delta) {
 }
 
 function renderAll() {
-  updateStatsScope();
-  updateStats();
-  renderKinds();
   renderLists();
   updateResetBtn();
 }
@@ -390,7 +301,7 @@ resetBtn.addEventListener("click", async () => {
   await loadDeletedBase();
   await loadCountLog();
   await loadCocktailLists();
-  initLists(renderAll); // Wechsel der Liste betrifft auch alle Auswertungen
+  initLists(renderAll); // Wechsel der Liste grenzt die angezeigten Karten ein
   // Aenderungen aus einem anderen offenen Tab live uebernehmen.
   watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
