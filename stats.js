@@ -287,7 +287,8 @@ function openAlcModal() {
   const a = alcoholTotal();
   if (a.ml <= 0) return;
 
-  alcHeadlineEl.textContent = Math.round(a.ml) + " ml reiner Alkohol entsprechen:";
+  // Passt zu den Zeilen darunter, die alle Infinitive sind ("Auto fahren").
+  alcHeadlineEl.textContent = "Mit " + Math.round(a.ml) + " ml reinem Alkohol:";
   alcListEl.innerHTML = "";
   EQUIVALENTS.forEach(eq => {
     const row = document.createElement("div");
