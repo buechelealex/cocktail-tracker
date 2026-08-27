@@ -1,0 +1,75 @@
+/* Nur fuer die Zaehler-Seite: Karten mit Plus/Minus und Zaehlerstand. */
+
+.count-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.count-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.count-cat {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.count-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.count-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.count-btn:active { transform: scale(0.92); background: #f0e9e0; }
+
+.count-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.count-btn.plus {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.count-btn.plus:active { background: var(--accent-dark); }
+
+.count-value {
+  min-width: 26px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.count-value.bump { animation: countBump 0.25s ease; }
+
+@keyframes countBump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); color: var(--accent); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .count-value.bump { animation: none; }
+}

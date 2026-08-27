@@ -2,7 +2,7 @@
 // nach Art als Kreisdiagramm, Top-Drinks und die getrunkene Menge Alkohol).
 // Gezählt wird auf der Zähler-Seite, hier wird nur gelesen. Ist oben eine
 // eigene Liste gewählt, beziehen sich alle Zahlen ausschließlich auf deren
-// Cocktails - dafür sorgt visibleLog() aus data.js.
+// Cocktails - dafür sorgt visibleLog() aus shared/data.js.
 
 const statusEl = document.getElementById("status");
 const statTotalEl = document.getElementById("statTotal");
@@ -51,7 +51,7 @@ function periodLog() {
 }
 
 // Feste Farbe je Art, damit ein Tortenstück beim Weiterzählen nicht die
-// Farbe wechselt. Reihenfolge und Töne passen zur Palette aus style.css.
+// Farbe wechselt. Reihenfolge und Töne passen zur Palette aus shared/base.css.
 const KIND_COLORS = {
   vodka: "#c9762f",
   gin: "#7d9a6b",
@@ -76,7 +76,7 @@ function setStatus(text, fade) {
     setTimeout(() => { statusEl.style.opacity = "0"; }, 1200);
   }
 }
-setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
+setStatusHandler(setStatus); // Speicher-Meldungen aus shared/data.js hier anzeigen
 
 function updateStats() {
   // Jede Zeitraum-Kachel zeigt immer ihre eigene Zahl - sonst wüsste man

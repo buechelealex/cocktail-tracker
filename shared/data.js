@@ -1,5 +1,5 @@
 // Gemeinsame Datenbasis für alle Seiten (Bewertungen und Zähler).
-// Wird von script.js (index.html) und counter.js (counter.html) geladen.
+// Wird von allen drei Seiten geladen (rate/, counter/, stats/).
 
 // Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
 // Format, wie es die TheCocktailDB-API zurückgibt (Menge + Zutat kombiniert,

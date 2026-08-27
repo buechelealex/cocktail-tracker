@@ -7,7 +7,7 @@ const SHARE_W = 1080;
 const SHARE_H = 1920;
 const DAY = 24 * 60 * 60 * 1000;
 
-// Farben aus style.css, damit das Bild wie die Seite aussieht.
+// Farben aus shared/base.css, damit das Bild wie die Seite aussieht.
 const C = {
   bgTop: "#fff8f0",
   bgBottom: "#f6ece1",

@@ -1,4 +1,4 @@
-// Cocktail-Liste, Speicherlogik und Kategorien stehen in data.js und werden
+// Cocktail-Liste, Speicherlogik und Kategorien stehen in shared/data.js und werden
 // von dieser Seite und der Zähler-Seite gemeinsam genutzt.
 
 let ratings = {};
@@ -29,7 +29,7 @@ function setStatus(text, fade) {
     setTimeout(() => { statusEl.style.opacity = "0"; }, 1200);
   }
 }
-setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
+setStatusHandler(setStatus); // Speicher-Meldungen aus shared/data.js hier anzeigen
 
 async function loadRatings() {
   const { fromWindowStorage, fromLocalStorage } = await storageGetBoth(RATINGS_KEY);

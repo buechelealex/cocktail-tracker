@@ -1,0 +1,618 @@
+/* Gemeinsame Grundlagen aller Seiten: Farben, Layout, Karten, Navigation,
+   Dialoge, Fusszeile und die Listen-Leiste. Jede Seite laedt zuerst diese
+   Datei und danach ihr eigenes style.css. */
+
+:root {
+  --bg: #faf6f2;
+  --card: #ffffff;
+  --accent: #c9762f;
+  --accent-dark: #a15d21;
+  --star-filled: #e0a530;
+  --star-empty: #d8d2cb;
+  --text: #2b2620;
+  --muted: #8a8178;
+  --border: #ede4d8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, #fff8f0 0%, var(--bg) 100%);
+  color: var(--text);
+  padding: 24px 16px 110px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.status {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-height: 20px;
+  margin-bottom: 12px;
+  transition: opacity 0.3s;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin: 24px 4px 10px;
+}
+
+.section-title:first-child {
+  margin-top: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cocktail-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Nach dem Einblenden wird die Einblend-Animation abgeschaltet, damit ein
+   Umhängen der Karte (beim Umsortieren) sie nicht erneut auslöst. */
+.cocktail-card.settled {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+.cocktail-card.flipping {
+  position: relative;
+  z-index: 2;
+}
+
+/* Die gerade bewertete Karte wandert sichtbar über die anderen hinweg. */
+.cocktail-card.flip-lead {
+  z-index: 5;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.cocktail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cocktail-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.cocktail-name {
+  font-size: 1rem;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.custom-tag {
+  font-size: 0.65rem;
+  color: var(--accent-dark);
+  background: #fbeedd;
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.card-action-btn {
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.card-action-btn:active { background: #f0e9e0; }
+
+.card-action-btn[hidden] { display: none; }
+
+.delete-btn {
+  border-color: #eccfc9;
+  color: #b04a3a;
+}
+
+.delete-btn:active { background: #f7e7e3; }
+
+.empty-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 10px 0;
+}
+
+.clear-btn {
+  display: block;
+  margin: 28px auto 0;
+  background: none;
+  border: 1px solid #ddd3c8;
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.clear-btn:active { background: #f0e9e0; }
+
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.8rem;
+}
+
+.footer a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1px;
+}
+
+.footer a:hover { color: var(--accent-dark); }
+
+.privacy-note {
+  margin: 0 auto 10px;
+  max-width: 420px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.footer-links {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-sep {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+/* Schwebender Button unten rechts */
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0 0 3px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.12);
+  z-index: 40;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.fab:hover { transform: scale(1.05); }
+
+.fab:active { background: var(--accent-dark); transform: scale(0.96); }
+
+/* Abgedunkelter Hintergrund des Dialogs */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(43, 38, 32, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  /* visibility ohne Verzoegerung einschalten (sonst kann das Namensfeld
+     beim Oeffnen keinen Fokus bekommen), beim Schliessen erst danach. */
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease, visibility 0s linear 0s;
+}
+
+body.modal-open { overflow: hidden; }
+
+.add-form {
+  /* margin:auto statt align-items:center - so wird der Dialog auch dann
+     nicht oben abgeschnitten, wenn er hoeher als der Bildschirm ist. */
+  margin: auto;
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.modal-overlay.open .add-form {
+  transform: none;
+  opacity: 1;
+}
+
+.add-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.add-form-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+}
+
+.modal-close:active { color: var(--text); }
+
+.add-form label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: -4px;
+}
+
+.add-form input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+}
+
+.add-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.add-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.add-form-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.save-cocktail-btn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.save-cocktail-btn:active { background: var(--accent-dark); }
+
+.cancel-cocktail-btn {
+  background: #f0e9e0;
+  color: var(--text);
+}
+
+.form-error {
+  color: #b04a3a;
+  font-size: 0.8rem;
+  display: none;
+}
+
+.form-error.show { display: block; }
+
+.form-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  display: none;
+}
+
+.form-hint.show { display: block; }
+
+/* --- Navigation zwischen Bewerten- und Zähler-Seite --- */
+.page-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 18px;
+  max-width: 480px;
+}
+
+.page-nav a {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.page-nav a.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Seit der Statistik-Seite sind es drei Einträge - die sollen auch auf
+   schmalen Geräten einzeilig nebeneinander bleiben. */
+.page-nav a { white-space: nowrap; }
+
+@media (max-width: 380px) {
+  .page-nav { gap: 6px; }
+  .page-nav a {
+    padding: 8px 4px;
+    font-size: 0.76rem;
+  }
+}
+
+.filter-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fffdfb;
+  color: var(--text);
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* --- Eigene Listen (Bierzelt, Exotische Drinks …) --- */
+.list-bar {
+  display: flex;
+  gap: 8px;
+  max-width: 480px;
+  margin: 0 auto 16px;
+  padding: 2px 2px 6px;
+  overflow-x: auto;
+  /* Auf dem Handy quer scrollbar, ohne dass Chips umbrechen. */
+  scrollbar-width: none;
+}
+
+.list-bar::-webkit-scrollbar { display: none; }
+
+.list-chip-wrap {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.list-chip-wrap.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.list-chip {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 7px 14px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.list-chip-wrap.active .list-chip { color: #fff; }
+
+.chip-count {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-edit {
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0 12px 0 2px;
+  cursor: pointer;
+}
+
+.chip-edit:active { opacity: 0.7; }
+
+/* "+ Liste" steht allein, ohne Wrapper */
+.list-chip.add-chip {
+  flex-shrink: 0;
+  border: 1px dashed #ddd3c8;
+  border-radius: 20px;
+  background: none;
+  color: var(--accent-dark);
+}
+
+.list-chip.add-chip:active { background: #f7ede1; }
+
+/* Dialog zum Anlegen/Bearbeiten einer Liste */
+.list-name-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.list-emoji-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 68px;
+  flex-shrink: 0;
+}
+
+.list-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.emoji-input { text-align: center; }
+
+.list-picker-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.list-pick-count {
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+}
+
+.list-picker-filter { margin-bottom: 0; }
+
+.list-picker {
+  max-height: 38vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  background: #fffdfb;
+}
+
+/* Die Zeilen sind <label>-Elemente im Dialog und muessen die Vorgaben aus
+   ".add-form label" bzw. ".add-form input" wieder aufheben - dafuer braucht
+   es die hoehere Spezifitaet ueber ".list-picker". */
+.list-picker .pick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.list-picker .pick-row.checked { background: #fbeedd; }
+
+.list-picker .pick-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+  accent-color: var(--accent);
+}
+
+.pick-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pick-name {
+  font-size: 0.9rem;
+  overflow-wrap: break-word;
+}
+
+.pick-cat {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.list-picker-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.list-picker-actions .card-action-btn { flex: 1; }
+
+.list-delete-btn { align-self: flex-start; }
+
+.list-delete-btn[hidden] { display: none; }

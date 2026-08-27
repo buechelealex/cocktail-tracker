@@ -1,7 +1,7 @@
 // Oberfläche für die eigenen Listen ("Bierzelt", "Exotische Drinks" …):
 // eine Chip-Leiste zum Umschalten und ein Dialog zum Anlegen/Bearbeiten.
-// Die Daten liegen in data.js, diese Datei wird von index.html und
-// counter.html gemeinsam genutzt. Die Seite ruft initLists(onChange) auf und
+// Die Daten liegen in shared/data.js, diese Datei wird von allen drei
+// Seiten gemeinsam genutzt. Die Seite ruft initLists(onChange) auf und
 // baut in onChange ihre Karten neu auf.
 
 let listsChangeHandler = null;

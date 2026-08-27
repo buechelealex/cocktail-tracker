@@ -1,6 +1,6 @@
 // Rechnet aus, wie viel reiner Alkohol (Ethanol) in den gezählten Getränken
 // steckt, und übersetzt diese Menge in anschauliche Vergleiche.
-// Grundlage sind die Zutatentexte aus data.js, die Menge und Zutat enthalten
+// Grundlage sind die Zutatentexte aus shared/data.js, die Menge und Zutat enthalten
 // ("1 1/2 oz Vodka", "0,5 l Helles Bier", "4 cl Korn"): aus der Menge und dem
 // Alkoholgehalt der Zutat ergibt sich der reine Alkohol.
 // Wird nur von der Statistik-Seite gebraucht.

@@ -1,0 +1,134 @@
+/* Nur fuer die Bewerten-Seite (index.html im Root): Sterne, Zutaten-Panel
+   und das Formular zum Hinzufuegen inklusive Vorschlagsliste. */
+
+.expand-icon {
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  display: inline-block;
+  width: 12px;
+}
+
+.expand-icon.open { transform: rotate(90deg); }
+
+.stars {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.star {
+  font-size: 1.4rem;
+  color: var(--star-empty);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, color 0.15s;
+  line-height: 1;
+}
+
+.star:hover { transform: scale(1.15); }
+
+.star.filled { color: var(--star-filled); }
+
+.ingredients-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, margin-top 0.25s ease;
+}
+
+.ingredients-panel.open {
+  max-height: 320px;
+  margin-top: 10px;
+}
+
+.ingredients-inner {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.ingredients-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.ingredients-list li {
+  margin: 2px 0;
+}
+
+.no-ingredients {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.summary {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.name-input-wrap {
+  position: relative;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fffefc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+
+.suggestions-list.open { display: block; }
+
+.suggestion-item {
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestion-item:active,
+.suggestion-item.active {
+  background: #fbeedd;
+}
+
+.suggestion-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.suggestion-loading,
+.suggestion-empty {
+  padding: 9px 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}

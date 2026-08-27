@@ -8,11 +8,18 @@ Sie besteht aus drei Seiten:
 | Seite | Zweck |
 | --- | --- |
 | [index.html](index.html) | Cocktails bewerten, Zutaten ansehen, eigene Cocktails anlegen |
-| [counter.html](counter.html) | Zählen, wie oft welcher Cocktail getrunken wurde |
-| [stats.html](stats.html) | Auswertung ansehen: Kennzahlen, Kreisdiagramm, Top-Drinks, Alkoholmenge – und als Story teilen |
+| [counter/index.html](counter/index.html) | Zählen, wie oft welcher Cocktail getrunken wurde |
+| [stats/index.html](stats/index.html) | Auswertung ansehen: Kennzahlen, Kreisdiagramm, Top-Drinks, Alkoholmenge – und als Story teilen |
+
+Jede Seite liegt in einem eigenen Ordner mit ihrer `index.html`, ihrem
+`style.css` und ihrem `script.js`; nur die Startseite muss als `index.html`
+im Wurzelverzeichnis bleiben, ihre beiden Dateien liegen daher in
+[rate/](rate). Was alle drei brauchen, steht in [shared/](shared) – siehe
+[Aufbau der Dateien](#aufbau-der-dateien).
 
 Alle Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
-[data.js](data.js); oben wechselt man mit den drei Reitern zwischen ihnen.
+[shared/data.js](shared/data.js); oben wechselt man mit den drei Reitern
+zwischen ihnen.
 Mit eigenen **Listen** („Bierzelt“, „Exotische Drinks“ …) lässt sich die
 Anzeige auf eine Auswahl eingrenzen – die Auswahl gilt auf allen drei Seiten
 und begrenzt auch die Statistik.
@@ -289,20 +296,42 @@ andere funktioniert offline.
 ## Technisches in Kürze
 
 - **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
-  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=2`).
+  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=5`).
   Diese Zahl bei jeder Änderung hochzählen – sonst liefern Browser (vor allem
   auf dem Handy) weiter ihre alte Kopie aus dem Cache aus, während neu
   hinzugekommene Dateien frisch geladen werden. Das Ergebnis ist eine halb
   aktuelle Seite: neue Bausteine ohne die zugehörigen Regeln, z. B. ein
   schwarzes Kreisdiagramm.
-- Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript:
-  [data.js](data.js) (gemeinsame Cocktail-Liste, Speicherung, Listen,
-  Kategorien), [lists.js](lists.js) (Listen-Leiste und -Dialog, von allen
-  Seiten genutzt), [script.js](script.js) (Bewertungsseite),
-  [counter.js](counter.js) (Zählerseite), [stats.js](stats.js)
-  (Statistikseite), [alcohol.js](alcohol.js) (Alkoholmenge und Vergleiche),
-  [share.js](share.js) (Story-Bild) und
-  [style.css](style.css) für alle Seiten.
+- Kein Framework, kein Build – reines HTML, CSS und Vanilla JavaScript.
+
+### Aufbau der Dateien
+
+Pro Seite ein Ordner, darin `index.html`, `style.css` und `script.js`.
+Gemeinsam genutzte Dateien liegen in `shared/` und werden von jeder Seite
+zuerst geladen:
+
+```
+index.html          Bewerten – muss im Wurzelverzeichnis liegen
+manifest.json       PWA-Angaben
+icon-512.png        App-Symbol
+shared/
+  base.css          Farben, Layout, Karten, Navigation, Dialoge, Fußzeile
+  data.js           Cocktail-Liste, Speicherung, Listen, Kategorien
+  lists.js          Listen-Leiste und -Dialog
+rate/
+  style.css         Sterne, Zutaten-Panel, Formular zum Hinzufügen
+  script.js         Bewertungsseite (gehört zur index.html im Wurzelordner)
+counter/
+  index.html        Zählerseite
+  style.css         Karten mit Plus/Minus
+  script.js
+stats/
+  index.html        Statistikseite
+  style.css         Kacheln, Kreisdiagramm, Leaderboard, Alkohol, Teilen
+  script.js
+  alcohol.js        Alkoholmenge und Vergleiche
+  share.js          Story-Bild
+```
 - Änderungen werden über das `storage`-Ereignis zwischen gleichzeitig
   geöffneten Tabs abgeglichen – wer im Zähler-Tab zählt, sieht es im
   Statistik-Tab sofort.

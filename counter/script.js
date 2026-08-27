@@ -1,6 +1,6 @@
 // Zähler-Seite: hier wird nur gezählt, wie oft welcher Cocktail getrunken
-// wurde. Cocktail-Liste und Speicherung kommen aus data.js, die Auswertung
-// (Gesamt, Heute, Nach Art, Teilen) steht auf der Statistik-Seite in stats.js.
+// wurde. Cocktail-Liste und Speicherung kommen aus shared/data.js, die
+// Auswertung (Gesamt, Heute, Nach Art, Teilen) steht in stats/script.js.
 
 const statusEl = document.getElementById("status");
 const drunkListEl = document.getElementById("drunkList");
@@ -19,7 +19,7 @@ function setStatus(text, fade) {
     setTimeout(() => { statusEl.style.opacity = "0"; }, 1200);
   }
 }
-setStatusHandler(setStatus); // Speicher-Meldungen aus data.js hier anzeigen
+setStatusHandler(setStatus); // Speicher-Meldungen aus shared/data.js hier anzeigen
 
 // Alle Namen, die angezeigt werden: die aktuelle Cocktail-Liste plus alle
 // bereits gezählten Sorten, die inzwischen aus der Liste gelöscht wurden
