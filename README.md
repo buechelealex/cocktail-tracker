@@ -64,8 +64,9 @@ dass sämtliche Daten nur lokal im Browser liegen.
 - **Story-Bild teilen** – die Zählerstände als fertiges Hochformat-Bild
   (1080×1920) für Instagram & Co. (auf der Statistik-Seite), bewusst knapp
   gehalten: Gesamtzahl, Top 3 und die häufigste Art.
-- **Installierbar** als App (PWA über [manifest.json](manifest.json)); zusätzlich
-  existiert eine Android-Variante als APK.
+- **Installierbar** als App (PWA) und **offline nutzbar** – nach dem ersten
+  Aufruf liegt alles im Browser-Cache. Für Android lässt sich daraus eine
+  Play-Store-App bauen, siehe [Android-App bauen](#android-app-bauen).
 
 ## Anleitung
 
@@ -287,24 +288,109 @@ eigene Origin, dadurch haben die drei Seiten getrennte localStorage-Speicher
 und teilen weder Listen noch eigene Cocktails.
 
 Eine Internetverbindung braucht die App nicht: Sie lädt keine fremden Skripte,
-Schriften oder Bilder und fragt keine API an. Alles läuft im Browser.
+Schriften oder Bilder und fragt keine API an. Ein Service Worker
+([sw.js](sw.js)) legt außerdem alle eigenen Dateien im Browser-Cache ab – nach
+dem ersten Aufruf startet die App auch ohne Verbindung.
+
+Der Service Worker läuft nur über `http://localhost` oder `https://`, nicht über
+`file://`. Beim Entwickeln stört er, weil er die alte Fassung ausliefert: in den
+DevTools unter *Application → Service Workers* „Update on reload“ anhaken oder
+„Unregister“ klicken.
 
 ## Als App installieren
 
 - **Handy/Desktop (PWA):** Seite im Browser öffnen und „Zum Startbildschirm
-  hinzufügen“ bzw. „Installieren“ wählen. Die App startet dann im
-  Vollbild-Modus.
-- **Android (APK):** Im Ordner `apk-build/` liegt ein mit
-  [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap) erzeugtes
-  TWA-Projekt (App-Name „BarCheck“, Paket `com.buechelealex.barcheck`), das die
-  GitHub-Pages-Seite als Android-App verpackt. Der Ordner ist bewusst nicht Teil
-  des Repositorys (siehe [.gitignore](.gitignore)), da er Build-Artefakte und
-  den Signing-Keystore enthält.
+  hinzufügen“ bzw. „Installieren“ wählen. Die App startet dann im Vollbild-Modus
+  und funktioniert offline.
+- **Android (Play Store):** siehe [Android-App bauen](#android-app-bauen).
+
+Dafür nötig sind [manifest.json](manifest.json) (Name, Farben, Symbole,
+Startadresse), der Service Worker [sw.js](sw.js) und die Anmeldung des Workers
+in [shared/pwa.js](shared/pwa.js). Alle drei Seiten binden das Manifest über
+`<link rel="manifest">` ein – ohne das gilt die Seite nicht als installierbar.
+
+Zwei Symbole liegen bei: [icon-512.png](icon-512.png) wird unverändert angezeigt,
+[icon-maskable-512.png](icon-maskable-512.png) hat das Glas auf 80 % verkleinert,
+damit runde Launcher-Masken nichts abschneiden (`purpose: "maskable"`).
+
+## Android-App bauen
+
+Die Android-App ist eine **Trusted Web Activity** (TWA): ein dünner Rahmen um
+die veröffentlichte Seite, ohne Adressleiste. Der frühere Ordner `apk-build/`
+mit dem Bubblewrap-Projekt und dem Signaturschlüssel existiert nicht mehr und
+war nie Teil des Repositorys – das Projekt wird neu erzeugt.
+
+### 1. Projekt erzeugen
+
+```
+npm install -g @bubblewrap/cli
+bubblewrap init --manifest https://projects.abuechele.de/cocktail-tracker/manifest.json
+bubblewrap build
+```
+
+`init` fragt Paketname (`com.buechelealex.barcheck`, nach der ersten
+Veröffentlichung unveränderlich), Anzeigename und Farben ab und legt den
+**Signaturschlüssel** an. Schlüsseldatei und Passwort außerhalb des Repositorys
+sichern – ohne sie sind später keine Updates möglich.
+
+`build` erzeugt zwei Dateien:
+
+| Datei | wofür |
+| --- | --- |
+| `app-release-signed.apk` | zum direkten Installieren auf dem eigenen Gerät |
+| `app-release-bundle.aab` | für den Play Store (APKs nimmt er nicht mehr an) |
+
+Wer lieber klickt: den erzeugten Ordner in Android Studio öffnen und
+*Build → Generate Signed App Bundle / APK* wählen. Einen eigenen TWA-Assistenten
+hat Android Studio nicht.
+
+### 2. Digital Asset Links
+
+Ohne diese Datei zeigt die App oben eine Adressleiste. Sie muss auf der
+**Wurzel der Domain** liegen, nicht im Unterordner des Projekts:
+
+```
+https://projects.abuechele.de/.well-known/assetlinks.json
+```
+
+Diese Seite hier liegt unter `/cocktail-tracker/` – die Datei gehört also in
+das Repository, das `projects.abuechele.de` selbst ausliefert.
+[playstore/assetlinks.template.json](playstore/assetlinks.template.json) enthält
+die fertige Struktur; einzutragen ist nur der SHA-256-Fingerabdruck.
+
+Welcher Fingerabdruck: Bei aktiviertem Play App Signing (Standard) signiert
+Google die ausgelieferte App mit einem **anderen** Schlüssel als dem eigenen
+Upload-Schlüssel. Es zählt der Wert aus der Play Console unter
+*Test und Veröffentlichung → App-Integrität → App-Signaturzertifikat*, nicht der
+aus dem lokalen Schlüsselspeicher. Praktisch heißt das: erst hochladen, dann
+Fingerabdruck holen, dann `assetlinks.json` veröffentlichen.
+
+### 3. Play Store
+
+- Entwicklerkonto: 25 USD einmalig, dazu Identitätsprüfung und – für die
+  Auslieferung in der EU – die Händlerangaben nach DSA.
+- Privatpersonen-Konten, die nach November 2023 angelegt wurden, müssen vor der
+  Produktionsfreigabe einen geschlossenen Test mit mindestens 12 Testern über
+  14 zusammenhängende Tage laufen lassen.
+- Für den Store-Eintrag nötig: Symbol 512 × 512, Feature-Grafik 1024 × 500,
+  mindestens zwei Telefon-Screenshots, Kurz- und Langbeschreibung,
+  **Datenschutzerklärung als URL** (Pflichtfeld, ein Impressum genügt nicht),
+  Data-Safety-Formular und die IARC-Inhaltseinstufung.
+- Bei der Inhaltseinstufung den Alkoholbezug angeben und die Zielgruppe auf 18+
+  setzen.
+- Reine Website-Verpackungen können an der Richtlinie zur Mindestfunktionalität
+  scheitern. Die TWA mit Offline-Betrieb und Installierbarkeit erfüllt sie.
+
+Anforderungen wie das `targetSdk`-Mindestlevel zieht Google jedes Jahr Ende
+August nach; maßgeblich ist, was die Play Console beim Hochladen verlangt.
 
 ## Technisches in Kürze
 
 - **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
-  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=5`).
+  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=6`), und
+  dieselbe Zahl steht in [sw.js](sw.js) unter `VERSION` sowie in der Dateiliste
+  darunter. Beide zusammen hochzählen, sonst liefert der Service Worker die
+  alten Dateien weiter aus.
   Diese Zahl bei jeder Änderung hochzählen – sonst liefern Browser (vor allem
   auf dem Handy) weiter ihre alte Kopie aus dem Cache aus, während neu
   hinzugekommene Dateien frisch geladen werden. Das Ergebnis ist eine halb
@@ -319,13 +405,18 @@ Gemeinsam genutzte Dateien liegen in `shared/` und werden von jeder Seite
 zuerst geladen:
 
 ```
-index.html          Bewerten – muss im Wurzelverzeichnis liegen
-manifest.json       PWA-Angaben
-icon-512.png        App-Symbol
+index.html               Bewerten – muss im Wurzelverzeichnis liegen
+manifest.json            PWA-Angaben
+sw.js                    Service Worker (Offline-Cache)
+icon-512.png             App-Symbol
+icon-maskable-512.png    App-Symbol mit Rand für runde Launcher-Masken
+playstore/
+  assetlinks.template.json  Vorlage für die Digital Asset Links
 shared/
   base.css          Farben, Layout, Karten, Navigation, Dialoge, Fußzeile
   data.js           Cocktail-Liste, Speicherung, Listen, Kategorien
   lists.js          Listen-Leiste und -Dialog
+  pwa.js            meldet den Service Worker an
 rate/
   style.css         Sterne, Zutaten-Panel, Formular zum Hinzufügen
   script.js         Bewertungsseite (gehört zur index.html im Wurzelordner)

@@ -1,18 +1,40 @@
 {
-  "name": "Cocktail-Bewertungen",
-  "short_name": "Cocktails",
-  "start_url": "./index.html",
+  "id": "./",
+  "name": "BarCheck - Cocktails bewerten und zählen",
+  "short_name": "BarCheck",
+  "description": "Cocktails bewerten, mitzählen und auswerten. Alle Daten bleiben auf dem Gerät.",
+  "lang": "de",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#faf6f2",
   "theme_color": "#c9762f",
   "orientation": "portrait",
+  "categories": ["food", "lifestyle", "utilities"],
   "icons": [
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Zähler",
+      "short_name": "Zähler",
+      "url": "./counter/"
+    },
+    {
+      "name": "Statistik",
+      "short_name": "Statistik",
+      "url": "./stats/"
     }
   ]
 }
