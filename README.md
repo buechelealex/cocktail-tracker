@@ -309,7 +309,9 @@ Startadresse), der Service Worker [sw.js](sw.js) und die Anmeldung des Workers
 in [shared/pwa.js](shared/pwa.js). Alle drei Seiten binden das Manifest über
 `<link rel="manifest">` ein – ohne das gilt die Seite nicht als installierbar.
 
-Zwei Symbole liegen bei: [icon-512.png](icon-512.png) wird unverändert angezeigt,
+Zwei Symbole liegen bei, beide aus [logo-512x512.jpeg](logo-512x512.jpeg)
+erzeugt und als 32-Bit-PNG gespeichert (das Store-Symbol in der Play Console
+muss eines sein): [icon-512.png](icon-512.png) wird unverändert angezeigt,
 [icon-maskable-512.png](icon-maskable-512.png) hat das Glas auf 80 % verkleinert,
 damit runde Launcher-Masken nichts abschneiden (`purpose: "maskable"`).
 
@@ -387,7 +389,7 @@ August nach; maßgeblich ist, was die Play Console beim Hochladen verlangt.
 ## Technisches in Kürze
 
 - **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
-  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=6`), und
+  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=7`), und
   dieselbe Zahl steht in [sw.js](sw.js) unter `VERSION` sowie in der Dateiliste
   darunter. Beide zusammen hochzählen, sonst liefert der Service Worker die
   alten Dateien weiter aus.
@@ -408,7 +410,8 @@ zuerst geladen:
 index.html               Bewerten – muss im Wurzelverzeichnis liegen
 manifest.json            PWA-Angaben
 sw.js                    Service Worker (Offline-Cache)
-icon-512.png             App-Symbol
+logo-512x512.jpeg        Ursprungsgrafik des App-Symbols
+icon-512.png             App-Symbol (32-bit PNG)
 icon-maskable-512.png    App-Symbol mit Rand für runde Launcher-Masken
 playstore/
   assetlinks.template.json  Vorlage für die Digital Asset Links
