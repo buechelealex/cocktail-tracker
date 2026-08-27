@@ -1,9 +1,9 @@
 // Gemeinsame Datenbasis für alle Seiten (Bewertungen und Zähler).
 // Wird von allen drei Seiten geladen (rate/, counter/, stats/).
 
-// Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben, im selben
-// Format, wie es die TheCocktailDB-API zurückgibt (Menge + Zutat kombiniert,
-// z. B. "1 1/2 oz Vodka" statt nur "Vodka").
+// Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben. Menge und Zutat
+// stehen zusammen in einem Text, z. B. "1 1/2 oz Vodka" statt nur "Vodka" -
+// genauso wie im Vorschlagskatalog rate/catalog.js.
 const baseRecipes = {
   "Blue Lagoon": ["1 1/2 oz Vodka", "1 oz Blue Curacao", "3 oz Lemonade"],
   "Malibu Pineapple": ["2 oz Malibu Rum", "4 oz Pineapple Juice"],
@@ -233,21 +233,32 @@ const CATEGORY_RULES = [
   { id: "whisky",    label: "Whisky",            emoji: "🥃", pattern: /whisk(?:e)?y|bourbon|scotch/i },
   { id: "brandy",    label: "Brandy & Cognac",   emoji: "🍇", pattern: /brandy|cognac|weinbrand|armagnac/i },
   { id: "korn",      label: "Korn & Klare",      emoji: "🌾", pattern: /\bkorn\b|doppelkorn|klarer|obstler/i },
-  { id: "bitter",    label: "Bitter & Aperitif", emoji: "🍊", pattern: /campari|aperol|vermouth|wermut|cynar/i },
+  { id: "bitter",    label: "Bitter & Aperitif", emoji: "🍊", pattern: /campari|aperol|vermouth|wermut|cynar|lillet|fernet|amaro|pastis|ricard|absinthe|absinth/i },
   { id: "sparkling", label: "Schaumwein",        emoji: "🥂", pattern: /champagne|champagner|prosecco|sekt|cremant|crémant|cava|spumante/i },
-  { id: "wine",      label: "Wein",              emoji: "🍷", pattern: /\bwine\b|\bwein\b|sherry|\bport\b/i },
-  { id: "liqueur",   label: "Likör",             emoji: "🍸", pattern: /liqueur|likör|curacao|curaçao|kahlua|baileys|amaretto|triple sec|cointreau|creme de|crème de|schnapps|advocaat|limoncello/i },
+  // "wein" ohne Wortgrenze davor, damit auch Rotwein, Weißwein und Glühwein
+  // erkannt werden; Weinbrand faengt die Brandy-Regel vorher ab.
+  { id: "wine",      label: "Wein",              emoji: "🍷", pattern: /\bwine\b|wein|sherry|\bport\b/i },
+  { id: "liqueur",   label: "Likör",             emoji: "🍸", pattern: /liqueur|likör|curacao|curaçao|kahlua|baileys|amaretto|triple sec|cointreau|creme de|crème de|schnapps|advocaat|limoncello|jägermeister|jagermeister|sambuca|midori|chambord|drambuie|galliano|chartreuse|maraschino|benedictine|falernum|passoa|grand marnier/i },
   { id: "beer",      label: "Bier",              emoji: "🍺", pattern: /\bbeer\b|\bbier\b|\bale\b|lager/i }
 ];
 const CATEGORY_NONE = { id: "none", label: "Alkoholfrei / Sonstige", emoji: "🧃" };
 
-function categoryOf(name) {
-  const ingredients = getAllRecipes()[name];
-  const haystack = (ingredients && ingredients.length ? ingredients.join(", ") : "") + " " + name;
+// Art aus Name und Zutaten bestimmen. Getrennt von categoryOf(), damit auch
+// Cocktails eingeordnet werden können, die noch nicht gespeichert sind -
+// etwa die Vorschläge aus dem Katalog im "Hinzufügen"-Dialog.
+function categoryFor(name, ingredients) {
+  const haystack = ((ingredients && ingredients.length ? ingredients.join(", ") : "") + " " + name)
+    // Ginger Beer und Ginger Ale sind alkoholfreie Limonaden - ohne diese
+    // Ausnahme landet ein Virgin Mule unter "Bier".
+    .replace(/ginger (beer|ale)/gi, "ginger soda");
   for (const rule of CATEGORY_RULES) {
     if (rule.pattern.test(haystack)) return rule;
   }
   return CATEGORY_NONE;
+}
+
+function categoryOf(name) {
+  return categoryFor(name, getAllRecipes()[name]);
 }
 
 // --- Eigene Listen ---

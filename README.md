@@ -45,9 +45,11 @@ dass sämtliche Daten nur lokal im Browser liegen.
 - **Cocktails löschen** – eigene endgültig, fest hinterlegte nur aus der eigenen
   Liste (jederzeit wiederherstellbar).
 - **Eigene Cocktails hinzufügen** – über den schwebenden **+**-Button unten
-  rechts, der einen Dialog öffnet – mit Live-Suche gegen
-  [TheCocktailDB](https://www.thecocktaildb.com/): beim Tippen erscheinen
-  Vorschläge, und bei Auswahl werden Name und Zutaten automatisch übernommen.
+  rechts, der einen Dialog öffnet. Die Vorschläge kommen aus einem mitgelieferten
+  Katalog von rund 165 bekannten Cocktails ([rate/catalog.js](rate/catalog.js)):
+  beim Öffnen stehen die bekanntesten dort, beim Tippen wird in Namen **und**
+  Zutaten gesucht, und bei Auswahl werden Name und Zutaten übernommen. Ohne
+  Netzwerkanfrage, dadurch ohne Wartezeit und auch im Flugmodus.
 - **Zusammenfassung** am Seitenende: wie viele Cocktails bewertet sind und der
   Durchschnitt in Sternen.
 - **Eigene Listen anlegen** – z. B. „Bierzelt“ (Bier, Radler, Russe, Vodka-Bull …)
@@ -92,16 +94,22 @@ Zutaten hinterlegt.“
 ### Eigenen Cocktail hinzufügen
 
 1. Unten rechts auf den runden **+**-Button tippen – es öffnet sich ein Dialog.
-2. In das Feld **Name** mindestens 2 Zeichen eingeben. Nach kurzer Pause
-   erscheint ein Vorschlagsmenü aus der Online-Datenbank.
+2. Das Feld **Name** zeigt sofort die bekanntesten Cocktails, die noch fehlen.
+   Beim Tippen wird gefiltert – auch nach Zutat: „Gin“ oder „Minze“ findet die
+   passenden Drinks, deutsche Begriffe wie „Wodka“ oder „Erdbeer“ werden
+   mitübersetzt.
    - Vorschlag antippen (oder mit ↑/↓ auswählen und mit Enter bestätigen) →
      Name und Zutaten werden automatisch eingetragen und können noch angepasst
      werden.
+   - Unter jedem Vorschlag stehen die Zutaten, davor das Emoji der erkannten
+     Art – so lassen sich ähnliche Namen unterscheiden.
    - Mit Esc oder einem Klick daneben schließt sich die Vorschlagsliste.
-   - Ohne Internet bzw. ohne passenden Treffer einfach selbst weitertippen.
+   - Ohne passenden Treffer einfach selbst weitertippen.
+   - Cocktails, die es in der Liste schon gibt, werden nicht vorgeschlagen.
 3. Feld **Zutaten**: mehrere Zutaten mit Komma trennen, z. B.
    `2 oz Rum, 1 oz Limettensaft, 1/2 oz Zuckersirup`. Das Feld darf auch leer
-   bleiben.
+   bleiben – steht der Name im Katalog, werden die Zutaten beim Speichern
+   automatisch ergänzt.
 4. **Speichern**. Der Dialog schließt sich, und der Cocktail erscheint mit dem
    Hinweis „eigener“ in der Liste, mit bereits aufgeklappten Zutaten.
 
@@ -278,8 +286,8 @@ aber in Firefox**: Firefox behandelt seit Version 68 jede lokale Datei als
 eigene Origin, dadurch haben die drei Seiten getrennte localStorage-Speicher
 und teilen weder Listen noch eigene Cocktails.
 
-Für die Live-Suche nach Cocktails ist eine Internetverbindung nötig; alles
-andere funktioniert offline.
+Eine Internetverbindung braucht die App nicht: Sie lädt keine fremden Skripte,
+Schriften oder Bilder und fragt keine API an. Alles läuft im Browser.
 
 ## Als App installieren
 
@@ -321,6 +329,7 @@ shared/
 rate/
   style.css         Sterne, Zutaten-Panel, Formular zum Hinzufügen
   script.js         Bewertungsseite (gehört zur index.html im Wurzelordner)
+  catalog.js        Offline-Katalog für die Vorschläge im Hinzufügen-Dialog
 counter/
   index.html        Zählerseite
   style.css         Karten mit Plus/Minus
@@ -344,7 +353,10 @@ stats/
   von der alten an die neue Position animieren) bewegt. Bei aktiviertem
   „Bewegung reduzieren“ (`prefers-reduced-motion`) wird ohne Animation
   umsortiert.
-- Einzige externe Abhängigkeit: die TheCocktailDB-API für Suchvorschläge
-  (`search.php?s=`), aufgerufen mit 300 ms Verzögerung nach der Eingabe;
-  veraltete Antworten werden verworfen.
+- Keine externen Abhängigkeiten und keine Netzwerkanfragen zur Laufzeit. Die
+  Suchvorschläge kamen früher von der TheCocktailDB-API; sie sind durch den
+  lokalen Katalog ersetzt, weil für eine App-Nutzung dieser API Gebühren
+  anfallen. Die Suche vergleicht gegen einen einmal vorberechneten Index und
+  bewertet Treffer nach Fundstelle: Name vor Zutat, Wortanfang vor Fundstelle
+  mitten im Wort, bei Gleichstand entscheidet die Katalogreihenfolge.
 - Deployment: GitHub Pages aus dem `main`-Branch.

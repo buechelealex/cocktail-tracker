@@ -95,21 +95,31 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-  max-height: 220px;
+  max-height: 300px;
   overflow-y: auto;
   display: none;
 }
 
 .suggestions-list.open { display: block; }
 
+/* Überschrift über den Vorschlägen ("Beliebte Cocktails") - kein Eintrag,
+   daher nicht anklickbar und nicht mit den Pfeiltasten erreichbar. */
+.suggestion-headline {
+  padding: 6px 10px 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
 .suggestion-item {
-  padding: 9px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   font-size: 0.9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 }
 
 .suggestion-item:active,
@@ -117,16 +127,39 @@
   background: #fbeedd;
 }
 
+/* Seit die Vorschläge offline aus dem Katalog kommen, steht hier das Emoji
+   der erkannten Art statt eines Fotos aus dem Netz. */
 .suggestion-thumb {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
-  object-fit: cover;
   flex-shrink: 0;
+  border-radius: 50%;
   background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
 }
 
-.suggestion-loading,
+.suggestion-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.suggestion-name {
+  font-weight: 500;
+}
+
+/* Zutaten als zweite Zeile: hilft beim Unterscheiden ähnlicher Namen. */
+.suggestion-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .suggestion-empty {
   padding: 9px 10px;
   font-size: 0.82rem;
