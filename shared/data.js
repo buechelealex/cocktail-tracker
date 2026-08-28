@@ -2,28 +2,28 @@
 // Wird von allen drei Seiten geladen (rate/, counter/, stats/).
 
 // Fest hinterlegte Cocktails mit Zutaten inkl. Mengenangaben. Menge und Zutat
-// stehen zusammen in einem Text, z. B. "1 1/2 oz Vodka" statt nur "Vodka" -
+// stehen zusammen in einem Text, z. B. "4,5 cl Vodka" statt nur "Vodka" -
 // genauso wie im Vorschlagskatalog rate/catalog.js.
 const baseRecipes = {
-  "Blue Lagoon": ["1 1/2 oz Vodka", "1 oz Blue Curacao", "3 oz Lemonade"],
-  "Malibu Pineapple": ["2 oz Malibu Rum", "4 oz Pineapple Juice"],
-  "Vodka Orange": ["1 1/2 oz Vodka", "4 oz Orange Juice"],
-  "Black Russian": ["2 oz Vodka", "1 oz Kahlua"],
-  "Tequila Sunrise": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Grenadine"],
-  "Tequila Sunset": ["1 1/2 oz Tequila", "3 oz Orange Juice", "1/2 oz Blackcurrant Cordial"],
-  "Sirocco": ["1 oz Vodka", "1 oz Campari", "3 oz Orange Juice", "1/2 oz Grenadine"],
-  "Dolce Vita": ["3 oz Prosecco", "1 oz Campari", "1 oz Orange Juice"],
-  "Cuba Libre": ["2 oz Light Rum", "4 oz Cola", "1/2 oz Lime Juice"],
-  "Campari Orange": ["1 1/2 oz Campari", "4 oz Orange Juice"],
-  "Dry Martini": ["2 1/2 oz Gin", "1/2 oz Dry Vermouth"],
-  "Gin Tonic": ["1 1/2 oz Gin", "4 oz Tonic Water"],
-  "Negroni": ["1 oz Gin", "1 oz Campari", "1 oz Sweet Vermouth"],
-  "Pina Colada": ["2 oz Light Rum", "1 oz Coconut Cream", "3 oz Pineapple Juice"],
-  "Vodka Martini": ["2 1/2 oz Vodka", "1/2 oz Dry Vermouth"],
-  "Kir Royal": ["4 oz Champagne", "1/2 oz Creme de Cassis"],
-  "Bellini": ["3 oz Prosecco", "2 oz Peach Puree"],
-  "Mimoza": ["3 oz Champagne", "3 oz Orange Juice"],
-  "Punch": ["2 oz Dark Rum", "1 oz Orange Juice", "1 oz Pineapple Juice", "1/2 oz Grenadine"],
+  "Blue Lagoon": ["4,5 cl Vodka", "3 cl Blue Curacao", "9 cl Lemonade"],
+  "Malibu Pineapple": ["6 cl Malibu Rum", "12 cl Pineapple Juice"],
+  "Vodka Orange": ["4,5 cl Vodka", "12 cl Orange Juice"],
+  "Black Russian": ["6 cl Vodka", "3 cl Kahlua"],
+  "Tequila Sunrise": ["4,5 cl Tequila", "9 cl Orange Juice", "1,5 cl Grenadine"],
+  "Tequila Sunset": ["4,5 cl Tequila", "9 cl Orange Juice", "1,5 cl Blackcurrant Cordial"],
+  "Sirocco": ["3 cl Vodka", "3 cl Campari", "9 cl Orange Juice", "1,5 cl Grenadine"],
+  "Dolce Vita": ["9 cl Prosecco", "3 cl Campari", "3 cl Orange Juice"],
+  "Cuba Libre": ["6 cl Light Rum", "12 cl Cola", "1,5 cl Lime Juice"],
+  "Campari Orange": ["4,5 cl Campari", "12 cl Orange Juice"],
+  "Dry Martini": ["7,5 cl Gin", "1,5 cl Dry Vermouth"],
+  "Gin Tonic": ["4,5 cl Gin", "12 cl Tonic Water"],
+  "Negroni": ["3 cl Gin", "3 cl Campari", "3 cl Sweet Vermouth"],
+  "Pina Colada": ["6 cl Light Rum", "3 cl Coconut Cream", "9 cl Pineapple Juice"],
+  "Vodka Martini": ["7,5 cl Vodka", "1,5 cl Dry Vermouth"],
+  "Kir Royal": ["12 cl Champagne", "1,5 cl Creme de Cassis"],
+  "Bellini": ["9 cl Prosecco", "6 cl Peach Puree"],
+  "Mimoza": ["9 cl Champagne", "9 cl Orange Juice"],
+  "Punch": ["6 cl Dark Rum", "3 cl Orange Juice", "3 cl Pineapple Juice", "1,5 cl Grenadine"],
 
   // Bierzelt-Klassiker. Hier stehen deutsche Mengenangaben (l / cl) statt oz,
   // weil diese Getränke so ausgeschenkt werden - für die Anzeige und die
