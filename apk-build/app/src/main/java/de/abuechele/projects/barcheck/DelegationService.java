@@ -1,4 +1,4 @@
-package com.abuechele.barcheck;
+package de.abuechele.projects.barcheck;
 
 
 

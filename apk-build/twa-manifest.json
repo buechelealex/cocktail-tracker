@@ -1,11 +1,11 @@
 {
-  "packageId": "com.abuechele.barcheck",
+  "packageId": "de.abuechele.projects.barcheck",
   "host": "projects.abuechele.de",
   "name": "BarCheck - Cocktails bewerten und zählen",
   "launcherName": "BarCheck",
-  "display": "fullscreen",
+  "display": "standalone",
   "themeColor": "#C9762F",
-  "themeColorDark": "#000000",
+  "themeColorDark": "#C9762F",
   "navigationColor": "#000000",
   "navigationColorDark": "#000000",
   "navigationDividerColor": "#000000",
@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1",
-  "appVersionCode": 1,
+  "appVersionName": "2",
+  "appVersionCode": 2,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://projects.abuechele.de/cocktail-tracker/manifest.json",
@@ -36,12 +36,17 @@
   "fullScopeUrl": "https://projects.abuechele.de/cocktail-tracker/",
   "minSdkVersion": 21,
   "orientation": "portrait",
-  "fingerprints": [],
+  "fingerprints": [
+    {
+      "name": "upload",
+      "value": "28:8A:C7:8F:BA:AA:B7:0C:80:6A:2B:F5:59:82:1B:DA:6A:CB:06:1F:FB:AA:BC:21:0F:AF:02:4E:4A:42:A0:B0"
+    }
+  ],
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "protocolHandlers": [],
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1"
+  "appVersion": "2"
 }

@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "de.abuechele.projects.barcheck",
+        "sha256_cert_fingerprints": ["28:8A:C7:8F:BA:AA:B7:0C:80:6A:2B:F5:59:82:1B:DA:6A:CB:06:1F:FB:AA:BC:21:0F:AF:02:4E:4A:42:A0:B0"]
+      }
+    }]
