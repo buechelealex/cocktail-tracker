@@ -1,20 +1,53 @@
-# Signaturschlüssel - darf niemals ins Repository. Wer ihn hat, kann Apps
-# signieren, die Android als Update dieser App akzeptiert. Das Passwort schützt
-# ihn nur begrenzt: einmal veröffentlicht, lässt es sich offline durchprobieren.
-*.keystore
-*.jks
+# ---------------------------------------------------------------------------
+# Geheimnisse - dürfen niemals ins Repository
+# ---------------------------------------------------------------------------
+# Wer den Signaturschlüssel besitzt, kann Apps bauen, die Android als Update
+# dieser App akzeptiert. Das Passwort schützt ihn nur begrenzt: einmal
+# veröffentlicht, lässt es sich offline in Ruhe durchprobieren. Die Muster
+# stehen bewusst mit Stern vorn und hinten, damit auch umbenannte Kopien wie
+# "android.keystore.backup" oder "alt-android.jks" erfasst werden.
+*keystore*
+*.jks*
 *.p12
-keystore.properties
+*.pfx
+*.pem
+*.key
+signing.properties
 
-# Baubare Ergebnisse - gehören nicht ins Repository, entstehen bei jedem Build neu
+# Sicherungskopien beliebiger Dateien - können Schlüssel oder Passwörter
+# enthalten, ohne dass man es der Endung ansieht.
+*.bak
+*.old
+*~
+
+# Maschinenspezifische Pfade, u.a. der lokale Android-SDK-Ort
+local.properties
+
+# ---------------------------------------------------------------------------
+# Build-Ergebnisse - entstehen bei jedem Build neu
+# ---------------------------------------------------------------------------
 *.apk
 *.aab
+*.apks
+*.idsig
 /build/
 /app/build/
 
-# Arbeitsverzeichnis von Gradle und maschinenspezifische Pfade
+# ---------------------------------------------------------------------------
+# Werkzeug- und Editorkrempel
+# ---------------------------------------------------------------------------
 /.gradle/
-local.properties
 /captures/
 .externalNativeBuild/
 .cxx/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Bewusst NICHT ignoriert
+# ---------------------------------------------------------------------------
+# twa-manifest.json  - Projektkonfiguration, enthält keine Passwörter
+# assetlinks.json    - der Fingerprint darin ist öffentlich, er steht ohnehin
+#                      auf der Website und in jeder installierten App
