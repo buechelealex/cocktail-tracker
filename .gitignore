@@ -1,1 +1,2 @@
-apk-build/
+# Der Ordner apk-build/ hat eine eigene .gitignore: Quelldateien werden
+# versioniert, Signaturschluessel, Build-Ergebnisse und Gradle-Cache nicht.

@@ -330,7 +330,7 @@ bubblewrap init --manifest https://projects.abuechele.de/cocktail-tracker/manife
 bubblewrap build
 ```
 
-`init` fragt Paketname (`com.buechelealex.barcheck`, nach der ersten
+`init` fragt Paketname (`com.abuechele.barcheck`, nach der ersten
 Veröffentlichung unveränderlich), Anzeigename und Farben ab und legt den
 **Signaturschlüssel** an. Schlüsseldatei und Passwort außerhalb des Repositorys
 sichern – ohne sie sind später keine Updates möglich.

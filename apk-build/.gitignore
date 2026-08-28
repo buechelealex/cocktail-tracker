@@ -1,0 +1,20 @@
+# Signaturschlüssel - darf niemals ins Repository. Wer ihn hat, kann Apps
+# signieren, die Android als Update dieser App akzeptiert. Das Passwort schützt
+# ihn nur begrenzt: einmal veröffentlicht, lässt es sich offline durchprobieren.
+*.keystore
+*.jks
+*.p12
+keystore.properties
+
+# Baubare Ergebnisse - gehören nicht ins Repository, entstehen bei jedem Build neu
+*.apk
+*.aab
+/build/
+/app/build/
+
+# Arbeitsverzeichnis von Gradle und maschinenspezifische Pfade
+/.gradle/
+local.properties
+/captures/
+.externalNativeBuild/
+.cxx/
