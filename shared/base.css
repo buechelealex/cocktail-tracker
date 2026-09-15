@@ -16,6 +16,22 @@
 
 * { box-sizing: border-box; }
 
+/* Android/Chrome blendet beim Antippen von Buttons und Links kurz eine blaue
+   Flaeche ein. Die Eigenschaft vererbt sich, html allein wuerde reichen - die
+   Aufzaehlung steht dabei, weil einzelne Browser eigene Vorgaben fuer
+   Bedienelemente mitbringen. */
+html,
+button,
+a,
+label,
+input,
+select,
+textarea,
+summary,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
