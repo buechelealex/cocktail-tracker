@@ -1,6 +1,5 @@
 // Service Worker: legt alle Dateien der App im Cache ab, damit sie ohne Netz
-// startet. Notwendig fuer die Installation als PWA und fuer die Android-App
-// (Trusted Web Activity), die sonst ohne Verbindung eine Fehlerseite zeigt.
+// startet. Notwendig fuer die Installation als PWA.
 //
 // WICHTIG beim Aendern von CSS oder JavaScript: VERSION hier genauso hochzaehlen
 // wie die ?v=-Marken in den drei HTML-Dateien. Der Cache haengt am Namen, ein

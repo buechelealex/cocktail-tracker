@@ -65,8 +65,7 @@ dass sämtliche Daten nur lokal im Browser liegen.
   (1080×1920) für Instagram & Co. (auf der Statistik-Seite), bewusst knapp
   gehalten: Gesamtzahl, Top 3 und die häufigste Art.
 - **Installierbar** als App (PWA) und **offline nutzbar** – nach dem ersten
-  Aufruf liegt alles im Browser-Cache. Für Android lässt sich daraus eine
-  Play-Store-App bauen, siehe [Android-App bauen](#android-app-bauen).
+  Aufruf liegt alles im Browser-Cache.
 
 ## Anleitung
 
@@ -302,7 +301,11 @@ DevTools unter *Application → Service Workers* „Update on reload“ anhaken 
 - **Handy/Desktop (PWA):** Seite im Browser öffnen und „Zum Startbildschirm
   hinzufügen“ bzw. „Installieren“ wählen. Die App startet dann im Vollbild-Modus
   und funktioniert offline.
-- **Android (Play Store):** siehe [Android-App bauen](#android-app-bauen).
+
+Eine eigene Android-App (Trusted Web Activity) gibt es bewusst nicht mehr. Sie
+hätte über `/.well-known/assetlinks.json` die ganze Domain
+`projects.abuechele.de` beansprucht und damit andere Apps auf derselben Domain
+bei der Installation gestört. `assetlinks.json` ist deshalb leer (`[]`).
 
 Dafür nötig sind [manifest.json](manifest.json) (Name, Farben, Symbole,
 Startadresse), der Service Worker [sw.js](sw.js) und die Anmeldung des Workers
@@ -310,81 +313,9 @@ in [shared/pwa.js](shared/pwa.js). Alle drei Seiten binden das Manifest über
 `<link rel="manifest">` ein – ohne das gilt die Seite nicht als installierbar.
 
 Zwei Symbole liegen bei, beide aus [logo-512x512.jpeg](logo-512x512.jpeg)
-erzeugt und als 32-Bit-PNG gespeichert (das Store-Symbol in der Play Console
-muss eines sein): [icon-512.png](icon-512.png) wird unverändert angezeigt,
+erzeugt und als 32-Bit-PNG gespeichert: [icon-512.png](icon-512.png) wird unverändert angezeigt,
 [icon-maskable-512.png](icon-maskable-512.png) hat das Glas auf 80 % verkleinert,
 damit runde Launcher-Masken nichts abschneiden (`purpose: "maskable"`).
-
-## Android-App bauen
-
-Die Android-App ist eine **Trusted Web Activity** (TWA): ein dünner Rahmen um
-die veröffentlichte Seite, ohne Adressleiste. Der frühere Ordner `apk-build/`
-mit dem Bubblewrap-Projekt und dem Signaturschlüssel existiert nicht mehr und
-war nie Teil des Repositorys – das Projekt wird neu erzeugt.
-
-### 1. Projekt erzeugen
-
-```
-npm install -g @bubblewrap/cli
-bubblewrap init --manifest https://projects.abuechele.de/cocktail-tracker/manifest.json
-bubblewrap build
-```
-
-`init` fragt Paketname (`com.abuechele.barcheck`, nach der ersten
-Veröffentlichung unveränderlich), Anzeigename und Farben ab und legt den
-**Signaturschlüssel** an. Schlüsseldatei und Passwort außerhalb des Repositorys
-sichern – ohne sie sind später keine Updates möglich.
-
-`build` erzeugt zwei Dateien:
-
-| Datei | wofür |
-| --- | --- |
-| `app-release-signed.apk` | zum direkten Installieren auf dem eigenen Gerät |
-| `app-release-bundle.aab` | für den Play Store (APKs nimmt er nicht mehr an) |
-
-Wer lieber klickt: den erzeugten Ordner in Android Studio öffnen und
-*Build → Generate Signed App Bundle / APK* wählen. Einen eigenen TWA-Assistenten
-hat Android Studio nicht.
-
-### 2. Digital Asset Links
-
-Ohne diese Datei zeigt die App oben eine Adressleiste. Sie muss auf der
-**Wurzel der Domain** liegen, nicht im Unterordner des Projekts:
-
-```
-https://projects.abuechele.de/.well-known/assetlinks.json
-```
-
-Diese Seite hier liegt unter `/cocktail-tracker/` – die Datei gehört also in
-das Repository, das `projects.abuechele.de` selbst ausliefert.
-[playstore/assetlinks.template.json](playstore/assetlinks.template.json) enthält
-die fertige Struktur; einzutragen ist nur der SHA-256-Fingerabdruck.
-
-Welcher Fingerabdruck: Bei aktiviertem Play App Signing (Standard) signiert
-Google die ausgelieferte App mit einem **anderen** Schlüssel als dem eigenen
-Upload-Schlüssel. Es zählt der Wert aus der Play Console unter
-*Test und Veröffentlichung → App-Integrität → App-Signaturzertifikat*, nicht der
-aus dem lokalen Schlüsselspeicher. Praktisch heißt das: erst hochladen, dann
-Fingerabdruck holen, dann `assetlinks.json` veröffentlichen.
-
-### 3. Play Store
-
-- Entwicklerkonto: 25 USD einmalig, dazu Identitätsprüfung und – für die
-  Auslieferung in der EU – die Händlerangaben nach DSA.
-- Privatpersonen-Konten, die nach November 2023 angelegt wurden, müssen vor der
-  Produktionsfreigabe einen geschlossenen Test mit mindestens 12 Testern über
-  14 zusammenhängende Tage laufen lassen.
-- Für den Store-Eintrag nötig: Symbol 512 × 512, Feature-Grafik 1024 × 500,
-  mindestens zwei Telefon-Screenshots, Kurz- und Langbeschreibung,
-  **Datenschutzerklärung als URL** (Pflichtfeld, ein Impressum genügt nicht),
-  Data-Safety-Formular und die IARC-Inhaltseinstufung.
-- Bei der Inhaltseinstufung den Alkoholbezug angeben und die Zielgruppe auf 18+
-  setzen.
-- Reine Website-Verpackungen können an der Richtlinie zur Mindestfunktionalität
-  scheitern. Die TWA mit Offline-Betrieb und Installierbarkeit erfüllt sie.
-
-Anforderungen wie das `targetSdk`-Mindestlevel zieht Google jedes Jahr Ende
-August nach; maßgeblich ist, was die Play Console beim Hochladen verlangt.
 
 ## Technisches in Kürze
 
@@ -413,8 +344,6 @@ sw.js                    Service Worker (Offline-Cache)
 logo-512x512.jpeg        Ursprungsgrafik des App-Symbols
 icon-512.png             App-Symbol (32-bit PNG)
 icon-maskable-512.png    App-Symbol mit Rand für runde Launcher-Masken
-playstore/
-  assetlinks.template.json  Vorlage für die Digital Asset Links
 shared/
   base.css          Farben, Layout, Karten, Navigation, Dialoge, Fußzeile
   data.js           Cocktail-Liste, Speicherung, Listen, Kategorien
