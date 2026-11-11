@@ -22,6 +22,9 @@ const saveAddBtn = document.getElementById("saveAddBtn");
 const autofillHint = document.getElementById("autofillHint");
 const suggestionsList = document.getElementById("suggestionsList");
 const addForm = document.getElementById("addForm");
+const filterInput = document.getElementById("filterInput");
+
+let filterText = ""; // Suchtext in Kleinbuchstaben
 
 function setStatus(text, fade) {
   statusEl.style.opacity = "1";
@@ -229,6 +232,7 @@ function computeGroups() {
   const rated = [];
   const unrated = [];
   Object.keys(allRecipes).forEach(name => {
+    if (filterText && !name.toLowerCase().includes(filterText)) return;
     const r = ratings[slug(name)] || 0;
     const isCustom = Object.prototype.hasOwnProperty.call(customCocktails, name);
     if (r > 0) rated.push({ name, r, isCustom });
@@ -244,17 +248,26 @@ function computeGroups() {
 function buildEmptyHint() {
   const hint = document.createElement("div");
   hint.className = "empty-hint";
-  hint.textContent = "Noch nichts bewertet.";
+  hint.textContent = filterText ? "Kein Treffer." : "Noch nichts bewertet.";
   return hint;
 }
 
-// Vollständiger Neuaufbau: beim Laden sowie beim Hinzufügen/Löschen.
+filterInput.addEventListener("input", () => {
+  filterText = filterInput.value.trim().toLowerCase();
+  // Während der Suche zeigen auch eingeklappte Abschnitte ihre Treffer.
+  document.body.classList.toggle("searching", filterText !== "");
+  renderList();
+});
+
+// Vollständiger Neuaufbau: beim Laden, beim Hinzufügen/Löschen und beim Suchen.
 function renderList() {
   ratedListEl.innerHTML = "";
   unratedListEl.innerHTML = "";
   cardEls.clear();
 
   const { rated, unrated } = computeGroups();
+  setSectionCount("ratedCount", rated.length);
+  setSectionCount("unratedCount", unrated.length);
 
   if (rated.length === 0) {
     ratedListEl.appendChild(buildEmptyHint());
@@ -265,7 +278,7 @@ function renderList() {
   unrated.forEach((item, idx) => unratedListEl.appendChild(buildCard(item.name, idx, item.isCustom)));
 
   // Leere Liste: erklaeren, wie Cocktails hineinkommen.
-  if (rated.length === 0 && unrated.length === 0 && getActiveList()) {
+  if (rated.length === 0 && unrated.length === 0 && getActiveList() && !filterText) {
     const hint = document.createElement("div");
     hint.className = "empty-hint";
     hint.textContent = "In dieser Liste ist noch nichts. Tippe oben auf ✎, um Cocktails auszuwählen.";
@@ -292,6 +305,8 @@ function refreshCard(card, name) {
 // Zutaten, Scrollposition und Event-Listener unverändert bleiben.
 function sortListsInPlace() {
   const { rated, unrated } = computeGroups();
+  setSectionCount("ratedCount", rated.length);
+  setSectionCount("unratedCount", unrated.length);
   const hint = ratedListEl.querySelector(".empty-hint");
   if (rated.length > 0 && hint) hint.remove();
 
@@ -733,5 +748,5 @@ saveAddBtn.addEventListener("click", async () => {
   // Aenderungen aus einem anderen offenen Tab live uebernehmen.
   watchStorage(() => { renderListBar(); renderList(); });
   renderList();
-  setStatus("Bereit", true);
+  setStatus("", false);
 })();

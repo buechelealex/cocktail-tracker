@@ -71,10 +71,12 @@ dass sämtliche Daten nur lokal im Browser liegen.
 
 ### Einen Cocktail bewerten
 
-1. Cocktail in der Liste suchen.
+1. Cocktail in der Liste suchen – das Suchfeld bleibt beim Scrollen oben
+   stehen. Die Abschnitte „Bewertet“ und „Unbewertet“ lassen sich über ihren
+   Titel ein- und ausklappen; die Zahl daneben zeigt, wie viele drin sind.
 2. Rechts auf den gewünschten Stern tippen – z. B. der vierte Stern für 4 ★.
 3. Die Karte gleitet in den Bereich „⭐ Bewertet“ und wird gespeichert
-   (kurze Statusmeldung „Gespeichert ✓“ oben). Die übrigen Cocktails rücken
+   (kurze Statusmeldung „Gespeichert ✓“ unten links). Die übrigen Cocktails rücken
    ruhig nach, ohne dass die Seite neu aufgebaut wird.
 
 **Bewertung entfernen:** entweder noch einmal auf den *aktuell höchsten
@@ -258,6 +260,7 @@ Alles wird lokal im Browser gespeichert, unter diesen Schlüsseln:
 | `cocktail-counts` | Trink-Protokoll: ein Eintrag `{id, name, ts}` pro getrunkenem Cocktail |
 | `cocktail-lists` | Eigene Listen: je Liste `{id, name, emoji, items, ts}` |
 | `cocktail-active-list` | ID der gerade gewählten Liste (`null` = „Alle“) |
+| `barcheck-collapsed` | Eingeklappte Abschnitte als Liste von Element-IDs, z. B. `["unratedList"]` (nur Ansicht, nur `localStorage`) |
 
 Geschrieben wird immer in `localStorage` **und** – falls vorhanden – in
 `window.storage`; beim Laden werden beide Quellen zusammengeführt. Dadurch
@@ -324,6 +327,12 @@ Die Farben der Website (Dunkelblau, Mint, Orange für die Sterne) stammen aus
 dem Symbol.
 
 ## Technisches in Kürze
+
+- **Darstellung:** Kopfleiste mit den drei Reitern und das Suchfeld bleiben
+  beim Scrollen stehen. Ab 900 px Breite stehen die Cocktails zweispaltig.
+  Stellt das Gerät auf dunkles Design, schaltet die Seite mit um
+  (`prefers-color-scheme`); alle Farben stehen als Variablen oben in
+  [shared/base.css](shared/base.css).
 
 - **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
   hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=7`), und

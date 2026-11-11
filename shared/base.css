@@ -6,17 +6,43 @@
    und Bedienelemente, Mint fuer Hervorhebungen, Orange nur fuer die Sterne. */
 
 :root {
+  color-scheme: light dark;
   --bg: #ffffff;
   --ink: #14213a;
   --muted: #667085;
   --line: #e4e7ec;
+  --line-strong: #c9ced8;
   --fill: #f2f4f7;
+  --bar: #14213a;
+  --btn: #14213a;
+  --btn-text: #ffffff;
+  --btn-press: #0c1526;
   --mint: #8fd0c6;
   --mint-soft: #e9f5f3;
   --star-filled: #f39a2b;
   --star-empty: #d3d8e0;
   --danger: #b3261e;
   --page: 560px;
+  --bar-h: 48px;
+}
+
+/* Dunkles Design, wenn das Geraet es vorgibt - abends an der Bar angenehmer.
+   Die Kopfleiste bleibt dunkelblau, Buttons werden mint mit dunkler Schrift. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1626;
+    --ink: #e8ecf2;
+    --muted: #98a3b6;
+    --line: #232f48;
+    --line-strong: #3a4762;
+    --fill: #18233a;
+    --btn: #8fd0c6;
+    --btn-text: #0e1626;
+    --btn-press: #79bdb2;
+    --mint-soft: #1a3140;
+    --star-empty: #3a4762;
+    --danger: #f08a80;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -44,7 +70,7 @@ body {
   line-height: 1.4;
   background: var(--bg);
   color: var(--ink);
-  padding-bottom: 96px;
+  padding-bottom: 88px;
 }
 
 button { color: inherit; }
@@ -54,18 +80,30 @@ button { color: inherit; }
   outline-offset: 2px;
 }
 
-/* --- Kopfleiste mit Symbol und Namen --- */
+/* --- Kopfleiste: Symbol, Name und die drei Reiter in einer Zeile. Sie
+   bleibt beim Scrollen oben stehen. --- */
 header {
-  background: var(--ink);
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  background: var(--bar);
+}
+
+.top-inner {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  max-width: var(--page);
+  height: var(--bar-h);
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  max-width: var(--page);
-  margin: 0 auto;
-  padding: 10px 16px;
+  gap: 6px;
+  margin-right: auto;
   color: #fff;
   text-decoration: none;
 }
@@ -79,42 +117,58 @@ header {
 
 .brand h1 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-.brand:focus-visible { outline-color: #fff; outline-offset: -4px; }
-
-/* --- Reiter: Bewerten, Zaehler, Statistik --- */
-.page-nav {
-  display: flex;
-  justify-content: center;
-  border-bottom: 1px solid var(--line);
-  padding: 0 16px;
-}
+.page-nav { display: flex; }
 
 .page-nav a {
-  flex: 0 1 176px;
-  text-align: center;
-  padding: 13px 4px 12px;
-  color: var(--muted);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
   text-decoration: none;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .page-nav a.active {
-  color: var(--ink);
+  color: #fff;
   font-weight: 600;
-  border-bottom-color: var(--ink);
+  border-bottom-color: var(--mint);
 }
 
-.page-hint,
+.brand:focus-visible,
+.page-nav a:focus-visible {
+  outline-color: #fff;
+  outline-offset: -4px;
+}
+
+/* Auf schmalen Handys reicht der Platz nicht fuer den Namen neben den
+   Reitern - das Symbol steht dann allein, der Name bleibt fuer Screenreader. */
+@media (max-width: 440px) {
+  .brand h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .page-nav { flex: 1; }
+  .page-nav a {
+    flex: 1;
+    justify-content: center;
+    padding: 0 4px;
+  }
+}
+
 .list-bar,
-.status,
+.search-row,
 .container,
 .summary,
 .footer {
@@ -125,44 +179,96 @@ header {
   padding-right: 16px;
 }
 
-.page-hint {
-  margin-top: 16px;
-  margin-bottom: 14px;
-  color: var(--muted);
-  font-size: 0.875rem;
+/* Die Suche bleibt unter der Kopfleiste stehen, damit man zum Suchen nicht
+   erst wieder nach oben scrollen muss. */
+.search-row {
+  position: sticky;
+  top: var(--bar-h);
+  z-index: 30;
+  background: var(--bg);
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
+.filter-input { width: 100%; }
+
+/* Speicher-Meldungen erscheinen kurz unten links und brauchen so keine
+   eigene Zeile im Seitenfluss. */
 .status {
+  position: fixed;
+  left: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  max-width: calc(100% - 32px);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--bg);
   font-size: 0.8rem;
-  color: var(--muted);
-  min-height: 18px;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  pointer-events: none;
   transition: opacity 0.3s;
 }
 
-/* Abschnittstitel wie auf einer Getraenkekarte: Text, darunter ein Strich. */
+.status:empty { display: none; }
+
+/* Abschnittstitel wie auf einer Getraenkekarte: Text, darunter ein Strich.
+   Mit Button darin laesst sich der Abschnitt ein- und ausklappen. */
 .section-title {
   font-size: 1rem;
   font-weight: 650;
-  margin: 32px 0 0;
-  padding-bottom: 8px;
+  margin: 22px 0 0;
+  padding-bottom: 6px;
   border-bottom: 1.5px solid var(--ink);
 }
 
-.section-title:first-child {
-  margin-top: 14px;
+.container > .section-title:first-child { margin-top: 12px; }
+
+.section-toggle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
+
+.section-count {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.section-toggle::after {
+  content: "›";
+  margin-left: auto;
+  padding: 0 4px;
+  color: var(--muted);
+  font-weight: 400;
+  transform: rotate(90deg);
+  transition: transform 0.15s;
+}
+
+.section-toggle[aria-expanded="false"]::after { transform: none; }
 
 .list {
   display: flex;
   flex-direction: column;
 }
 
+/* Eingeklappte Abschnitte - ausser waehrend einer Suche, damit Treffer
+   nicht in einem zugeklappten Abschnitt verschwinden. */
+body:not(.searching) .list[hidden] { display: none; }
+
 /* Eine Zeile je Cocktail, getrennt durch feine Linien. */
 .cocktail-card {
   background: var(--bg);
-  padding: 13px 0;
+  padding: 9px 0;
   border-bottom: 1px solid var(--line);
   opacity: 0;
   animation: fadeIn 0.2s ease forwards;
@@ -185,11 +291,11 @@ header {
 }
 
 /* Die gerade bewertete Zeile wandert sichtbar über die anderen hinweg. Der
-   weisse Ring gibt ihr dabei seitlich etwas Rand. */
+   Ring in Seitenfarbe gibt ihr dabei seitlich etwas Rand. */
 .cocktail-card.flip-lead {
   z-index: 5;
   border-bottom-color: transparent;
-  box-shadow: 0 0 0 10px var(--bg), 0 6px 20px 8px rgba(20, 33, 58, 0.16);
+  box-shadow: 0 0 0 10px var(--bg), 0 6px 20px 8px rgba(0, 0, 0, 0.18);
 }
 
 .cocktail-row {
@@ -231,7 +337,7 @@ header {
   font-size: 0.85rem;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--bg);
   color: var(--ink);
   cursor: pointer;
@@ -246,7 +352,21 @@ header {
 .empty-hint {
   color: var(--muted);
   font-size: 0.9rem;
-  padding: 14px 0;
+  padding: 12px 0;
+}
+
+/* Auf breiten Bildschirmen stehen die Cocktails zweispaltig - halb so viel
+   Scrollen. Die Statistik bleibt schmal (body.narrow). */
+@media (min-width: 900px) {
+  :root { --page: 1000px; }
+  body.narrow { --page: 560px; }
+  body:not(.narrow) .list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+    align-items: start;
+  }
+  .list .empty-hint { grid-column: 1 / -1; }
 }
 
 /* "Alles zuruecksetzen" ist selten gebraucht und steht deshalb nur als
@@ -255,7 +375,7 @@ header {
   display: block;
   max-width: var(--page);
   width: 100%;
-  margin: 28px auto 0;
+  margin: 24px auto 0;
   padding: 4px 16px;
   background: none;
   border: none;
@@ -273,7 +393,7 @@ header {
 .clear-btn:active { color: var(--ink); }
 
 .footer {
-  margin-top: 40px;
+  margin-top: 32px;
   font-size: 0.8rem;
   color: var(--muted);
 }
@@ -308,17 +428,17 @@ header {
   padding: 0 18px;
   border: none;
   border-radius: 8px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--btn);
+  color: var(--btn-text);
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(20, 33, 58, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   z-index: 40;
 }
 
-.fab:active { background: #0c1526; }
+.fab:active { background: var(--btn-press); }
 
 .fab[hidden] { display: none; }
 
@@ -332,7 +452,7 @@ header {
   justify-content: center;
   padding: 16px;
   overflow-y: auto;
-  background: rgba(20, 33, 58, 0.5);
+  background: rgba(8, 14, 26, 0.6);
   opacity: 0;
   visibility: hidden;
   /* visibility ohne Verzoegerung einschalten (sonst kann das Namensfeld
@@ -355,9 +475,10 @@ body.modal-open { overflow: hidden; }
   width: 100%;
   max-width: 480px;
   background: var(--bg);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 18px;
-  box-shadow: 0 10px 30px rgba(20, 33, 58, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -399,9 +520,9 @@ body.modal-open { overflow: hidden; }
 .filter-input {
   font-family: inherit;
   font-size: 1rem;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 6px;
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   background: var(--bg);
   color: var(--ink);
 }
@@ -429,16 +550,16 @@ body.modal-open { overflow: hidden; }
 }
 
 .save-cocktail-btn {
-  border: 1px solid var(--ink);
-  background: var(--ink);
-  color: #fff;
+  border: 1px solid var(--btn);
+  background: var(--btn);
+  color: var(--btn-text);
   font-weight: 600;
 }
 
-.save-cocktail-btn:active { background: #0c1526; }
+.save-cocktail-btn:active { background: var(--btn-press); }
 
 .cancel-cocktail-btn {
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   background: var(--bg);
   color: var(--ink);
 }
@@ -461,15 +582,11 @@ body.modal-open { overflow: hidden; }
 
 .form-hint.show { display: block; }
 
-.filter-input {
-  width: 100%;
-  margin: 8px 0 4px;
-}
-
 /* --- Eigene Listen (Bierzelt, Exotische Drinks …) --- */
 .list-bar {
   display: flex;
   gap: 6px;
+  margin-top: 10px;
   padding-top: 2px;
   padding-bottom: 2px;
   overflow-x: auto;
@@ -483,15 +600,15 @@ body.modal-open { overflow: hidden; }
   display: inline-flex;
   align-items: stretch;
   flex-shrink: 0;
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   border-radius: 6px;
   background: var(--bg);
   overflow: hidden;
 }
 
 .list-chip-wrap.active {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--btn);
+  border-color: var(--btn);
 }
 
 .list-chip {
@@ -505,7 +622,7 @@ body.modal-open { overflow: hidden; }
   cursor: pointer;
 }
 
-.list-chip-wrap.active .list-chip { color: #fff; }
+.list-chip-wrap.active .list-chip { color: var(--btn-text); }
 
 .chip-count {
   display: inline-block;
@@ -517,12 +634,11 @@ body.modal-open { overflow: hidden; }
 
 .chip-edit {
   border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.25);
   background: none;
-  color: #fff;
+  color: var(--btn-text);
   font-size: 0.9rem;
   line-height: 1;
-  padding: 0 10px;
+  padding: 0 10px 0 2px;
   cursor: pointer;
 }
 
@@ -575,8 +691,6 @@ body.modal-open { overflow: hidden; }
   font-size: 0.8rem;
 }
 
-.list-picker-filter { margin: 0; }
-
 .list-picker {
   max-height: 38vh;
   overflow-y: auto;
@@ -610,7 +724,7 @@ body.modal-open { overflow: hidden; }
   border: none;
   background: none;
   border-radius: 0;
-  accent-color: var(--ink);
+  accent-color: var(--btn);
 }
 
 .pick-text {

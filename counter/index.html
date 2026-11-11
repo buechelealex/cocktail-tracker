@@ -9,37 +9,40 @@
 <link rel="apple-touch-icon" href="../icon-512.png?v=8">
 <link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#14213a">
-<link rel="stylesheet" href="../shared/base.css?v=10">
-<link rel="stylesheet" href="style.css?v=10">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../shared/base.css?v=11">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
 <header>
-  <a class="brand" href="../index.html">
-    <img src="../icon.svg?v=8" alt="" width="32" height="32">
-    <h1>BarCheck</h1>
-  </a>
+  <div class="top-inner">
+    <a class="brand" href="../index.html">
+      <img src="../icon.svg?v=8" alt="" width="32" height="32">
+      <h1>BarCheck</h1>
+    </a>
+    <nav class="page-nav" aria-label="Seiten">
+      <a href="../index.html">Bewerten</a>
+      <a href="index.html" class="active" aria-current="page">Zähler</a>
+      <a href="../stats/index.html">Statistik</a>
+    </nav>
+  </div>
 </header>
 
-<nav class="page-nav" aria-label="Seiten">
-  <a href="../index.html">Bewerten</a>
-  <a href="index.html" class="active" aria-current="page">Zähler</a>
-  <a href="../stats/index.html">Statistik</a>
-</nav>
-
-<p class="page-hint">Mit + zählst du einen getrunkenen Cocktail.</p>
-
 <div class="list-bar" id="listBar" aria-label="Eigene Listen"></div>
+
+<div class="search-row">
+  <input type="search" class="filter-input" id="filterInput" placeholder="Cocktail suchen…" aria-label="Cocktail suchen" autocomplete="off">
+</div>
 
 <div class="status" id="status">Lade Zählerstände…</div>
 
 <div class="container">
 
-  <input type="search" class="filter-input" id="filterInput" placeholder="Cocktail suchen…" autocomplete="off">
-
+  <h2 class="section-title"><button class="section-toggle" type="button" aria-expanded="true" aria-controls="drunkList">Getrunken <span class="section-count" id="drunkCount"></span></button></h2>
   <div class="list" id="drunkList"></div>
 
-  <h2 class="section-title" id="notYetTitle">Noch nicht getrunken</h2>
+  <h2 class="section-title" id="notYetTitle"><button class="section-toggle" type="button" aria-expanded="true" aria-controls="notDrunkList">Noch nicht getrunken <span class="section-count" id="notDrunkCount"></span></button></h2>
   <div class="list" id="notDrunkList"></div>
 
 </div>
@@ -57,9 +60,9 @@
   </p>
 </footer>
 
-<script src="../shared/data.js?v=10"></script>
-<script src="../shared/lists.js?v=10"></script>
-<script src="script.js?v=10"></script>
-<script src="../shared/pwa.js?v=10"></script>
+<script src="../shared/data.js?v=11"></script>
+<script src="../shared/lists.js?v=11"></script>
+<script src="script.js?v=11"></script>
+<script src="../shared/pwa.js?v=11"></script>
 </body>
 </html>

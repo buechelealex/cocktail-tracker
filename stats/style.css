@@ -5,10 +5,10 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .stat-card {
@@ -47,15 +47,18 @@
 .stat-btn:active { background: var(--fill); }
 
 .stat-btn.active {
-  background: var(--ink);
-  color: #fff;
+  background: var(--btn);
+  color: var(--btn-text);
 }
 
-.stat-btn.active .stat-label { color: rgba(255, 255, 255, 0.75); }
+.stat-btn.active .stat-label {
+  color: inherit;
+  opacity: 0.75;
+}
 
 .stat-btn:focus-visible { outline-offset: -3px; }
 
-.stat-btn.active:focus-visible { outline-color: #fff; }
+.stat-btn.active:focus-visible { outline-color: var(--btn-text); }
 
 /* "Sorten" ist kein Umschalter, sondern zeigt nur an. */
 .stat-passive { background: var(--fill); }
@@ -158,14 +161,11 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Auf schmalen Geraeten Ring oben, Legende darunter. */
+/* Ring und Legende bleiben auch auf dem Handy nebeneinander - das spart
+   eine Bildschirmhoehe. Der Ring wird dafuer etwas kleiner. */
 @media (max-width: 400px) {
-  .chart-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .chart-legend { width: 100%; }
+  .chart-card { gap: 14px; }
+  .donut { width: 104px; }
 }
 
 /* --- Rangliste --- */
@@ -267,7 +267,7 @@
   align-self: flex-start;
   margin-top: 12px;
   padding: 10px 14px;
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   border-radius: 6px;
   background: var(--bg);
   color: var(--ink);
@@ -355,9 +355,10 @@
   width: 100%;
   max-width: 420px;
   background: var(--bg);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 18px;
-  box-shadow: 0 10px 30px rgba(20, 33, 58, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -365,7 +366,7 @@
 
 .segmented {
   display: flex;
-  border: 1px solid #c9ced8;
+  border: 1px solid var(--line-strong);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -385,8 +386,8 @@
 .seg-btn:first-child { border-left: none; }
 
 .seg-btn.active {
-  background: var(--ink);
-  color: #fff;
+  background: var(--btn);
+  color: var(--btn-text);
 }
 
 .share-preview {
@@ -402,4 +403,20 @@
   font-size: 0.8rem;
   color: var(--muted);
   min-height: 18px;
+}
+
+/* Rangliste kompakt: Name und Art in einer Zeile, der Balken darunter. */
+.board-row { padding: 8px 0; }
+
+.board-info {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+  row-gap: 0;
+}
+
+.board-bar {
+  flex-basis: 100%;
+  margin-top: 5px;
 }

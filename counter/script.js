@@ -157,6 +157,8 @@ function renderLists() {
   cardEls.clear();
 
   const { drunk, notDrunk } = computeGroups();
+  setSectionCount("drunkCount", drunk.length);
+  setSectionCount("notDrunkCount", notDrunk.length);
 
   if (drunk.length === 0) {
     drunkListEl.appendChild(buildEmptyHint());
@@ -184,6 +186,8 @@ function refreshCard(card, count, animate) {
 // Elemente selbst bleiben erhalten (kein innerHTML), damit nichts flackert.
 function sortListsInPlace() {
   const { drunk, notDrunk } = computeGroups();
+  setSectionCount("drunkCount", drunk.length);
+  setSectionCount("notDrunkCount", notDrunk.length);
   const hint = drunkListEl.querySelector(".empty-hint");
   if (drunk.length > 0 && hint) hint.remove();
 
@@ -281,6 +285,8 @@ function renderAll() {
 
 filterInput.addEventListener("input", () => {
   filterText = filterInput.value.trim().toLowerCase();
+  // Während der Suche zeigen auch eingeklappte Abschnitte ihre Treffer.
+  document.body.classList.toggle("searching", filterText !== "");
   renderLists();
 });
 
@@ -305,5 +311,5 @@ resetBtn.addEventListener("click", async () => {
   // Aenderungen aus einem anderen offenen Tab live uebernehmen.
   watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
-  setStatus("Bereit", true);
+  setStatus("", false);
 })();

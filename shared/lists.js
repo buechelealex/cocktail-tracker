@@ -315,4 +315,49 @@ function initLists(onChange) {
   listBarEl = document.getElementById("listBar");
   buildListDialog();
   renderListBar();
+  initSections();
+}
+
+// --- Einklappbare Abschnitte ---
+// Jeder Abschnittstitel mit einem .section-toggle-Button klappt die Liste ein,
+// auf die sein aria-controls zeigt. Welche Abschnitte zu sind, merkt sich der
+// Browser (nur Ansicht, daher bewusst nur localStorage).
+const COLLAPSED_KEY = "barcheck-collapsed";
+
+function readCollapsed() {
+  try {
+    const ids = JSON.parse(localStorage.getItem(COLLAPSED_KEY));
+    return new Set(Array.isArray(ids) ? ids : []);
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function initSections() {
+  const collapsed = readCollapsed();
+  document.querySelectorAll(".section-toggle").forEach(btn => {
+    const id = btn.getAttribute("aria-controls");
+    const target = document.getElementById(id);
+    if (!target) return;
+    const apply = closed => {
+      btn.setAttribute("aria-expanded", closed ? "false" : "true");
+      target.hidden = closed;
+    };
+    apply(collapsed.has(id));
+    btn.addEventListener("click", () => {
+      const closed = !target.hidden;
+      apply(closed);
+      if (closed) collapsed.add(id);
+      else collapsed.delete(id);
+      try {
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+      } catch (e) { /* nicht verfügbar - dann gilt es nur bis zum Neuladen */ }
+    });
+  });
+}
+
+// Anzahl neben einem Abschnittstitel, z. B. "Unbewertet 27".
+function setSectionCount(id, count) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = count;
 }

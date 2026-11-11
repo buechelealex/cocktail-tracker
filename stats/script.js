@@ -401,5 +401,5 @@ function renderAll() {
   // Wird nebenan im Zähler-Tab gezählt, aktualisiert sich diese Seite mit.
   watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
-  setStatus("Bereit", true);
+  setStatus("", false);
 })();
