@@ -113,7 +113,7 @@ function buildCard(name, idx, isCustom) {
 
   const expandIcon = document.createElement("span");
   expandIcon.className = "expand-icon" + (expandedState[key] ? " open" : "");
-  expandIcon.textContent = "▶";
+  expandIcon.textContent = "›";
 
   const nameEl = document.createElement("span");
   nameEl.className = "cocktail-name";
@@ -526,14 +526,6 @@ function renderSuggestions(entries, headline) {
     const li = document.createElement("li");
     li.className = "suggestion-item";
     li.dataset.index = String(i);
-
-    // Statt eines Fotos aus dem Netz das Emoji der erkannten Art - es steht
-    // ohne Ladezeit bereit und passt zur Anzeige auf den anderen Seiten.
-    const icon = document.createElement("span");
-    icon.className = "suggestion-thumb";
-    icon.textContent = categoryFor(entry.name, entry.ingredients).emoji;
-    icon.setAttribute("aria-hidden", "true");
-    li.appendChild(icon);
 
     const text = document.createElement("span");
     text.className = "suggestion-text";

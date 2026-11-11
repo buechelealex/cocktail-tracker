@@ -2,51 +2,47 @@
    und das Formular zum Hinzufuegen inklusive Vorschlagsliste. */
 
 .expand-icon {
-  font-size: 0.7rem;
+  font-size: 1.1rem;
+  line-height: 1;
   color: var(--muted);
   flex-shrink: 0;
-  transition: transform 0.2s;
+  transition: transform 0.15s;
   display: inline-block;
   width: 12px;
+  text-align: center;
 }
 
 .expand-icon.open { transform: rotate(90deg); }
 
 .stars {
   display: flex;
-  gap: 2px;
   flex-shrink: 0;
 }
 
 .star {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  padding: 0 1px;
   color: var(--star-empty);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s, color 0.15s;
   line-height: 1;
 }
-
-.star:hover { transform: scale(1.15); }
 
 .star.filled { color: var(--star-filled); }
 
 .ingredients-panel {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.25s ease, margin-top 0.25s ease;
+  transition: max-height 0.2s ease;
 }
 
 .ingredients-panel.open {
-  max-height: 320px;
-  margin-top: 10px;
+  max-height: 340px;
 }
 
 .ingredients-inner {
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  font-size: 0.85rem;
-  color: var(--text);
+  padding: 10px 0 4px 18px;
+  font-size: 0.9rem;
 }
 
 .ingredients-list {
@@ -61,7 +57,6 @@
 
 .no-ingredients {
   color: var(--muted);
-  font-style: italic;
 }
 
 .card-actions {
@@ -72,14 +67,15 @@
 }
 
 .summary {
-  text-align: center;
-  margin-top: 18px;
-  font-size: 0.85rem;
+  margin-top: 16px;
+  font-size: 0.875rem;
   color: var(--muted);
 }
 
 .name-input-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .suggestions-list {
@@ -89,12 +85,12 @@
   right: 0;
   z-index: 20;
   margin: 0;
-  padding: 6px;
+  padding: 4px;
   list-style: none;
-  background: #fffefc;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  background: var(--bg);
+  border: 1px solid #c9ced8;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(20, 33, 58, 0.12);
   max-height: 300px;
   overflow-y: auto;
   display: none;
@@ -106,39 +102,20 @@
    daher nicht anklickbar und nicht mit den Pfeiltasten erreichbar. */
 .suggestion-headline {
   padding: 6px 10px 4px;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 0.8rem;
   color: var(--muted);
 }
 
 .suggestion-item {
   padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 9px;
 }
 
 .suggestion-item:active,
 .suggestion-item.active {
-  background: #fbeedd;
-}
-
-/* Seit die Vorschläge offline aus dem Katalog kommen, steht hier das Emoji
-   der erkannten Art statt eines Fotos aus dem Netz. */
-.suggestion-thumb {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
+  background: var(--mint-soft);
 }
 
 .suggestion-text {
@@ -147,13 +124,9 @@
   min-width: 0;
 }
 
-.suggestion-name {
-  font-weight: 500;
-}
-
 /* Zutaten als zweite Zeile: hilft beim Unterscheiden ähnlicher Namen. */
 .suggestion-sub {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
@@ -162,6 +135,6 @@
 
 .suggestion-empty {
   padding: 9px 10px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }

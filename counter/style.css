@@ -1,10 +1,12 @@
-/* Nur fuer die Zaehler-Seite: Karten mit Plus/Minus und Zaehlerstand. */
+/* Nur fuer die Zaehler-Seite: Zeilen mit Plus/Minus und Zaehlerstand. */
 
 .count-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .count-info {
@@ -13,33 +15,32 @@
 }
 
 .count-cat {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .count-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
 .count-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: #fffdfb;
-  color: var(--text);
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #c9ced8;
+  background: var(--bg);
+  color: var(--ink);
   font-family: inherit;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.1s ease, background 0.15s ease;
 }
 
-.count-btn:active { transform: scale(0.92); background: #f0e9e0; }
+.count-btn:active { background: var(--fill); }
 
 .count-btn:disabled {
   opacity: 0.35;
@@ -47,26 +48,27 @@
 }
 
 .count-btn.plus {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #fff;
 }
 
-.count-btn.plus:active { background: var(--accent-dark); }
+.count-btn.plus:active { background: #0c1526; }
 
 .count-value {
-  min-width: 26px;
+  min-width: 30px;
   text-align: center;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 
+/* Kurzes Aufleuchten als Rueckmeldung, dass gezaehlt wurde. */
 .count-value.bump { animation: countBump 0.25s ease; }
 
 @keyframes countBump {
   0% { transform: scale(1); }
-  45% { transform: scale(1.35); color: var(--accent); }
+  45% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
 

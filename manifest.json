@@ -7,19 +7,19 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#faf6f2",
-  "theme_color": "#c9762f",
+  "background_color": "#ffffff",
+  "theme_color": "#14213a",
   "orientation": "portrait",
   "categories": ["food", "lifestyle", "utilities"],
   "icons": [
     {
-      "src": "icon-512.png?v=7",
+      "src": "icon-512.png?v=8",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-maskable-512.png?v=7",
+      "src": "icon-maskable-512.png?v=8",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

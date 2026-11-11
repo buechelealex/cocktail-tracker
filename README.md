@@ -1,4 +1,4 @@
-# 🍹 Cocktail-Bewertungen (BarCheck)
+# Cocktail-Bewertungen (BarCheck)
 
 Eine kleine Web-App zum Bewerten und Zählen von Cocktails, ohne Build-Schritt,
 ohne Server und ohne Benutzerkonto – alle Daten bleiben auf dem eigenen Gerät.
@@ -36,7 +36,7 @@ dass sämtliche Daten nur lokal im Browser liegen.
   dazu Bierzelt-Klassiker wie Radler, Russe oder Fanta-Korn),
   jeweils mit Zutatenliste inklusive Mengenangaben.
 - **Bewerten mit 1–5 Sternen.** Bewertete Cocktails wandern automatisch in den
-  Bereich „⭐ Bewertet“ und werden dort nach Bewertung sortiert (beste zuerst,
+  Bereich „Bewertet“ und werden dort nach Bewertung sortiert (beste zuerst,
   bei Gleichstand alphabetisch). Unbewertete stehen alphabetisch darunter.
   Die bewertete Karte gleitet dabei sichtbar an ihre neue Position – die Liste
   wird nicht neu aufgebaut, aufgeklappte Zutaten und Scrollposition bleiben
@@ -101,8 +101,8 @@ Zutaten hinterlegt.“
    - Vorschlag antippen (oder mit ↑/↓ auswählen und mit Enter bestätigen) →
      Name und Zutaten werden automatisch eingetragen und können noch angepasst
      werden.
-   - Unter jedem Vorschlag stehen die Zutaten, davor das Emoji der erkannten
-     Art – so lassen sich ähnliche Namen unterscheiden.
+   - Unter jedem Vorschlag stehen die Zutaten – so lassen sich ähnliche Namen
+     unterscheiden.
    - Mit Esc oder einem Klick daneben schließt sich die Vorschlagsliste.
    - Ohne passenden Treffer einfach selbst weitertippen.
    - Cocktails, die es in der Liste schon gibt, werden nicht vorgeschlagen.
@@ -191,7 +191,7 @@ Oben auf den Reiter **„📊 Statistik“** wechseln.
    (Anzahl verschiedener Cocktails). Die ersten drei sind zugleich
    **Umschalter für den Zeitraum**: ein Tipp darauf grenzt alles Weitere auf
    diese Zeitspanne ein – Kreisdiagramm, Top-Drinks und Alkoholmenge. Die
-   aktive Kachel ist farbig umrandet, jede behält dabei ihre eigene Zahl.
+   aktive Kachel ist dunkel hinterlegt, jede behält dabei ihre eigene Zahl.
    „Sorten“ ist keine Zeitspanne und daher nicht anklickbar; sie zeigt, wie
    viele verschiedene Getränke im gewählten Zeitraum vorkamen.
 2. **Nach Art** stellt als Kreisdiagramm dar, wie sich die Drinks auf die Basis
@@ -312,10 +312,16 @@ Startadresse), der Service Worker [sw.js](sw.js) und die Anmeldung des Workers
 in [shared/pwa.js](shared/pwa.js). Alle drei Seiten binden das Manifest über
 `<link rel="manifest">` ein – ohne das gilt die Seite nicht als installierbar.
 
-Zwei Symbole liegen bei, beide aus [logo-512x512.jpeg](logo-512x512.jpeg)
-erzeugt und als 32-Bit-PNG gespeichert: [icon-512.png](icon-512.png) wird unverändert angezeigt,
-[icon-maskable-512.png](icon-maskable-512.png) hat das Glas auf 80 % verkleinert,
-damit runde Launcher-Masken nichts abschneiden (`purpose: "maskable"`).
+Das Symbol ist als Vektorgrafik gezeichnet: [icon.svg](icon.svg) dient als
+Favicon und steht in der Kopfleiste. Daraus sind die beiden PNGs für das
+Manifest erzeugt: [icon-512.png](icon-512.png) und
+[icon-maskable-512.png](icon-maskable-512.png) (aus
+[icon-maskable.svg](icon-maskable.svg), Glas auf 78 % verkleinert, damit runde
+Launcher-Masken nichts abschneiden, `purpose: "maskable"`). Nach einer Änderung
+am SVG beide PNGs neu erzeugen, z. B. mit
+`chrome --headless --window-size=512,512 --screenshot=icon-512.png icon.svg`.
+Die Farben der Website (Dunkelblau, Mint, Orange für die Sterne) stammen aus
+dem Symbol.
 
 ## Technisches in Kürze
 
@@ -341,11 +347,13 @@ zuerst geladen:
 index.html               Bewerten – muss im Wurzelverzeichnis liegen
 manifest.json            PWA-Angaben
 sw.js                    Service Worker (Offline-Cache)
-logo-512x512.jpeg        Ursprungsgrafik des App-Symbols
-icon-512.png             App-Symbol (32-bit PNG)
+icon.svg                 App-Symbol als Vektorgrafik (Favicon, Kopfleiste)
+icon-maskable.svg        dasselbe mit Rand, Vorlage für das maskable-PNG
+icon-512.png             App-Symbol für das Manifest
 icon-maskable-512.png    App-Symbol mit Rand für runde Launcher-Masken
+logo-512x512.jpeg        frühere Ursprungsgrafik, nicht mehr eingebunden
 shared/
-  base.css          Farben, Layout, Karten, Navigation, Dialoge, Fußzeile
+  base.css          Farben, Layout, Zeilen, Navigation, Dialoge, Fußzeile
   data.js           Cocktail-Liste, Speicherung, Listen, Kategorien
   lists.js          Listen-Leiste und -Dialog
   pwa.js            meldet den Service Worker an

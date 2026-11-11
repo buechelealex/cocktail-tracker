@@ -1,72 +1,68 @@
-/* Nur fuer die Statistik-Seite: Kacheln, Kreisdiagramm, Leaderboard,
+/* Nur fuer die Statistik-Seite: Kennzahlen, Kreisdiagramm, Rangliste,
    Alkoholmenge und das Teilen-Bild. */
 
-/* --- Kacheln mit den Kennzahlen --- */
+/* --- Kennzahlen: ein Rahmen, vier Felder --- */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  border: 1px solid #c9ced8;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
 }
 
 .stat-card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 12px 6px;
+  background: var(--bg);
+  padding: 10px 4px 9px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border: none;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--ink);
 }
 
-/* Als <span> in den Umschalt-Kacheln brauchen beide ein eigenes display. */
+.stat-card:first-child { border-left: none; }
+
+/* Als <span> in den Umschalt-Feldern brauchen beide ein eigenes display. */
 .stat-value {
   display: block;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--accent-dark);
-  line-height: 1.1;
+  font-size: 1.4rem;
+  font-weight: 650;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
   display: block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-top: 2px;
 }
 
-/* Die drei Zeitraum-Kacheln sind Buttons: Rahmen immer reservieren, damit
-   beim Aktivieren nichts springt. */
+/* Die drei Zeitraum-Felder sind Buttons und schalten um, was darunter steht. */
 .stat-btn {
   font-family: inherit;
-  /* Sichtbarer Rahmen auch im Ruhezustand - so ist erkennbar, dass diese drei
-     Kacheln bedienbar sind und "Sorten" daneben nur anzeigt. */
-  border: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
-.stat-btn:active { transform: scale(0.96); }
+.stat-btn:active { background: var(--fill); }
 
 .stat-btn.active {
-  border-color: var(--accent);
-  background: #fff6ec;
+  background: var(--ink);
+  color: #fff;
 }
 
-.stat-btn.active .stat-value { color: var(--accent); }
+.stat-btn.active .stat-label { color: rgba(255, 255, 255, 0.75); }
 
-.stat-btn.active .stat-label { color: var(--accent-dark); }
+.stat-btn:focus-visible { outline-offset: -3px; }
 
-/* "Sorten" ist kein Umschalter und bekommt denselben Rahmenplatz, damit die
-   vier Kacheln gleich hoch bleiben. */
-.stat-passive { border: 1px solid transparent; }
+.stat-btn.active:focus-visible { outline-color: #fff; }
+
+/* "Sorten" ist kein Umschalter, sondern zeigt nur an. */
+.stat-passive { background: var(--fill); }
 
 .stats-scope {
-  text-align: center;
-  font-size: 0.78rem;
-  color: var(--accent-dark);
-  background: #fbeedd;
-  border-radius: 10px;
-  padding: 5px 10px;
+  font-size: 0.85rem;
+  color: var(--muted);
   margin-top: 8px;
 }
 
@@ -76,20 +72,22 @@
 .chart-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--card);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  gap: 20px;
+  padding: 16px 0 4px;
 }
 
-/* Ohne Daten gibt es keinen Ring - dann nur den Hinweis mittig zeigen. */
-.chart-card.is-empty { display: block; }
+/* Ohne Daten gibt es keinen Ring - dann nur den Hinweis zeigen. */
+.chart-card.is-empty {
+  display: block;
+  padding: 0;
+}
 
 .donut {
   flex-shrink: 0;
-  width: 132px;
+  width: 128px;
 }
+
+.chart-card.is-empty .donut { display: none; }
 
 .donut-svg {
   display: block;
@@ -99,13 +97,13 @@
 
 .donut-track {
   fill: none;
-  stroke: #f1e8dd;
-  stroke-width: 22;
+  stroke: var(--fill);
+  stroke-width: 20;
 }
 
 .donut-seg {
   fill: none;
-  stroke-width: 22;
+  stroke-width: 20;
 }
 
 .donut-value {
@@ -113,7 +111,7 @@
   font-family: inherit;
   font-size: 30px;
   font-weight: 700;
-  fill: var(--accent-dark);
+  fill: var(--ink);
 }
 
 .donut-label {
@@ -128,20 +126,20 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
 .legend-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
 }
 
 .legend-dot {
   width: 10px;
   height: 10px;
-  border-radius: 50%;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 
@@ -155,46 +153,45 @@
 
 .legend-value {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Auf schmalen Geraeten Ring oben, Legende darunter. */
 @media (max-width: 400px) {
   .chart-card {
     flex-direction: column;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 14px;
   }
-  .donut { width: 150px; }
   .chart-legend { width: 100%; }
 }
 
-/* --- Leaderboard --- */
+/* --- Rangliste --- */
 .board {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .board-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--card);
-  border-radius: 14px;
-  padding: 10px 14px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
 }
-
-.board-row.podium { border: 1px solid #f2e2cb; }
 
 .board-rank {
   flex-shrink: 0;
-  width: 26px;
-  text-align: center;
-  font-size: 1.1rem;
+  width: 22px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+
+.board-row.podium .board-rank {
+  color: var(--ink);
+  font-weight: 650;
 }
 
 .board-info {
@@ -202,53 +199,43 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .board-name {
-  font-size: 0.95rem;
-  font-weight: 500;
   overflow-wrap: break-word;
 }
 
 .board-cat {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--muted);
 }
 
 .board-bar {
   display: block;
-  height: 6px;
-  border-radius: 4px;
-  background: #f1e8dd;
-  overflow: hidden;
-  margin-top: 2px;
+  height: 4px;
+  background: var(--fill);
+  margin-top: 4px;
 }
 
 .board-bar-fill {
   display: block;
   height: 100%;
-  border-radius: 4px;
   transition: width 0.3s ease;
 }
 
 .board-count {
   flex-shrink: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--accent-dark);
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 
 /* --- Alkoholmenge --- */
 .alc-card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding-top: 14px;
 }
 
 .alc-figure {
@@ -261,65 +248,61 @@
 .alc-value {
   font-size: 1.9rem;
   font-weight: 700;
-  color: var(--accent-dark);
   line-height: 1.1;
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
 
 .alc-unit {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
 .alc-sub {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--muted);
 }
 
 .alc-btn {
-  margin-top: 10px;
-  padding: 11px 14px;
-  border: none;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid #c9ced8;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--ink);
   font-family: inherit;
   font-size: 0.9rem;
   cursor: pointer;
 }
 
-.alc-btn:active { background: var(--accent-dark); }
+.alc-btn:active { background: var(--fill); }
 
 .alc-btn:disabled {
-  background: #e6ddd2;
   color: var(--muted);
+  opacity: 0.6;
   cursor: default;
 }
 
 .alc-note {
-  margin-top: 8px;
-  font-size: 0.75rem;
+  margin-top: 10px;
+  font-size: 0.8rem;
   color: var(--muted);
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 8px 10px;
 }
 
 .alc-note[hidden] { display: none; }
 
-/* Popup mit den Vergleichen */
+/* Dialog mit den Vergleichen */
 .alc-sheet { max-width: 440px; }
 
 .alc-headline {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--muted);
-  margin-bottom: 2px;
 }
 
 .alc-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   /* Reicht auf üblichen Handys für alle Vergleiche; auf sehr flachen
      Bildschirmen wird gescrollt. */
   max-height: 58vh;
@@ -330,17 +313,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 8px;
-  border-radius: 10px;
-}
-
-.alc-row:nth-child(odd) { background: #fdf8f2; }
-
-.alc-emoji {
-  font-size: 1.35rem;
-  flex-shrink: 0;
-  width: 30px;
-  text-align: center;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
 }
 
 .alc-text {
@@ -351,95 +325,68 @@
 }
 
 .alc-titel {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   overflow-wrap: break-word;
 }
 
 .alc-info {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-top: 1px;
 }
 
 .alc-wert {
   flex-shrink: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--accent-dark);
+  font-weight: 650;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 .alc-disclaimer {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--muted);
   line-height: 1.45;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
   padding-top: 10px;
-  margin-top: 4px;
 }
 
 /* --- Teilen als Story-Bild --- */
-.share-fab {
-  width: auto;
-  height: 52px;
-  border-radius: 26px;
-  padding: 0 20px;
-  font-size: 1rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.share-fab[hidden] { display: none; }
-
 .share-sheet {
   margin: auto;
   width: 100%;
   max-width: 420px;
-  background: var(--card);
-  border-radius: 16px;
+  background: var(--bg);
+  border-radius: 10px;
   padding: 18px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px rgba(20, 33, 58, 0.25);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transform: translateY(12px) scale(0.98);
-  opacity: 0;
-  transition: transform 0.22s ease, opacity 0.22s ease;
-}
-
-.modal-overlay.open .share-sheet {
-  transform: none;
-  opacity: 1;
 }
 
 .segmented {
   display: flex;
-  gap: 4px;
-  padding: 4px;
-  background: #f4ece2;
-  border-radius: 12px;
+  border: 1px solid #c9ced8;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .seg-btn {
   flex: 1;
   padding: 8px 4px;
   border: none;
-  border-radius: 9px;
-  background: none;
+  border-left: 1px solid var(--line);
+  background: var(--bg);
   font-family: inherit;
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 0.9rem;
+  color: var(--ink);
   cursor: pointer;
 }
 
+.seg-btn:first-child { border-left: none; }
+
 .seg-btn.active {
-  background: var(--card);
-  color: var(--text);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--ink);
+  color: #fff;
 }
 
 .share-preview {
@@ -447,13 +394,12 @@
   width: 100%;
   max-height: 58vh;
   object-fit: contain;
-  border-radius: 14px;
-  background: var(--bg);
+  border-radius: 6px;
+  background: var(--fill);
 }
 
 .share-hint {
-  text-align: center;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--muted);
   min-height: 18px;
 }

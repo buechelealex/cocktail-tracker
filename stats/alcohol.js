@@ -123,35 +123,35 @@ function mal(anzahl) {
 // Menge Alkohol (ml).
 const EQUIVALENTS = [
   {
-    emoji: "🚗", titel: "Auto fahren", info: "Kleinwagen mit 7 l/100 km",
+    titel: "Auto fahren", info: "Kleinwagen mit 7 l/100 km",
     wert: ml => strecke(ml * ETHANOL_KJ_PER_ML / 2.24)
   },
   {
-    emoji: "✈️", titel: "Flugzeug fliegen", info: "Mittelstreckenjet, ganze Maschine",
+    titel: "Flugzeug fliegen", info: "Mittelstreckenjet, ganze Maschine",
     wert: ml => strecke(ml * ETHANOL_KJ_PER_ML / 129)
   },
   {
-    emoji: "🔥", titel: "Grill reinigen", info: "50 ml Spiritus je Reinigung",
+    titel: "Grill reinigen", info: "50 ml Spiritus je Reinigung",
     wert: ml => mal(ml / 50)
   },
   {
-    emoji: "🧴", titel: "Hände desinfizieren", info: "3 ml je Anwendung",
+    titel: "Hände desinfizieren", info: "3 ml je Anwendung",
     wert: ml => mal(ml / 3)
   },
   {
-    emoji: "🫕", titel: "Fondue warm halten", info: "Brenner mit 60 ml je Stunde",
+    titel: "Fondue warm halten", info: "Brenner mit 60 ml je Stunde",
     wert: ml => zeit(ml)
   },
   {
-    emoji: "☕", titel: "Wasser kochen", info: "von 20 auf 100 °C",
+    titel: "Wasser kochen", info: "von 20 auf 100 °C",
     wert: ml => num(ml * ETHANOL_KJ_PER_ML / 335) + " Liter"
   },
   {
-    emoji: "🔋", titel: "Handy laden", info: "Akku mit 15 Wh",
+    titel: "Handy laden", info: "Akku mit 15 Wh",
     wert: ml => mal(ml * ETHANOL_KJ_PER_ML / 54)
   },
   {
-    emoji: "💡", titel: "LED-Lampe brennen lassen", info: "10 Watt",
+    titel: "LED-Lampe brennen lassen", info: "10 Watt",
     wert: ml => zeit(ml * ETHANOL_KJ_PER_ML / 0.6)
   }
 ];

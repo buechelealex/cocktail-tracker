@@ -208,7 +208,7 @@ function renderListPicker() {
       const cat = categoryOf(name);
       const catEl = document.createElement("span");
       catEl.className = "pick-cat";
-      catEl.textContent = cat.emoji + " " + cat.label;
+      catEl.textContent = cat.label;
 
       text.appendChild(nameEl);
       text.appendChild(catEl);

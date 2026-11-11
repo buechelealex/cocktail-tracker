@@ -51,7 +51,7 @@ function periodLog() {
 }
 
 // Feste Farbe je Art, damit ein Tortenstück beim Weiterzählen nicht die
-// Farbe wechselt. Reihenfolge und Töne passen zur Palette aus shared/base.css.
+// Farbe wechselt. Gedeckte Töne, die sich auf Weiß gut unterscheiden lassen.
 const KIND_COLORS = {
   vodka: "#c9762f",
   gin: "#7d9a6b",
@@ -215,7 +215,7 @@ function renderLegend(kinds, total) {
 
     const label = document.createElement("span");
     label.className = "legend-label";
-    label.textContent = cat.emoji + " " + cat.label;
+    label.textContent = cat.label;
 
     const value = document.createElement("span");
     value.className = "legend-value";
@@ -245,8 +245,6 @@ function renderChart() {
 
 // --- Leaderboard ---
 
-const MEDALS = ["🥇", "🥈", "🥉"];
-
 function renderBoard() {
   const counts = {};
   periodLog().forEach(e => { counts[e.name] = (counts[e.name] || 0) + 1; });
@@ -268,7 +266,7 @@ function renderBoard() {
 
     const rank = document.createElement("span");
     rank.className = "board-rank";
-    rank.textContent = i < 3 ? MEDALS[i] : (i + 1) + ".";
+    rank.textContent = (i + 1) + ".";
 
     const info = document.createElement("span");
     info.className = "board-info";
@@ -280,7 +278,7 @@ function renderBoard() {
     const cat = categoryOf(item.name);
     const catEl = document.createElement("span");
     catEl.className = "board-cat";
-    catEl.textContent = cat.emoji + " " + cat.label;
+    catEl.textContent = cat.label;
 
     info.appendChild(name);
     info.appendChild(catEl);
@@ -337,10 +335,6 @@ function openAlcModal() {
     const row = document.createElement("div");
     row.className = "alc-row";
 
-    const emoji = document.createElement("span");
-    emoji.className = "alc-emoji";
-    emoji.textContent = eq.emoji;
-
     const text = document.createElement("span");
     text.className = "alc-text";
 
@@ -359,7 +353,6 @@ function openAlcModal() {
     wert.className = "alc-wert";
     wert.textContent = eq.wert(a.ml);
 
-    row.appendChild(emoji);
     row.appendChild(text);
     row.appendChild(wert);
     alcListEl.appendChild(row);

@@ -92,7 +92,7 @@ function buildCard(name, count, idx, isGone) {
   const cat = categoryOf(name);
   const catEl = document.createElement("div");
   catEl.className = "count-cat";
-  catEl.textContent = cat.emoji + " " + cat.label;
+  catEl.textContent = cat.label;
 
   info.appendChild(nameEl);
   info.appendChild(catEl);

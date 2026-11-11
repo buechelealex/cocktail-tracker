@@ -226,22 +226,22 @@ function startOfToday() {
 // Die "Art" wird aus den Zutaten abgeleitet (erste passende Regel gewinnt),
 // damit sichtbar wird, wie viele Gin-, Rum-, Vodka-Drinks usw. es waren.
 const CATEGORY_RULES = [
-  { id: "vodka",     label: "Vodka",             emoji: "🥔", pattern: /vodka|wodka/i },
-  { id: "gin",       label: "Gin",               emoji: "🌿", pattern: /\bgin\b/i },
-  { id: "rum",       label: "Rum",               emoji: "🏝️", pattern: /\brum\b|malibu|cachaca|cachaça/i },
-  { id: "tequila",   label: "Tequila",           emoji: "🌵", pattern: /tequila|mezcal/i },
-  { id: "whisky",    label: "Whisky",            emoji: "🥃", pattern: /whisk(?:e)?y|bourbon|scotch/i },
-  { id: "brandy",    label: "Brandy & Cognac",   emoji: "🍇", pattern: /brandy|cognac|weinbrand|armagnac/i },
-  { id: "korn",      label: "Korn & Klare",      emoji: "🌾", pattern: /\bkorn\b|doppelkorn|klarer|obstler/i },
-  { id: "bitter",    label: "Bitter & Aperitif", emoji: "🍊", pattern: /campari|aperol|vermouth|wermut|cynar|lillet|fernet|amaro|pastis|ricard|absinthe|absinth/i },
-  { id: "sparkling", label: "Schaumwein",        emoji: "🥂", pattern: /champagne|champagner|prosecco|sekt|cremant|crémant|cava|spumante/i },
+  { id: "vodka",     label: "Vodka", pattern: /vodka|wodka/i },
+  { id: "gin",       label: "Gin", pattern: /\bgin\b/i },
+  { id: "rum",       label: "Rum", pattern: /\brum\b|malibu|cachaca|cachaça/i },
+  { id: "tequila",   label: "Tequila", pattern: /tequila|mezcal/i },
+  { id: "whisky",    label: "Whisky", pattern: /whisk(?:e)?y|bourbon|scotch/i },
+  { id: "brandy",    label: "Brandy & Cognac", pattern: /brandy|cognac|weinbrand|armagnac/i },
+  { id: "korn",      label: "Korn & Klare", pattern: /\bkorn\b|doppelkorn|klarer|obstler/i },
+  { id: "bitter",    label: "Bitter & Aperitif", pattern: /campari|aperol|vermouth|wermut|cynar|lillet|fernet|amaro|pastis|ricard|absinthe|absinth/i },
+  { id: "sparkling", label: "Schaumwein", pattern: /champagne|champagner|prosecco|sekt|cremant|crémant|cava|spumante/i },
   // "wein" ohne Wortgrenze davor, damit auch Rotwein, Weißwein und Glühwein
   // erkannt werden; Weinbrand faengt die Brandy-Regel vorher ab.
-  { id: "wine",      label: "Wein",              emoji: "🍷", pattern: /\bwine\b|wein|sherry|\bport\b/i },
-  { id: "liqueur",   label: "Likör",             emoji: "🍸", pattern: /liqueur|likör|curacao|curaçao|kahlua|baileys|amaretto|triple sec|cointreau|creme de|crème de|schnapps|advocaat|limoncello|jägermeister|jagermeister|sambuca|midori|chambord|drambuie|galliano|chartreuse|maraschino|benedictine|falernum|passoa|grand marnier/i },
-  { id: "beer",      label: "Bier",              emoji: "🍺", pattern: /\bbeer\b|\bbier\b|\bale\b|lager/i }
+  { id: "wine",      label: "Wein", pattern: /\bwine\b|wein|sherry|\bport\b/i },
+  { id: "liqueur",   label: "Likör", pattern: /liqueur|likör|curacao|curaçao|kahlua|baileys|amaretto|triple sec|cointreau|creme de|crème de|schnapps|advocaat|limoncello|jägermeister|jagermeister|sambuca|midori|chambord|drambuie|galliano|chartreuse|maraschino|benedictine|falernum|passoa|grand marnier/i },
+  { id: "beer",      label: "Bier", pattern: /\bbeer\b|\bbier\b|\bale\b|lager/i }
 ];
-const CATEGORY_NONE = { id: "none", label: "Alkoholfrei / Sonstige", emoji: "🧃" };
+const CATEGORY_NONE = { id: "none", label: "Alkoholfrei / Sonstige" };
 
 // Art aus Name und Zutaten bestimmen. Getrennt von categoryOf(), damit auch
 // Cocktails eingeordnet werden können, die noch nicht gespeichert sind -

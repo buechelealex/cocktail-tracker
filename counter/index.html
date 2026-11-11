@@ -4,25 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BarCheck · Zähler</title>
-<link rel="icon" type="image/png" href="../icon-512.png?v=7">
-<link rel="apple-touch-icon" href="../icon-512.png?v=7">
+<link rel="icon" type="image/svg+xml" href="../icon.svg?v=8">
+<link rel="icon" type="image/png" href="../icon-512.png?v=8">
+<link rel="apple-touch-icon" href="../icon-512.png?v=8">
 <link rel="manifest" href="../manifest.json">
-<meta name="theme-color" content="#c9762f">
-<link rel="stylesheet" href="../shared/base.css?v=9">
-<link rel="stylesheet" href="style.css?v=9">
+<meta name="theme-color" content="#14213a">
+<link rel="stylesheet" href="../shared/base.css?v=10">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
 <header>
-  <h1>🥂 Getrunken</h1>
-  <p>Tippe auf + wenn du einen Cocktail getrunken hast</p>
+  <a class="brand" href="../index.html">
+    <img src="../icon.svg?v=8" alt="" width="32" height="32">
+    <h1>BarCheck</h1>
+  </a>
 </header>
 
-<nav class="page-nav">
-  <a href="../index.html">⭐ Bewerten</a>
-  <a href="index.html" class="active" aria-current="page">🥂 Zähler</a>
-  <a href="../stats/index.html">📊 Statistik</a>
+<nav class="page-nav" aria-label="Seiten">
+  <a href="../index.html">Bewerten</a>
+  <a href="index.html" class="active" aria-current="page">Zähler</a>
+  <a href="../stats/index.html">Statistik</a>
 </nav>
+
+<p class="page-hint">Mit + zählst du einen getrunkenen Cocktail.</p>
 
 <div class="list-bar" id="listBar" aria-label="Eigene Listen"></div>
 
@@ -34,7 +39,7 @@
 
   <div class="list" id="drunkList"></div>
 
-  <div class="section-title" id="notYetTitle">Noch nicht getrunken</div>
+  <h2 class="section-title" id="notYetTitle">Noch nicht getrunken</h2>
   <div class="list" id="notDrunkList"></div>
 
 </div>
@@ -43,19 +48,18 @@
 
 <footer class="footer">
   <p class="privacy-note">
-    🔒 Alle Daten bleiben auf diesem Gerät – Bewertungen, Zählerstände und Listen
+    Alle Daten bleiben auf diesem Gerät. Bewertungen, Zählerstände und Listen
     werden nur lokal im Browser gespeichert, nicht auf einem Server.
   </p>
   <p class="footer-links">
     <a href="https://github.com/buechelealex/cocktail-tracker" target="_blank" rel="noopener noreferrer">Quellcode auf GitHub</a>
-    <span class="footer-sep" aria-hidden="true">·</span>
     <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
   </p>
 </footer>
 
-<script src="../shared/data.js?v=9"></script>
-<script src="../shared/lists.js?v=9"></script>
-<script src="script.js?v=9"></script>
-<script src="../shared/pwa.js?v=9"></script>
+<script src="../shared/data.js?v=10"></script>
+<script src="../shared/lists.js?v=10"></script>
+<script src="script.js?v=10"></script>
+<script src="../shared/pwa.js?v=10"></script>
 </body>
 </html>

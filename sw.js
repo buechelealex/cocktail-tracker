@@ -4,32 +4,33 @@
 // WICHTIG beim Aendern von CSS oder JavaScript: VERSION hier genauso hochzaehlen
 // wie die ?v=-Marken in den drei HTML-Dateien. Der Cache haengt am Namen, ein
 // neuer Name ersetzt den alten komplett.
-const VERSION = "v9";
+const VERSION = "v10";
 const CACHE = "barcheck-" + VERSION;
 
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon-512.png?v=7",
-  "./icon-maskable-512.png?v=7",
-  "./shared/base.css?v=9",
-  "./shared/data.js?v=9",
-  "./shared/lists.js?v=9",
-  "./shared/pwa.js?v=9",
-  "./rate/style.css?v=9",
-  "./rate/catalog.js?v=9",
-  "./rate/script.js?v=9",
+  "./icon.svg?v=8",
+  "./icon-512.png?v=8",
+  "./icon-maskable-512.png?v=8",
+  "./shared/base.css?v=10",
+  "./shared/data.js?v=10",
+  "./shared/lists.js?v=10",
+  "./shared/pwa.js?v=10",
+  "./rate/style.css?v=10",
+  "./rate/catalog.js?v=10",
+  "./rate/script.js?v=10",
   "./counter/",
   "./counter/index.html",
-  "./counter/style.css?v=9",
-  "./counter/script.js?v=9",
+  "./counter/style.css?v=10",
+  "./counter/script.js?v=10",
   "./stats/",
   "./stats/index.html",
-  "./stats/style.css?v=9",
-  "./stats/alcohol.js?v=9",
-  "./stats/share.js?v=9",
-  "./stats/script.js?v=9"
+  "./stats/style.css?v=10",
+  "./stats/alcohol.js?v=10",
+  "./stats/share.js?v=10",
+  "./stats/script.js?v=10"
 ];
 
 self.addEventListener("install", (event) => {

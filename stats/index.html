@@ -4,25 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BarCheck · Statistik</title>
-<link rel="icon" type="image/png" href="../icon-512.png?v=7">
-<link rel="apple-touch-icon" href="../icon-512.png?v=7">
+<link rel="icon" type="image/svg+xml" href="../icon.svg?v=8">
+<link rel="icon" type="image/png" href="../icon-512.png?v=8">
+<link rel="apple-touch-icon" href="../icon-512.png?v=8">
 <link rel="manifest" href="../manifest.json">
-<meta name="theme-color" content="#c9762f">
-<link rel="stylesheet" href="../shared/base.css?v=9">
-<link rel="stylesheet" href="style.css?v=9">
+<meta name="theme-color" content="#14213a">
+<link rel="stylesheet" href="../shared/base.css?v=10">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
 <header>
-  <h1>📊 Statistik</h1>
-  <p>Deine Auswertung · wähle oben eine Liste, um sie einzugrenzen</p>
+  <a class="brand" href="../index.html">
+    <img src="../icon.svg?v=8" alt="" width="32" height="32">
+    <h1>BarCheck</h1>
+  </a>
 </header>
 
-<nav class="page-nav">
-  <a href="../index.html">⭐ Bewerten</a>
-  <a href="../counter/index.html">🥂 Zähler</a>
-  <a href="index.html" class="active" aria-current="page">📊 Statistik</a>
+<nav class="page-nav" aria-label="Seiten">
+  <a href="../index.html">Bewerten</a>
+  <a href="../counter/index.html">Zähler</a>
+  <a href="index.html" class="active" aria-current="page">Statistik</a>
 </nav>
+
+<p class="page-hint">Die Zahlen gelten für alle Cocktails oder für die oben gewählte Liste.</p>
 
 <div class="list-bar" id="listBar" aria-label="Eigene Listen"></div>
 
@@ -49,16 +54,16 @@
   </div>
   <div class="stats-scope" id="statsScope" hidden></div>
 
-  <div class="section-title">Nach Art</div>
+  <h2 class="section-title">Nach Art</h2>
   <div class="chart-card" id="chartCard">
     <div class="donut" id="donut"></div>
     <div class="chart-legend" id="chartLegend"></div>
   </div>
 
-  <div class="section-title">🏆 Top-Drinks</div>
+  <h2 class="section-title">Meistgetrunken</h2>
   <div class="board" id="leaderboard"></div>
 
-  <div class="section-title">🍸 Alkohol</div>
+  <h2 class="section-title">Alkohol</h2>
   <div class="alc-card">
     <div class="alc-figure">
       <span class="alc-value" id="alcValue">0 ml</span>
@@ -73,19 +78,16 @@
 
 <footer class="footer">
   <p class="privacy-note">
-    🔒 Alle Daten bleiben auf diesem Gerät – Bewertungen, Zählerstände und Listen
+    Alle Daten bleiben auf diesem Gerät. Bewertungen, Zählerstände und Listen
     werden nur lokal im Browser gespeichert, nicht auf einem Server.
   </p>
   <p class="footer-links">
     <a href="https://github.com/buechelealex/cocktail-tracker" target="_blank" rel="noopener noreferrer">Quellcode auf GitHub</a>
-    <span class="footer-sep" aria-hidden="true">·</span>
     <a href="https://projects.abuechele.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a>
   </p>
 </footer>
 
-<button class="fab share-fab" id="shareBtn" type="button" title="Als Story-Bild teilen" hidden>
-  <span aria-hidden="true">📸</span> Teilen
-</button>
+<button class="fab" id="shareBtn" type="button" title="Als Story-Bild teilen" hidden>Teilen</button>
 
 <div class="modal-overlay" id="shareOverlay">
   <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
@@ -130,11 +132,11 @@
   </div>
 </div>
 
-<script src="../shared/data.js?v=9"></script>
-<script src="../shared/lists.js?v=9"></script>
-<script src="alcohol.js?v=9"></script>
-<script src="share.js?v=9"></script>
-<script src="script.js?v=9"></script>
-<script src="../shared/pwa.js?v=9"></script>
+<script src="../shared/data.js?v=10"></script>
+<script src="../shared/lists.js?v=10"></script>
+<script src="alcohol.js?v=10"></script>
+<script src="share.js?v=10"></script>
+<script src="script.js?v=10"></script>
+<script src="../shared/pwa.js?v=10"></script>
 </body>
 </html>

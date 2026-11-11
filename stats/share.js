@@ -7,26 +7,20 @@ const SHARE_W = 1080;
 const SHARE_H = 1920;
 const DAY = 24 * 60 * 60 * 1000;
 
-// Farben aus shared/base.css, damit das Bild wie die Seite aussieht.
+// Farben des App-Symbols: dunkelblauer Grund, helle Schrift, Mint als Akzent.
 const C = {
-  bgTop: "#fff8f0",
-  bgBottom: "#f6ece1",
-  card: "#ffffff",
-  accent: "#c9762f",
-  accentDark: "#a15d21",
-  accentSoft: "#fbeedd",
-  star: "#e0a530",
-  text: "#2b2620",
-  muted: "#8a8178",
-  border: "#ede4d8",
-  track: "#f1e8dd"
+  bg: "#14213a",
+  text: "#f4f7f5",
+  muted: "#9aa6ba",
+  mint: "#8fd0c6",
+  line: "#2c3a56"
 };
 const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif';
 
 const PERIODS = {
-  today: { label: "Heute", badge: "HEUTE", from: () => startOfToday() },
-  week: { label: "7 Tage", badge: "LETZTE 7 TAGE", from: () => Date.now() - 7 * DAY },
-  all: { label: "Gesamt", badge: "INSGESAMT", from: () => 0 }
+  today: { label: "Heute", badge: "Heute", from: () => startOfToday() },
+  week: { label: "7 Tage", badge: "In den letzten 7 Tagen", from: () => Date.now() - 7 * DAY },
+  all: { label: "Gesamt", badge: "Insgesamt", from: () => 0 }
 };
 let sharePeriod = "all";
 
@@ -43,30 +37,6 @@ shareCanvas.width = SHARE_W;
 shareCanvas.height = SHARE_H;
 
 // --- Zeichen-Helfer ---
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-// Weich auslaufender Farbfleck im Hintergrund.
-function softCircle(ctx, x, y, r, color, alpha) {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, color);
-  g.addColorStop(1, "rgba(255,255,255,0)");
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-}
 
 function setFont(ctx, weight, size, spacing) {
   ctx.font = weight + " " + size + "px " + FONT;
@@ -121,157 +91,120 @@ function shareStats() {
 function drawShareImage() {
   const ctx = shareCanvas.getContext("2d");
   const s = shareStats();
+  const left = 96;
+  const right = SHARE_W - 96;
 
-  // Hintergrund mit Farbverlauf wie auf der Seite
-  const bg = ctx.createLinearGradient(0, 0, 0, SHARE_H);
-  bg.addColorStop(0, C.bgTop);
-  bg.addColorStop(1, C.bgBottom);
-  ctx.fillStyle = bg;
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, SHARE_W, SHARE_H);
-
-  // Zwei weich auslaufende Farbkreise als Deko
-  softCircle(ctx, 940, 60, 460, C.accent, 0.2);
-  softCircle(ctx, 100, 1860, 420, C.star, 0.2);
-
-  // Höhe der Karte richtet sich nach dem Inhalt, damit unten kein
-  // Leerraum entsteht, wenn nur ein oder zwei Cocktails gezählt wurden.
-  const rowsEnd = 830 + s.top.length * 150;
-  const kindY = s.topKind ? rowsEnd + 40 : rowsEnd - 60;
-  const cardH = kindY + 200;
-  const cardX = 64, cardY = Math.round((SHARE_H - cardH) / 2), cardW = SHARE_W - 128, cardR = 64;
-  ctx.save();
-  ctx.shadowColor = "rgba(43, 38, 32, 0.14)";
-  ctx.shadowBlur = 70;
-  ctx.shadowOffsetY = 24;
-  ctx.fillStyle = C.card;
-  roundRect(ctx, cardX, cardY, cardW, cardH, cardR);
-  ctx.fill();
-  ctx.restore();
-
-  const mid = SHARE_W / 2;
-  const left = cardX + 88;
-  const right = cardX + cardW - 88;
-  ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
 
-  // Kopfzeile - mit dem Namen der Liste, wenn eine ausgewählt ist
-  setFont(ctx, "600", 44, 8);
-  ctx.fillStyle = C.muted;
+  // Kopfzeile: links der Name der App, rechts die Liste, wenn eine gewählt ist
+  setFont(ctx, "700", 48, 0);
+  ctx.textAlign = "left";
+  ctx.fillStyle = C.text;
+  ctx.fillText("BarCheck", left, 250);
   const list = getActiveList();
-  const heading = list
-    ? "🍹 BARCHECK · " + (list.emoji ? list.emoji + " " : "") + list.name.toUpperCase()
-    : "🍹 BARCHECK";
-  ctx.fillText(fitText(ctx, heading, cardW - 140), mid + 4, cardY + 130);
+  if (list) {
+    const brandW = ctx.measureText("BarCheck").width;
+    setFont(ctx, "400", 44, 0);
+    ctx.textAlign = "right";
+    ctx.fillStyle = C.muted;
+    const listName = (list.emoji ? list.emoji + " " : "") + list.name;
+    ctx.fillText(fitText(ctx, listName, right - left - brandW - 60), right, 250);
+  }
 
-  // Zeitraum-Pille
-  setFont(ctx, "700", 30, 5);
-  const badge = PERIODS[sharePeriod].badge;
-  const badgeW = ctx.measureText(badge).width + 56;
-  ctx.fillStyle = C.accentSoft;
-  roundRect(ctx, mid - badgeW / 2, cardY + 176, badgeW, 62, 31);
-  ctx.fill();
-  ctx.fillStyle = C.accentDark;
-  ctx.fillText(badge, mid + 2, cardY + 218);
+  // Der Block darunter steht mittig in der Höhe, damit bei nur ein oder zwei
+  // Cocktails unten kein Leerraum entsteht.
+  const rowsH = s.top.length ? 100 + s.top.length * 150 : 110;
+  const blockH = 650 + rowsH + (s.topKind ? 90 : 0);
+  let y = Math.max(380, Math.round((SHARE_H - blockH) / 2));
+
+  ctx.textAlign = "left";
+  setFont(ctx, "500", 44, 0);
+  ctx.fillStyle = C.mint;
+  ctx.fillText(PERIODS[sharePeriod].badge, left, y + 44);
 
   // Große Zahl
-  const numSize = s.total >= 1000 ? 240 : s.total >= 100 ? 280 : 320;
-  setFont(ctx, "700", numSize, -4);
-  ctx.fillStyle = C.accent;
-  ctx.fillText(String(s.total), mid, cardY + 520);
-
-  setFont(ctx, "600", 62, 1);
+  setFont(ctx, "700", s.total >= 1000 ? 260 : 340, -6);
   ctx.fillStyle = C.text;
-  ctx.fillText(s.total === 1 ? "Cocktail" : "Cocktails", mid, cardY + 600);
+  ctx.fillText(String(s.total), left - 12, y + 390);
+
+  setFont(ctx, "600", 68, 0);
+  ctx.fillText(s.total === 1 ? "Cocktail" : "Cocktails", left, y + 490);
 
   if (s.sorts > 0) {
-    setFont(ctx, "400", 38, 0);
+    setFont(ctx, "400", 40, 0);
     ctx.fillStyle = C.muted;
-    ctx.fillText(s.sorts === 1 ? "aus 1 Sorte" : "aus " + s.sorts + " Sorten", mid, cardY + 662);
+    ctx.fillText(s.sorts === 1 ? "aus 1 Sorte" : "aus " + s.sorts + " Sorten", left, y + 552);
   }
 
   // Trennlinie
-  ctx.strokeStyle = C.border;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(left, cardY + 730);
-  ctx.lineTo(right, cardY + 730);
-  ctx.stroke();
+  y += 620;
+  ctx.fillStyle = C.line;
+  ctx.fillRect(left, y, right - left, 3);
+  y += 30;
 
-  // Top-Sorten mit Balken
-  let y = cardY + 830;
+  // Meistgetrunkene Sorten mit Balken
   if (s.top.length === 0) {
     setFont(ctx, "400", 42, 0);
     ctx.fillStyle = C.muted;
-    ctx.fillText("Noch nichts gezählt.", mid, y);
+    ctx.fillText("Noch nichts gezählt.", left, y + 80);
   } else {
-    setFont(ctx, "600", 30, 6);
+    setFont(ctx, "400", 36, 0);
     ctx.fillStyle = C.muted;
-    ctx.textAlign = "left";
-    ctx.fillText(s.top.length === 1 ? "MEIN DRINK" : "MEINE TOP " + s.top.length, left, y - 54);
+    ctx.fillText(s.top.length === 1 ? "Mein Drink" : "Meine Top " + s.top.length, left, y + 50);
+    y += 100;
 
-    const medals = ["🥇", "🥈", "🥉"];
     const max = s.top[0].count;
-    const barX = left + 78;
-    const barW = right - barX;
+    const nameX = left + 64;
+    const barW = right - nameX;
 
     s.top.forEach((item, i) => {
-      setFont(ctx, "400", 52, 0);
+      setFont(ctx, "400", 48, 0);
       ctx.textAlign = "left";
-      ctx.fillStyle = C.text;
-      ctx.fillText(medals[i], left, y + 12);
+      ctx.fillStyle = C.muted;
+      ctx.fillText(String(i + 1), left, y + 50);
 
       // Anzahl rechts, Name füllt den Rest
       setFont(ctx, "700", 48, 0);
       ctx.textAlign = "right";
-      ctx.fillStyle = C.accentDark;
+      ctx.fillStyle = C.text;
       const countText = item.count + "×";
-      ctx.fillText(countText, right, y + 8);
+      ctx.fillText(countText, right, y + 50);
       const countW = ctx.measureText(countText).width;
 
       setFont(ctx, "500", 48, 0);
       ctx.textAlign = "left";
-      ctx.fillStyle = C.text;
-      ctx.fillText(fitText(ctx, item.name, barW - countW - 40), barX, y + 8);
+      ctx.fillText(fitText(ctx, item.name, barW - countW - 40), nameX, y + 50);
 
-      ctx.fillStyle = C.track;
-      roundRect(ctx, barX, y + 36, barW, 16, 8);
-      ctx.fill();
-      const fillW = Math.max(24, Math.round((item.count / max) * barW));
-      const grad = ctx.createLinearGradient(barX, 0, barX + fillW, 0);
-      grad.addColorStop(0, C.accent);
-      grad.addColorStop(1, C.star);
-      ctx.fillStyle = grad;
-      roundRect(ctx, barX, y + 36, fillW, 16, 8);
-      ctx.fill();
+      ctx.fillStyle = C.line;
+      ctx.fillRect(nameX, y + 80, barW, 8);
+      ctx.fillStyle = C.mint;
+      ctx.fillRect(nameX, y + 80, Math.max(16, Math.round((item.count / max) * barW)), 8);
 
       y += 150;
     });
   }
 
-  // Lieblings-Art als eine ruhige Zeile
+  // Häufigste Art als eine ruhige Zeile
   if (s.topKind) {
     const pct = Math.round((s.topKind.count / s.total) * 100);
-    // Bei nur einer Sorte wäre "Meistens … · 100%" albern.
+    // Bei nur einer Sorte wäre "Meistens … (100 %)" albern.
     const line = s.sorts === 1
-      ? s.topKind.cat.emoji + "  " + s.topKind.cat.label
-      : s.topKind.cat.emoji + "  Meistens " + s.topKind.cat.label + " · " + pct + "%";
-    setFont(ctx, "500", 40, 0);
-    ctx.textAlign = "center";
-    const lineW = ctx.measureText(line).width + 72;
-    const lineY = cardY + kindY + 55;
-    ctx.fillStyle = C.accentSoft;
-    roundRect(ctx, mid - lineW / 2, lineY - 52, lineW, 84, 42);
-    ctx.fill();
-    ctx.fillStyle = C.accentDark;
-    ctx.fillText(line, mid, lineY);
+      ? s.topKind.cat.label
+      : "Meistens " + s.topKind.cat.label + " (" + pct + " %)";
+    setFont(ctx, "400", 40, 0);
+    ctx.textAlign = "left";
+    ctx.fillStyle = C.muted;
+    ctx.fillText(line, left, y + 50);
   }
 
   // Fußzeile
-  setFont(ctx, "400", 32, 2);
-  ctx.textAlign = "center";
+  setFont(ctx, "400", 32, 0);
+  ctx.textAlign = "left";
   ctx.fillStyle = C.muted;
   const date = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-  ctx.fillText(date + " · projects.abuechele.de", mid + 1, cardY + cardH - 60);
+  ctx.fillText(date + " · projects.abuechele.de", left, 1760);
 
   ctx.letterSpacing = "0px";
 }
