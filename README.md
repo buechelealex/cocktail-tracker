@@ -9,7 +9,7 @@ Sie besteht aus drei Seiten:
 | --- | --- |
 | [index.html](index.html) | Cocktails bewerten, Zutaten ansehen, eigene Cocktails anlegen |
 | [counter/index.html](counter/index.html) | Zählen, wie oft welcher Cocktail getrunken wurde |
-| [stats/index.html](stats/index.html) | Auswertung ansehen: Kennzahlen, Kreisdiagramm, Top-Drinks, Alkoholmenge – und als Story teilen |
+| [stats/index.html](stats/index.html) | Auswertung ansehen: Kennzahlen, Kreisdiagramm, Rangliste, Alkoholmenge – und als Story teilen |
 
 Jede Seite liegt in einem eigenen Ordner mit ihrer `index.html`, ihrem
 `style.css` und ihrem `script.js`; nur die Startseite muss als `index.html`
@@ -19,7 +19,8 @@ im Wurzelverzeichnis bleiben, ihre beiden Dateien liegen daher in
 
 Alle Seiten teilen sich die Cocktail-Liste und die Speicherlogik aus
 [shared/data.js](shared/data.js); oben wechselt man mit den drei Reitern
-zwischen ihnen.
+zwischen ihnen. Die Kopfleiste mit Symbol und Reitern bleibt beim Scrollen
+stehen.
 Mit eigenen **Listen** („Bierzelt“, „Exotische Drinks“ …) lässt sich die
 Anzeige auf eine Auswahl eingrenzen – die Auswahl gilt auf allen drei Seiten
 und begrenzt auch die Statistik.
@@ -38,13 +39,13 @@ dass sämtliche Daten nur lokal im Browser liegen.
 - **Bewerten mit 1–5 Sternen.** Bewertete Cocktails wandern automatisch in den
   Bereich „Bewertet“ und werden dort nach Bewertung sortiert (beste zuerst,
   bei Gleichstand alphabetisch). Unbewertete stehen alphabetisch darunter.
-  Die bewertete Karte gleitet dabei sichtbar an ihre neue Position – die Liste
+  Die bewertete Zeile gleitet dabei sichtbar an ihre neue Position – die Liste
   wird nicht neu aufgebaut, aufgeklappte Zutaten und Scrollposition bleiben
   erhalten.
 - **Zutaten aufklappen** per Tipp auf den Cocktailnamen.
 - **Cocktails löschen** – eigene endgültig, fest hinterlegte nur aus der eigenen
   Liste (jederzeit wiederherstellbar).
-- **Eigene Cocktails hinzufügen** – über den schwebenden **+**-Button unten
+- **Eigene Cocktails hinzufügen** – über den Button **„+ Cocktail“** unten
   rechts, der einen Dialog öffnet. Die Vorschläge kommen aus einem mitgelieferten
   Katalog von rund 165 bekannten Cocktails ([rate/catalog.js](rate/catalog.js)):
   beim Öffnen stehen die bekanntesten dort, beim Tippen wird in Namen **und**
@@ -56,16 +57,24 @@ dass sämtliche Daten nur lokal im Browser liegen.
   und „Exotische Drinks“ (Punch, Campari Orange, Bellini …). Über die Chip-Leiste
   oben schaltet man um; die Auswahl gilt auf allen drei Seiten und grenzt auch
   die Statistik ein.
-- **Zählen, was getrunken wurde** (Seite „🥂 Zähler“): pro Cocktail mit
-  **+**/**−**, häufigste zuerst, mit Suchfeld.
-- **Statistik ansehen** (Seite „📊 Statistik“): Gesamt, Heute und die letzten
-  7 Tage, ein **Kreisdiagramm** der Verteilung nach Art, ein **Leaderboard**
-  der Top-Drinks und die getrunkene Menge **reinen Alkohols**.
+- **Zählen, was getrunken wurde** (Seite „Zähler“): pro Cocktail mit
+  **+**/**−**, häufigste zuerst.
+- **Suchen** auf den Seiten „Bewerten“ und „Zähler“ – das Suchfeld bleibt beim
+  Scrollen unter der Kopfleiste stehen.
+- **Abschnitte ein- und ausklappen** („Bewertet“, „Unbewertet“, „Getrunken“,
+  „Noch nicht getrunken“) per Tipp auf den Titel; daneben steht die Anzahl.
+  Was zugeklappt ist, bleibt nach dem Neuladen so.
+- **Statistik ansehen** (Seite „Statistik“): Gesamt, Heute und die letzten
+  7 Tage, ein **Kreisdiagramm** der Verteilung nach Art, die Rangliste
+  **„Meistgetrunken“** und die getrunkene Menge **reinen Alkohols**.
 - **Story-Bild teilen** – die Zählerstände als fertiges Hochformat-Bild
   (1080×1920) für Instagram & Co. (auf der Statistik-Seite), bewusst knapp
   gehalten: Gesamtzahl, Top 3 und die häufigste Art.
 - **Installierbar** als App (PWA) und **offline nutzbar** – nach dem ersten
   Aufruf liegt alles im Browser-Cache.
+- **Helles und dunkles Design** – die Seite folgt der Einstellung des Geräts.
+- **Zweispaltig auf breiten Bildschirmen** (ab 900 px), damit man am Rechner
+  weniger scrollen muss.
 
 ## Anleitung
 
@@ -75,7 +84,7 @@ dass sämtliche Daten nur lokal im Browser liegen.
    stehen. Die Abschnitte „Bewertet“ und „Unbewertet“ lassen sich über ihren
    Titel ein- und ausklappen; die Zahl daneben zeigt, wie viele drin sind.
 2. Rechts auf den gewünschten Stern tippen – z. B. der vierte Stern für 4 ★.
-3. Die Karte gleitet in den Bereich „⭐ Bewertet“ und wird gespeichert
+3. Die Zeile gleitet in den Bereich „Bewertet“ und wird gespeichert
    (kurze Statusmeldung „Gespeichert ✓“ unten links). Die übrigen Cocktails rücken
    ruhig nach, ohne dass die Seite neu aufgebaut wird.
 
@@ -87,7 +96,7 @@ sind.
 
 ### Zutaten ansehen
 
-Auf den Cocktailnamen (oder das ▶-Symbol) tippen. Das Panel klappt auf und zeigt
+Auf den Cocktailnamen (oder den kleinen Pfeil **›** davor) tippen. Das Panel klappt auf und zeigt
 die Zutaten mit Mengen sowie die Buttons **„Bewertung zurücksetzen“** (nur bei
 bewerteten Cocktails) und **„Cocktail löschen“**. Erneutes Tippen schließt es
 wieder. Bei eigenen Cocktails ohne eingetragene Zutaten steht dort „Keine
@@ -95,7 +104,7 @@ Zutaten hinterlegt.“
 
 ### Eigenen Cocktail hinzufügen
 
-1. Unten rechts auf den runden **+**-Button tippen – es öffnet sich ein Dialog.
+1. Unten rechts auf **„+ Cocktail“** tippen – es öffnet sich ein Dialog.
 2. Das Feld **Name** zeigt sofort die bekanntesten Cocktails, die noch fehlen.
    Beim Tippen wird gefiltert – auch nach Zutat: „Gin“ oder „Minze“ findet die
    passenden Drinks, deutsche Begriffe wie „Wodka“ oder „Erdbeer“ werden
@@ -109,7 +118,7 @@ Zutaten hinterlegt.“
    - Ohne passenden Treffer einfach selbst weitertippen.
    - Cocktails, die es in der Liste schon gibt, werden nicht vorgeschlagen.
 3. Feld **Zutaten**: mehrere Zutaten mit Komma trennen, z. B.
-   `2 oz Rum, 1 oz Limettensaft, 1/2 oz Zuckersirup`. Das Feld darf auch leer
+   `6 cl Rum, 3 cl Limettensaft, 1,5 cl Zuckersirup`. Das Feld darf auch leer
    bleiben – steht der Name im Katalog, werden die Zutaten beim Speichern
    automatisch ergänzt.
 4. **Speichern**. Der Dialog schließt sich, und der Cocktail erscheint mit dem
@@ -141,22 +150,27 @@ zurückholen – die müssen bei Bedarf neu angelegt werden.
 
 ### Alle Bewertungen zurücksetzen
 
-Ganz unten **„Alle Bewertungen zurücksetzen“** – nach Bestätigung sind alle
+Ganz unten der Textlink **„Alle Bewertungen zurücksetzen“** – nach Bestätigung sind alle
 Sterne wieder leer. Selbst hinzugefügte Cocktails bleiben dabei erhalten, nur
 ihre Bewertungen verschwinden.
 
 ### Getrunkene Cocktails zählen
 
-Oben auf den Reiter **„🥂 Zähler“** wechseln. Dort steht dieselbe Cocktail-Liste
-wie auf der Bewertungsseite, jeweils mit **− 0 +**. Diese Seite dient nur dem
-Zählen – die Auswertung steht auf der Statistik-Seite.
+Oben auf den Reiter **„Zähler“** wechseln. Dort steht dieselbe Cocktail-Liste
+wie auf der Bewertungsseite, jeweils mit **− 0 +** und der Art (Rum, Gin …)
+neben dem Namen. Diese Seite dient nur dem Zählen – die Auswertung steht auf
+der Statistik-Seite.
 
-1. Beim Trinken eines Cocktails auf **+** tippen. Der Cocktail wandert nach oben
-   (häufigste zuerst) und wird sofort gespeichert.
+1. Beim Trinken eines Cocktails auf **+** tippen. Der Cocktail wandert in den
+   Abschnitt „Getrunken“ (häufigste zuerst) und wird sofort gespeichert.
 2. Zu viel gezählt? **−** entfernt den zuletzt gezählten Drink dieser Sorte.
-3. Das Suchfeld filtert die Liste nach Namen.
+3. Das Suchfeld filtert die Liste nach Namen und bleibt beim Scrollen oben
+   stehen.
+4. „Getrunken“ und „Noch nicht getrunken“ lassen sich über ihren Titel ein-
+   und ausklappen. Während einer Suche zeigen auch zugeklappte Abschnitte ihre
+   Treffer.
 
-Der Button ganz unten löscht nach Rückfrage die Zählerstände. Ist oben eine
+Der Textlink ganz unten löscht nach Rückfrage die Zählerstände. Ist oben eine
 eigene Liste gewählt, betrifft er auch nur deren Cocktails und heißt dann z. B.
 **„Zählerstände in ‚Bierzelt‘ zurücksetzen“**; unter „Alle“ löscht er das
 komplette Trink-Protokoll. Bewertungen und eigene Cocktails bleiben unberührt.
@@ -165,7 +179,7 @@ Zählerstand mit dem Hinweis „nicht mehr in der Liste“ erhalten.
 
 ### Eigene Listen anlegen und bearbeiten
 
-Unter der Navigation steht auf jeder Seite eine Leiste mit **„Alle“**, den
+Unter der Kopfleiste steht auf jeder Seite eine Leiste mit **„Alle“**, den
 eigenen Listen und **„+ Liste“**.
 
 1. **„+ Liste“** antippen. Im Dialog ein Symbol (Emoji, optional) und einen
@@ -187,12 +201,12 @@ sofort wieder ausgeblendet.
 
 ### Statistik ansehen
 
-Oben auf den Reiter **„📊 Statistik“** wechseln.
+Oben auf den Reiter **„Statistik“** wechseln.
 
-1. Vier Kacheln zeigen **Gesamt**, **Heute**, **7 Tage** und **Sorten**
+1. Vier Felder in einem Rahmen (im Folgenden „Kacheln“) zeigen **Gesamt**, **Heute**, **7 Tage** und **Sorten**
    (Anzahl verschiedener Cocktails). Die ersten drei sind zugleich
    **Umschalter für den Zeitraum**: ein Tipp darauf grenzt alles Weitere auf
-   diese Zeitspanne ein – Kreisdiagramm, Top-Drinks und Alkoholmenge. Die
+   diese Zeitspanne ein – Kreisdiagramm, Rangliste und Alkoholmenge. Die
    aktive Kachel ist dunkel hinterlegt, jede behält dabei ihre eigene Zahl.
    „Sorten“ ist keine Zeitspanne und daher nicht anklickbar; sie zeigt, wie
    viele verschiedene Getränke im gewählten Zeitraum vorkamen.
@@ -201,9 +215,11 @@ Oben auf den Reiter **„📊 Statistik“** wechseln.
    Bitter & Aperitif, Schaumwein, Wein, Likör, Bier oder „Alkoholfrei /
    Sonstige“. Die Art wird automatisch aus den Zutaten abgeleitet (erste
    passende Regel gewinnt). Jede Art hat eine feste Farbe, daneben stehen
-   Anzahl und Prozent.
-3. **🏆 Top-Drinks** listet die häufigsten Getränke mit 🥇🥈🥉 und Balken.
-4. **🍸 Alkohol** zeigt, wie viel reiner Alkohol darin steckt – in Millilitern,
+   Anzahl und Prozent. Ring und Legende stehen auch auf dem Handy
+   nebeneinander.
+3. **Meistgetrunken** listet die häufigsten Getränke mit Platz (1., 2., 3. …),
+   Art und einem Balken, der den Abstand zum Spitzenreiter zeigt.
+4. **Alkohol** zeigt, wie viel reiner Alkohol darin steckt – in Millilitern,
    Gramm und „Halbe Bier“.
 
 Liste und Zeitraum lassen sich kombinieren. Worauf sich die Zahlen gerade
@@ -224,13 +240,13 @@ ist, wird über den Heizwert von Ethanol (rund 21 kJ je ml) gerechnet. Das ist
 als Spielerei gedacht, nicht als Messwert.
 
 Selbst angelegte Cocktails **ohne Mengenangaben** lassen sich nicht berechnen.
-Sie werden nicht stillschweigend als 0 gezählt, sondern unter der Karte
+Sie werden nicht stillschweigend als 0 gezählt, sondern unter der Alkoholmenge
 namentlich genannt („Ohne Mengenangabe und daher nicht mitgerechnet: …“).
 
 ### Als Instagram-Story teilen
 
 Sobald mindestens ein Cocktail gezählt ist, erscheint auf der Statistik-Seite
-unten rechts der Button **„📸 Teilen“**.
+unten rechts der Button **„Teilen“**.
 
 1. Button antippen – es öffnet sich eine Vorschau des Story-Bilds.
 2. Oben den Zeitraum wählen: **Heute**, **7 Tage** oder **Gesamt**.
@@ -242,8 +258,9 @@ unten rechts der Button **„📸 Teilen“**.
 
 Das Bild ist 1080×1920 Pixel groß (Story-Format) und zeigt bewusst nur wenig:
 die Gesamtzahl, aus wie vielen Sorten sie besteht, die Top 3 mit Balken und die
-häufigste Art. Gestaltung und Farben entsprechen der Website. Ist oben eine
-Liste gewählt, zeigt das Bild nur deren Drinks und nennt die Liste im Kopf.
+häufigste Art. Es ist flächig dunkelblau mit heller Schrift und Mint als
+Akzent – dieselben Farben wie das App-Symbol und die Kopfleiste. Ist oben eine
+Liste gewählt, zeigt das Bild nur deren Drinks und nennt die Liste oben rechts.
 
 Browser ohne Datei-Teilen (typischerweise am Desktop) laden das Bild
 automatisch herunter statt das Teilen-Menü zu öffnen.
@@ -305,6 +322,13 @@ DevTools unter *Application → Service Workers* „Update on reload“ anhaken 
   hinzufügen“ bzw. „Installieren“ wählen. Die App startet dann im Vollbild-Modus
   und funktioniert offline.
 
+Chrome übernimmt Farben und Symbol beim Installieren fest in die App und
+aktualisiert sie erst nach einigen Tagen von selbst. Wer nach einer Änderung
+am Manifest sofort die neuen Farben sehen will (z. B. die Systemleisten in
+Dunkelblau statt im früheren Orange), deinstalliert die App und installiert
+sie neu – die gespeicherten Daten bleiben dabei erhalten, solange die
+Website-Daten nicht mitgelöscht werden.
+
 Eine eigene Android-App (Trusted Web Activity) gibt es bewusst nicht mehr. Sie
 hätte über `/.well-known/assetlinks.json` die ganze Domain
 `projects.abuechele.de` beansprucht und damit andere Apps auf derselben Domain
@@ -328,14 +352,34 @@ dem Symbol.
 
 ## Technisches in Kürze
 
+- **Gestaltung:** bewusst schlicht. Die Farben stammen aus dem App-Symbol:
+  Dunkelblau für Kopfleiste, Schrift und Buttons, Mint für Hervorhebungen,
+  Orange nur für die Sterne. Cocktails stehen als Zeilen mit feinen
+  Trennlinien, Abschnittstitel als Text mit einem Strich darunter. Es gibt
+  keine Emojis als Symbole, keine Farbverläufe und keine Schmuckschatten; das
+  einzige Emoji ist das Symbol, das man einer eigenen Liste selbst gibt.
+  Schrift ist die Systemschrift des Geräts, es wird nichts nachgeladen.
 - **Darstellung:** Kopfleiste mit den drei Reitern und das Suchfeld bleiben
-  beim Scrollen stehen. Ab 900 px Breite stehen die Cocktails zweispaltig.
-  Stellt das Gerät auf dunkles Design, schaltet die Seite mit um
-  (`prefers-color-scheme`); alle Farben stehen als Variablen oben in
-  [shared/base.css](shared/base.css).
+  beim Scrollen stehen (`position: sticky`). Auf schmalen Handys (bis 440 px)
+  zeigt die Kopfleiste nur das Symbol, der Schriftzug „BarCheck“ erscheint
+  erst bei mehr Platz. Ab 900 px Breite stehen die Cocktails zweispaltig; die
+  Statistik bleibt schmal. Stellt das Gerät auf dunkles Design, schaltet die
+  Seite mit um (`prefers-color-scheme`); alle Farben stehen als Variablen oben
+  in [shared/base.css](shared/base.css). Einen Umschalter in der App gibt es
+  nicht.
+- **Statusmeldungen** („Speichere…“, „Gespeichert ✓“) erscheinen kurz unten
+  links und belegen keine eigene Zeile.
+- **Seitenwechsel ohne Ladebalken:** Die drei Reiter sind echte, getrennte
+  Seiten. Damit Chrome beim Wechsel nicht jedes Mal neu lädt, meldet
+  [shared/pwa.js](shared/pwa.js) die beiden anderen Seiten zum Vorabladen an
+  (Speculation Rules, `prerender`). Eine vorgeladene Seite liest ihre Daten
+  erst ein, wenn sie wirklich angezeigt wird (`whenVisible()` in
+  [shared/data.js](shared/data.js)), damit z. B. die Statistik keine
+  Zählerstände von vorhin zeigt. Im Datensparmodus und in Browsern ohne diese
+  Funktion wird normal geladen.
 
 - **Wichtig beim Ändern von CSS oder JavaScript:** In den drei HTML-Dateien
-  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=7`), und
+  hängt an jeder eingebundenen Datei eine Versionsmarke (`style.css?v=12`), und
   dieselbe Zahl steht in [sw.js](sw.js) unter `VERSION` sowie in der Dateiliste
   darunter. Beide zusammen hochzählen, sonst liefert der Service Worker die
   alten Dateien weiter aus.
@@ -364,19 +408,19 @@ logo-512x512.jpeg        frühere Ursprungsgrafik, nicht mehr eingebunden
 shared/
   base.css          Farben, Layout, Zeilen, Navigation, Dialoge, Fußzeile
   data.js           Cocktail-Liste, Speicherung, Listen, Kategorien
-  lists.js          Listen-Leiste und -Dialog
-  pwa.js            meldet den Service Worker an
+  lists.js          Listen-Leiste und -Dialog, einklappbare Abschnitte
+  pwa.js            meldet den Service Worker an, lädt die anderen Seiten vor
 rate/
   style.css         Sterne, Zutaten-Panel, Formular zum Hinzufügen
   script.js         Bewertungsseite (gehört zur index.html im Wurzelordner)
   catalog.js        Offline-Katalog für die Vorschläge im Hinzufügen-Dialog
 counter/
   index.html        Zählerseite
-  style.css         Karten mit Plus/Minus
+  style.css         Zeilen mit Plus/Minus
   script.js
 stats/
   index.html        Statistikseite
-  style.css         Kacheln, Kreisdiagramm, Leaderboard, Alkohol, Teilen
+  style.css         Kennzahlen, Kreisdiagramm, Rangliste, Alkohol, Teilen
   script.js
   alcohol.js        Alkoholmenge und Vergleiche
   share.js          Story-Bild
@@ -388,7 +432,7 @@ stats/
   Web-Share-API (`navigator.share` mit Datei) weitergegeben; die PNG-Datei wird
   schon beim Öffnen der Vorschau erzeugt, weil Safari `navigator.share` nur
   direkt aus der Nutzeraktion heraus erlaubt.
-- Beim Bewerten wird die Liste nicht neu gerendert: die vorhandenen Karten werden
+- Beim Bewerten wird die Liste nicht neu gerendert: die vorhandenen Zeilen werden
   nur umgehängt und per FLIP-Technik (Position vorher messen → umsortieren →
   von der alten an die neue Position animieren) bewegt. Bei aktiviertem
   „Bewegung reduzieren“ (`prefers-reduced-motion`) wird ohne Animation

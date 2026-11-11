@@ -739,7 +739,7 @@ saveAddBtn.addEventListener("click", async () => {
   if (addedToList) await saveCocktailLists();
 });
 
-(async function init() {
+whenVisible(async function init() {
   await loadRatings();
   await loadCustomCocktails();
   await loadDeletedBase();
@@ -749,4 +749,4 @@ saveAddBtn.addEventListener("click", async () => {
   watchStorage(() => { renderListBar(); renderList(); });
   renderList();
   setStatus("", false);
-})();
+});

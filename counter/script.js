@@ -302,7 +302,7 @@ resetBtn.addEventListener("click", async () => {
   await saveCountLog();
 });
 
-(async function init() {
+whenVisible(async function init() {
   await loadCustomCocktails();
   await loadDeletedBase();
   await loadCountLog();
@@ -312,4 +312,4 @@ resetBtn.addEventListener("click", async () => {
   watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
   setStatus("", false);
-})();
+});

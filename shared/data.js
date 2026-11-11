@@ -53,6 +53,18 @@ let statusHandler = null;
 function setStatusHandler(fn) { statusHandler = fn; }
 function notifyStatus(text, fade) { if (statusHandler) statusHandler(text, fade); }
 
+// Chrome lädt die jeweils anderen Seiten unsichtbar vor (siehe shared/pwa.js),
+// damit der Wechsel zwischen den Reitern ohne Ladebalken auskommt. Eine so
+// vorgeladene Seite soll ihre Daten aber erst einlesen, wenn sie wirklich
+// angezeigt wird - sonst stünden dort die Zählerstände von vorhin.
+function whenVisible(fn) {
+  if (document.prerendering) {
+    document.addEventListener("prerenderingchange", fn, { once: true });
+  } else {
+    fn();
+  }
+}
+
 function slug(name) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }

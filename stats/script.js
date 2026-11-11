@@ -392,7 +392,7 @@ function renderAll() {
   renderAlcohol();
 }
 
-(async function init() {
+whenVisible(async function init() {
   await loadCustomCocktails();
   await loadDeletedBase();
   await loadCountLog();
@@ -402,4 +402,4 @@ function renderAll() {
   watchStorage(() => { renderListBar(); renderAll(); });
   renderAll();
   setStatus("", false);
-})();
+});
